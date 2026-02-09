@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, type PersistStorage } from "zustand/middleware";
 import { buildFactsFromIntake, buildOutputsFromFacts, deriveAssumptions, deriveUncertainties } from "@/lib/case";
+import { createEncryptedStorage } from "@/lib/encryption";
 import type { CaseFile, CaseOutputs, CoachMessage, Facts, IntakeData } from "@/lib/types";
 
 export const defaultIntake: IntakeData = {
@@ -200,9 +201,13 @@ export const createCaseStore = (storage?: PersistStorage<CaseStoreState>) =>
     )
   );
 
+/**
+ * Use encrypted storage in the browser so case data is not stored as
+ * plaintext in localStorage. Falls back to a no-op store on the server.
+ */
 export const useCaseStore = createCaseStore(
   typeof window !== "undefined"
-    ? createJSONStorage(() => localStorage)
+    ? createJSONStorage(() => createEncryptedStorage())
     : createJSONStorage(
         () =>
           ({

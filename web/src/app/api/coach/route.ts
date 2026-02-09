@@ -15,6 +15,14 @@ import type { Facts, IntakeData } from "@/lib/types";
 
 const IMMEDIATE_DANGER_FLAG = "immediate_danger";
 
+/** Check API_SECRET if configured */
+function isAuthorized(request: Request): boolean {
+  const secret = process.env.API_SECRET;
+  if (!secret) return true; // no secret configured = open (dev mode)
+  const provided = request.headers.get("x-api-secret") || request.headers.get("authorization")?.replace("Bearer ", "");
+  return provided === secret;
+}
+
 /** Zod schema for validating incoming coach requests */
 const CoachRequestSchema = z.object({
   intake: z.object({
@@ -76,6 +84,10 @@ function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: st
 }
 
 export async function POST(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
