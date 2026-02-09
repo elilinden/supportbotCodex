@@ -29,19 +29,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           spaceGrotesk.variable,
           bricolage.variable,
           "min-h-screen antialiased",
-          "bg-ui-bg text-ui-text"
+          "bg-slate-50 text-slate-900"
         ].join(" ")}
       >
-        {/* Subtle background wash */}
-        <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
-          <div className="absolute -top-24 left-[-10%] h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
-          <div className="absolute top-10 right-[-10%] h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
-          <div className="absolute bottom-[-10%] left-[30%] h-80 w-80 rounded-full bg-rose-200/30 blur-3xl" />
-        </div>
-
         <div className="min-h-screen">
-          {/* Sticky "app header" */}
-          <header className="sticky top-0 z-50 border-b border-ui-border bg-ui-surface/75 backdrop-blur">
+          {/* Sticky header */}
+          <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
               <TopNav />
             </div>
