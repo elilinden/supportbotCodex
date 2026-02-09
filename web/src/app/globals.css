@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -----------------------------
+   App-wide theme (Light dashboard)
+   ----------------------------- */
+:root {
+  color-scheme: light;
+
+  /* Core surfaces */
+  --bg: #f6f8fc;
+  --bg-2: #eef3fb;
+  --panel: #ffffff;
+  --panel-2: #fbfcff;
+
+  /* Text */
+  --text: #0f172a;        /* slate-900 */
+  --muted: #475569;       /* slate-600 */
+  --muted-2: #64748b;     /* slate-500 */
+
+  /* Borders + shadows */
+  --border: rgba(15, 23, 42, 0.10);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-strong: 0 14px 40px rgba(15, 23, 42, 0.10);
+
+  /* Radius */
+  --radius: 18px;
+  --radius-strong: 22px;
+
+  /* Accent (used for selection, focus, etc.) */
+  --accent: 59, 130, 246; /* rgb for a nice blue */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Space Grotesk", "Bricolage Grotesque", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 0% 0%, rgba(59, 130, 246, 0.10), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, rgba(34, 197, 94, 0.08), transparent 55%),
+    radial-gradient(900px 520px at 40% 110%, rgba(99, 102, 241, 0.06), transparent 55%),
+    linear-gradient(180deg, var(--bg), var(--bg-2));
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Softer text rendering in a UI dashboard */
+body,
+button,
+input,
+textarea {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(var(--accent), 0.18);
+  color: var(--text);
+}
+
+/* Links: subtle dashboard style */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Inputs: cleaner default look (Tailwind will still control most styling) */
+input,
+textarea,
+select {
+  outline: none;
+}
+
+/* Visible, modern focus ring */
+:focus-visible {
+  outline: 2px solid rgba(var(--accent), 0.35);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* -----------------------------
+   Panels / Cards
+   Keep existing class names so your components keep working.
+   ----------------------------- */
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.glass-panel-strong {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-strong);
+  box-shadow: var(--shadow-strong);
+}
+
+/* Optional: subtle “dashboard grid” background you can reuse */
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Small animation for page sections */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-float-in {
+  animation: floatIn 0.45s ease-out both;
+}
+
+/* -----------------------------
+   Print
+   ----------------------------- */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .glass-panel,
+  .glass-panel-strong {
+    border: 1px solid #e5e7eb !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+}
