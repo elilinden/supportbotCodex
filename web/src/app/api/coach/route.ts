@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { callGemini } from "@/lib/gemini";
 import {
   buildCoachPrompt,
@@ -13,6 +14,42 @@ import { mergeFacts } from "@/lib/mergeFacts";
 import type { Facts, IntakeData } from "@/lib/types";
 
 const IMMEDIATE_DANGER_FLAG = "immediate_danger";
+
+/** Zod schema for validating incoming coach requests */
+const CoachRequestSchema = z.object({
+  intake: z.object({
+    petitionerName: z.string().max(500).default(""),
+    respondentName: z.string().max(500).default(""),
+    relationshipCategory: z.string().max(200).default(""),
+    cohabitation: z.string().max(200).default(""),
+    mostRecentIncidentAt: z.string().max(200).default(""),
+    patternOfIncidents: z.string().max(5000).default(""),
+    childrenInvolved: z.string().max(200).default(""),
+    existingCasesOrders: z.string().max(2000).default(""),
+    firearmsAccess: z.string().max(50).default(""),
+    safetyStatus: z.string().max(50).default(""),
+    evidenceInventory: z.string().max(5000).default(""),
+    requestedRelief: z.string().max(2000).default("")
+  }),
+  facts: z.object({
+    parties: z.object({
+      petitioner: z.string().max(500).default(""),
+      respondent: z.string().max(500).default("")
+    }).default({ petitioner: "", respondent: "" }),
+    relationship: z.string().max(500).default(""),
+    incidents: z.array(z.record(z.unknown())).default([]),
+    safetyConcerns: z.array(z.string()).default([]),
+    requestedRelief: z.array(z.string()).default([]),
+    evidenceList: z.array(z.string()).default([]),
+    timeline: z.array(z.string()).default([])
+  }),
+  lastMessages: z.array(z.object({
+    role: z.enum(["user", "assistant"]),
+    content: z.string().max(5000)
+  })).max(20).default([]),
+  userMessage: z.string().max(5000).default(""),
+  mode: z.enum(["interview", "update"]).default("interview")
+});
 
 function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: string) {
   const missingFields = computeMissingFields(intake, facts);
@@ -39,15 +76,28 @@ function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: st
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const intake = body?.intake as IntakeData | undefined;
-  const facts = body?.facts as Facts | undefined;
-  const lastMessages = body?.lastMessages as { role: "user" | "assistant"; content: string }[] | undefined;
-  const userMessage = (body?.userMessage as string | undefined) || "";
-
-  if (!intake || !facts) {
-    return NextResponse.json({ error: "Missing intake or facts" }, { status: 400 });
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
+
+  const parsed = CoachRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid request", details: parsed.error.flatten().fieldErrors },
+      { status: 400 }
+    );
+  }
+
+  const { intake, facts, lastMessages, userMessage, mode: parsedMode } = parsed.data as unknown as {
+    intake: IntakeData;
+    facts: Facts;
+    lastMessages: { role: "user" | "assistant"; content: string }[];
+    userMessage: string;
+    mode: "interview" | "update";
+  };
 
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
@@ -65,7 +115,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const mode = body?.mode === "update" ? "update" : "interview";
+  const mode = parsedMode;
 
   const { systemInstruction, userPrompt } = buildCoachPrompt({
     intake,

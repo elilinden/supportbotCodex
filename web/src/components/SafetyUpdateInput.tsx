@@ -77,7 +77,8 @@ export function SafetyUpdateInput({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <input
-          className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-ink placeholder:text-slate-400 shadow-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+          className="flex-1 rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs text-ui-text placeholder:text-ui-textMuted shadow-sm outline-none focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft"
+          aria-label="Quick update input"
           placeholder="Quick update (e.g., 'I remembered he hit me in 2023')"
           value={input}
           onChange={(event) => setInput(event.target.value)}
@@ -87,7 +88,7 @@ export function SafetyUpdateInput({
           disabled={loading}
         />
         <button
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-60"
+          className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text shadow-sm hover:bg-ui-surface2 disabled:opacity-60"
           onClick={handleSubmit}
           disabled={loading}
         >
@@ -95,8 +96,8 @@ export function SafetyUpdateInput({
         </button>
       </div>
 
-      {note ? <p className="text-xs text-slate-600">{note}</p> : null}
-      {error ? <p className="text-xs text-rose-600">{error}</p> : null}
+      {note ? <p className="text-xs text-ui-textMuted" role="status">{note}</p> : null}
+      {error ? <p className="text-xs text-ui-danger" role="alert">{error}</p> : null}
     </div>
   );
 }

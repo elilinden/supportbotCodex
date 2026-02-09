@@ -16,20 +16,15 @@ const config: Config = {
     extend: {
       colors: {
         /**
-         * Legacy tokens (keep so existing UI doesn't break)
-         * ✅ Updated to match new dashboard palette (high impact)
+         * Unified design tokens (light-first dashboard)
+         * Legacy aliases (ink, accentBlue, etc.) point to ui.* values for
+         * backward compatibility during migration.
          */
-        ink: "#0f172a", // was #0b0f19
-        glass: "rgba(255, 255, 255, 0.08)",
-        glassStrong: "rgba(255, 255, 255, 0.16)",
-        borderGlass: "rgba(255, 255, 255, 0.16)",
-        accentMint: "#6ee7b7",
-        accentBlue: "#2563eb", // was #60a5fa
-        accentRose: "#fb7185",
+        ink: "#0f172a",         // alias → ui.text
+        accentBlue: "#2563eb",  // alias → ui.primary
+        accentMint: "#16a34a",  // alias → ui.success
+        accentRose: "#dc2626",  // alias → ui.danger
 
-        /**
-         * New dashboard tokens (light-first)
-         */
         ui: {
           bg: "#f7f8fb",
           surface: "#ffffff",

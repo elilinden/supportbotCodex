@@ -9,7 +9,7 @@ export default function AboutPage() {
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-slate-500">
           About Pro-Se Prime
         </p>
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-ink tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-display font-bold text-ui-text tracking-tight">
           A calmer way to prepare for NY Family Court
         </h1>
         <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -20,7 +20,7 @@ export default function AboutPage() {
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link
             href="/new"
-            className="rounded-full bg-accentBlue px-7 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/20 hover:opacity-95"
+            className="rounded-full bg-ui-primary px-7 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/20 hover:opacity-95"
           >
             Start Your Case
           </Link>
@@ -40,9 +40,9 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <GlassCardStrong className="p-8 md:p-10 border-l-4 border-l-accentBlue text-slate-900">
+      <GlassCardStrong className="p-8 md:p-10 border-l-4 border-l-ui-primary text-slate-900">
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-ink uppercase tracking-widest">The mission</h2>
+          <h2 className="text-xl font-bold text-ui-text uppercase tracking-widest">The mission</h2>
           <p className="text-slate-700 leading-7">
             Going to Family Court without a lawyer can feel overwhelming. The court needs specific, chronological,
             factual details. Most people show up with lived experience, fear, and scattered proof.
@@ -72,40 +72,40 @@ export default function AboutPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-accentBlue/30 transition-all text-slate-900">
-            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-accentBlue group-hover:opacity-20 transition-opacity">
+          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-ui-primary/30 transition-all text-slate-900">
+            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-ui-primary group-hover:opacity-20 transition-opacity">
               1
             </div>
-            <div className="h-10 w-10 rounded-full bg-accentBlue/10 flex items-center justify-center text-accentBlue font-bold">
+            <div className="h-10 w-10 rounded-full bg-ui-primary/10 flex items-center justify-center text-ui-primary font-bold">
               <span className="text-lg">✎</span>
             </div>
-            <h3 className="font-bold text-ink">Guided intake</h3>
+            <h3 className="font-bold text-ui-text">Guided intake</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Answer plain-language questions about relationship eligibility, incidents, safety, and proof. No jargon.
             </p>
           </GlassCard>
 
-          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-accentMint/30 transition-all text-slate-900">
-            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-accentMint group-hover:opacity-20 transition-opacity">
+          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-ui-success/30 transition-all text-slate-900">
+            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-ui-success group-hover:opacity-20 transition-opacity">
               2
             </div>
-            <div className="h-10 w-10 rounded-full bg-accentMint/10 flex items-center justify-center text-accentMint font-bold">
+            <div className="h-10 w-10 rounded-full bg-ui-success/10 flex items-center justify-center text-ui-success font-bold">
               <span className="text-[11px] font-extrabold tracking-widest">AI</span>
             </div>
-            <h3 className="font-bold text-ink">Missing-details check</h3>
+            <h3 className="font-bold text-ui-text">Missing-details check</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               The tool flags gaps that courts commonly ask about: dates, locations, injuries, threats, witnesses, and weapons.
             </p>
           </GlassCard>
 
-          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-accentRose/30 transition-all text-slate-900">
-            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-accentRose group-hover:opacity-20 transition-opacity">
+          <GlassCard className="p-6 space-y-3 relative overflow-hidden group hover:border-ui-danger/30 transition-all text-slate-900">
+            <div className="absolute top-0 right-0 p-4 opacity-10 font-display text-6xl font-bold text-ui-danger group-hover:opacity-20 transition-opacity">
               3
             </div>
-            <div className="h-10 w-10 rounded-full bg-accentRose/10 flex items-center justify-center text-accentRose font-bold">
+            <div className="h-10 w-10 rounded-full bg-ui-danger/10 flex items-center justify-center text-ui-danger font-bold">
               <span className="text-lg">✓</span>
             </div>
-            <h3 className="font-bold text-ink">Evidence organization</h3>
+            <h3 className="font-bold text-ui-text">Evidence organization</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Build a checklist of texts, photos, reports, witness names, and logs so you know what to bring.
             </p>
@@ -118,7 +118,7 @@ export default function AboutPage() {
             <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-700 font-bold">
               <span className="text-lg">🎙</span>
             </div>
-            <h3 className="font-bold text-ink">Court roadmap</h3>
+            <h3 className="font-bold text-ui-text">Court roadmap</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
               Get a clear script and outline for court, focused on the facts that matter for an Order of Protection.
             </p>
@@ -129,8 +129,8 @@ export default function AboutPage() {
       {/* What we are / aren’t */}
       <div className="grid gap-6 md:grid-cols-2">
         <GlassCard className="p-8 space-y-4 text-slate-900">
-          <h3 className="text-lg font-bold text-ink flex items-center gap-2">
-            <span className="text-accentBlue">✅</span> What this tool does
+          <h3 className="text-lg font-bold text-ui-text flex items-center gap-2">
+            <span className="text-ui-primary">✅</span> What this tool does
           </h3>
           <ul className="space-y-2 text-sm text-slate-700 leading-relaxed">
             <li>• Helps you gather facts in a clean timeline.</li>
@@ -140,9 +140,9 @@ export default function AboutPage() {
           </ul>
         </GlassCard>
 
-        <GlassCard className="p-8 space-y-4 border border-accentRose/20 bg-accentRose/5 text-slate-900">
-          <h3 className="text-lg font-bold text-accentRose flex items-center gap-2">
-            <span className="text-accentRose">⚠️</span> What this tool is not
+        <GlassCard className="p-8 space-y-4 border border-ui-danger/20 bg-ui-danger/5 text-slate-900">
+          <h3 className="text-lg font-bold text-ui-danger flex items-center gap-2">
+            <span className="text-ui-danger">⚠️</span> What this tool is not
           </h3>
           <ul className="space-y-2 text-sm text-slate-700 leading-relaxed">
             <li>• Not a lawyer, not a substitute for legal representation.</li>
@@ -156,8 +156,8 @@ export default function AboutPage() {
       {/* Privacy & Safety */}
       <div className="grid gap-6 md:grid-cols-2">
         <GlassCard className="p-8 space-y-4 text-slate-900">
-          <h3 className="text-lg font-bold text-ink flex items-center gap-2">
-            <span className="text-accentBlue">🛡</span> Privacy-first design
+          <h3 className="text-lg font-bold text-ui-text flex items-center gap-2">
+            <span className="text-ui-primary">🛡</span> Privacy-first design
           </h3>
           <p className="text-sm text-slate-600 leading-relaxed">
             Your information is sensitive. Pro-Se Prime is designed to minimize what it keeps and to make it easy to
@@ -179,9 +179,9 @@ export default function AboutPage() {
           </div>
         </GlassCard>
 
-        <GlassCard className="p-8 space-y-4 border border-accentRose/20 bg-accentRose/5 text-slate-900">
-          <h3 className="text-lg font-bold text-accentRose flex items-center gap-2">
-            <span className="text-accentRose">🕵️</span> Safety tips
+        <GlassCard className="p-8 space-y-4 border border-ui-danger/20 bg-ui-danger/5 text-slate-900">
+          <h3 className="text-lg font-bold text-ui-danger flex items-center gap-2">
+            <span className="text-ui-danger">🕵️</span> Safety tips
           </h3>
           <p className="text-sm text-slate-700 leading-relaxed">
             If you share a device with the person causing harm, consider private browsing and clearing history.
@@ -209,7 +209,7 @@ export default function AboutPage() {
       <div className="flex justify-center pt-6">
         <Link
           href="/new"
-          className="rounded-full bg-accentBlue px-8 py-4 text-sm font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/20 hover:opacity-95"
+          className="rounded-full bg-ui-primary px-8 py-4 text-sm font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/20 hover:opacity-95"
         >
           Start Your Case
         </Link>

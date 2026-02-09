@@ -15,18 +15,18 @@ export default function CaseDashboardPage() {
   if (!caseFile) {
     return (
       <GlassCard className="space-y-4">
-        <h1 className="text-xl font-semibold text-white">Case not found</h1>
-        <p className="text-sm text-white/70">Start a new New York Family Court Order of Protection intake.</p>
+        <h1 className="text-xl font-semibold text-ui-text">Case not found</h1>
+        <p className="text-sm text-ui-textMuted">Start a new New York Family Court Order of Protection intake.</p>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/"
-            className="inline-flex rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="inline-flex rounded-full border border-ui-border px-5 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text"
           >
             Back Home
           </Link>
           <Link
             href="/settings"
-            className="inline-flex rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="inline-flex rounded-full border border-ui-border px-5 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text"
           >
             Settings
           </Link>
@@ -42,14 +42,14 @@ export default function CaseDashboardPage() {
       <GlassCardStrong className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">Case Dashboard</p>
-            <h1 className="text-2xl font-semibold text-white">Order of Protection - NY Family Court</h1>
-            <p className="text-xs text-white/60">Last updated {new Date(caseFile.updatedAt).toLocaleString()}</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-ui-textMuted">Case Dashboard</p>
+            <h1 className="text-2xl font-semibold text-ui-text">Order of Protection - NY Family Court</h1>
+            <p className="text-xs text-ui-textMuted">Last updated {new Date(caseFile.updatedAt).toLocaleString()}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
               href={`/case/${caseFile.id}/interview`}
-              className="rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-ink"
+              className="rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text"
             >
               Interview
             </Link>
@@ -70,76 +70,76 @@ export default function CaseDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
           <GlassCard className="space-y-4">
-            <h2 className="text-sm font-semibold text-white">Intake snapshot</h2>
-            <div className="grid gap-3 text-xs text-white/70 md:grid-cols-2">
+            <h2 className="text-sm font-semibold text-ui-text">Intake snapshot</h2>
+            <div className="grid gap-3 text-xs text-ui-textMuted md:grid-cols-2">
               <div>
-                <span className="text-white/50">Relationship</span>
+                <span className="text-ui-textMuted">Relationship</span>
                 <p>{safeText(intake.relationshipCategory)}</p>
               </div>
               <div>
-                <span className="text-white/50">Cohabitation</span>
+                <span className="text-ui-textMuted">Cohabitation</span>
                 <p>{safeText(intake.cohabitation)}</p>
               </div>
               <div>
-                <span className="text-white/50">Most recent incident</span>
+                <span className="text-ui-textMuted">Most recent incident</span>
                 <p>{safeText(intake.mostRecentIncidentAt)}</p>
               </div>
               <div>
-                <span className="text-white/50">Children involved</span>
+                <span className="text-ui-textMuted">Children involved</span>
                 <p>{safeText(intake.childrenInvolved)}</p>
               </div>
               <div>
-                <span className="text-white/50">Existing cases/orders</span>
+                <span className="text-ui-textMuted">Existing cases/orders</span>
                 <p>{safeText(intake.existingCasesOrders)}</p>
               </div>
               <div>
-                <span className="text-white/50">Firearms access</span>
+                <span className="text-ui-textMuted">Firearms access</span>
                 <p>{safeText(intake.firearmsAccess)}</p>
               </div>
               <div>
-                <span className="text-white/50">Safety status</span>
-                <p className={intake.safetyStatus === "Immediate danger" ? "text-rose-300" : ""}>
+                <span className="text-ui-textMuted">Safety status</span>
+                <p className={intake.safetyStatus === "Immediate danger" ? "text-ui-danger" : ""}>
                   {safeText(intake.safetyStatus)}
                 </p>
               </div>
               <div>
-                <span className="text-white/50">Evidence inventory</span>
+                <span className="text-ui-textMuted">Evidence inventory</span>
                 <p>{safeText(intake.evidenceInventory)}</p>
               </div>
             </div>
           </GlassCard>
 
           <GlassCard className="space-y-4">
-            <h2 className="text-sm font-semibold text-white">Facts snapshot</h2>
-            <div className="grid gap-4 text-xs text-white/70 md:grid-cols-2">
+            <h2 className="text-sm font-semibold text-ui-text">Facts snapshot</h2>
+            <div className="grid gap-4 text-xs text-ui-textMuted md:grid-cols-2">
               <div>
-                <span className="text-white/50">Parties</span>
+                <span className="text-ui-textMuted">Parties</span>
                 <p>{facts.parties.petitioner || "Petitioner"} vs. {facts.parties.respondent || "Respondent"}</p>
               </div>
               <div>
-                <span className="text-white/50">Relationship</span>
+                <span className="text-ui-textMuted">Relationship</span>
                 <p>{safeText(facts.relationship)}</p>
               </div>
               <div className="md:col-span-2">
-                <span className="text-white/50">Safety concerns</span>
+                <span className="text-ui-textMuted">Safety concerns</span>
                 <p>{facts.safetyConcerns.join(" / ") || "None noted"}</p>
               </div>
               <div className="md:col-span-2">
-                <span className="text-white/50">Evidence list</span>
+                <span className="text-ui-textMuted">Evidence list</span>
                 <p>{facts.evidenceList.join(" / ") || "None listed"}</p>
               </div>
             </div>
           </GlassCard>
 
           <GlassCard className="space-y-4">
-            <h2 className="text-sm font-semibold text-white">Outputs (info-only)</h2>
-            <div className="space-y-3 text-xs text-white/70">
+            <h2 className="text-sm font-semibold text-ui-text">Outputs (info-only)</h2>
+            <div className="space-y-3 text-xs text-ui-textMuted">
               <div>
-                <span className="text-white/50">2-minute script</span>
+                <span className="text-ui-textMuted">2-minute script</span>
                 <p>{safeText(outputs.script2Min)}</p>
               </div>
               <div>
-                <span className="text-white/50">5-minute outline</span>
+                <span className="text-ui-textMuted">5-minute outline</span>
                 <ul className="mt-2 space-y-1">
                   {outputs.outline5Min.length ? outputs.outline5Min.map((item, index) => (
                     <li key={index}>- {item}</li>
@@ -147,7 +147,7 @@ export default function CaseDashboardPage() {
                 </ul>
               </div>
               <div>
-                <span className="text-white/50">Evidence checklist</span>
+                <span className="text-ui-textMuted">Evidence checklist</span>
                 <ul className="mt-2 space-y-1">
                   {outputs.evidenceChecklist.length ? outputs.evidenceChecklist.map((item, index) => (
                     <li key={index}>- {item}</li>
@@ -160,8 +160,8 @@ export default function CaseDashboardPage() {
 
         <div className="space-y-6">
           <GlassCard className="space-y-3">
-            <h2 className="text-sm font-semibold text-white">Timeline</h2>
-            <ul className="space-y-2 text-xs text-white/70">
+            <h2 className="text-sm font-semibold text-ui-text">Timeline</h2>
+            <ul className="space-y-2 text-xs text-ui-textMuted">
               {facts.timeline.length ? facts.timeline.map((item, index) => (
                 <li key={index}>- {item}</li>
               )) : <li>- Add incidents to build a timeline.</li>}

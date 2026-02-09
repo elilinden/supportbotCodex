@@ -103,8 +103,8 @@ export default function RoadmapPage() {
 
   if (!caseFile) {
     return (
-      <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20 text-ink">
-        <h1 className="text-2xl font-bold text-ink">Case not found</h1>
+      <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20 text-ui-text">
+        <h1 className="text-2xl font-bold text-ui-text">Case not found</h1>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/"
@@ -412,7 +412,7 @@ export default function RoadmapPage() {
   }, [derived, dayGreeting]);
 
   return (
-    <div className="min-h-[calc(100vh-120px)] animate-float-in text-ink">
+    <div className="min-h-[calc(100vh-120px)] animate-float-in text-ui-text">
       <div className="mb-4 flex flex-wrap gap-2 lg:hidden">
         <Link
           href={`/case/${caseFile.id}/interview`}
@@ -430,12 +430,12 @@ export default function RoadmapPage() {
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         {/* LEFT SIDEBAR (dashboard-style) */}
         <aside className="hidden lg:block">
-          <GlassCard className="p-4 space-y-4 text-ink">
+          <GlassCard className="p-4 space-y-4 text-ui-text">
             <div className="space-y-1">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
                 Navigation
               </p>
-              <h2 className="text-sm font-bold text-ink">Case Dashboard</h2>
+              <h2 className="text-sm font-bold text-ui-text">Case Dashboard</h2>
             </div>
 
             <div className="space-y-2">
@@ -461,22 +461,22 @@ export default function RoadmapPage() {
               <div className="mt-2 space-y-2 text-xs text-slate-700">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Mode</span>
-                  <span className="font-semibold text-ink">{status === "active" ? "Active" : "Draft"}</span>
+                  <span className="font-semibold text-ui-text">{status === "active" ? "Active" : "Draft"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Safety</span>
-                  <span className="font-semibold text-ink">{derived.safetyStatus || "Unknown"}</span>
+                  <span className="font-semibold text-ui-text">{derived.safetyStatus || "Unknown"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Relationship</span>
-                  <span className="font-semibold text-ink">{derived.relationshipCategory || "Not set"}</span>
+                  <span className="font-semibold text-ui-text">{derived.relationshipCategory || "Not set"}</span>
                 </div>
               </div>
             </div>
 
             {status !== "active" ? (
-              <div className="rounded-xl border border-accentRose/20 bg-accentRose/5 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-accentRose">
+              <div className="rounded-xl border border-ui-danger/20 bg-ui-danger/5 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ui-danger">
                   Draft mode
                 </p>
                 <p className="mt-2 text-xs text-slate-700 leading-relaxed">
@@ -484,7 +484,7 @@ export default function RoadmapPage() {
                 </p>
                 <Link
                   href={`/case/${caseFile.id}/interview`}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-ink shadow-sm border border-slate-200 hover:bg-slate-50"
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-ui-text shadow-sm border border-slate-200 hover:bg-slate-50"
                 >
                   Continue
                 </Link>
@@ -496,13 +496,13 @@ export default function RoadmapPage() {
         {/* MAIN */}
         <main className="space-y-6">
           {/* Header row (dashboard-like) */}
-          <GlassCardStrong className="p-5 text-ink">
+          <GlassCardStrong className="p-5 text-ui-text">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-accentBlue">
+                <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-ui-primary">
                   Dashboard
                 </p>
-                <h1 className="text-2xl md:text-3xl font-display font-bold text-ink">
+                <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">
                   Your Filing Roadmap
                 </h1>
                 <p className="text-sm text-slate-600 max-w-2xl">
@@ -550,12 +550,12 @@ export default function RoadmapPage() {
 
           {/* KPI row */}
           <div className="grid gap-4 md:grid-cols-3">
-            <GlassCard className="p-4 text-ink">
+            <GlassCard className="p-4 text-ui-text">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 Timeline Items
               </p>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-ink">
+                <span className="text-3xl font-display font-bold text-ui-text">
                   {derived.timelineItems.length}
                 </span>
                 <span className="text-xs text-slate-500">items</span>
@@ -565,12 +565,12 @@ export default function RoadmapPage() {
               </p>
             </GlassCard>
 
-            <GlassCard className="p-4 text-ink">
+            <GlassCard className="p-4 text-ui-text">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 Evidence Items
               </p>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-ink">
+                <span className="text-3xl font-display font-bold text-ui-text">
                   {derived.evidenceChecklist.length}
                 </span>
                 <span className="text-xs text-slate-500">tracked</span>
@@ -580,12 +580,12 @@ export default function RoadmapPage() {
               </p>
             </GlassCard>
 
-            <GlassCard className="p-4 text-ink">
+            <GlassCard className="p-4 text-ui-text">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 Top Incidents
               </p>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-display font-bold text-ink">
+                <span className="text-3xl font-display font-bold text-ui-text">
                   {derived.topIncidents.length}
                 </span>
                 <span className="text-xs text-slate-500">anchors</span>
@@ -601,9 +601,9 @@ export default function RoadmapPage() {
             {/* LEFT */}
             <div className="space-y-6">
               {/* Timeline preview */}
-              <GlassCard className="p-5 text-ink">
+              <GlassCard className="p-5 text-ui-text">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-ink">Timeline</h2>
+                  <h2 className="text-sm font-bold text-ui-text">Timeline</h2>
                   <span className="text-xs text-slate-400">Showing up to 6</span>
                 </div>
                 <div className="mt-4">
@@ -626,14 +626,14 @@ export default function RoadmapPage() {
               </GlassCard>
 
               {/* Scripts */}
-              <GlassCard className="p-5 space-y-4 text-ink">
+              <GlassCard className="p-5 space-y-4 text-ui-text">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-ink">Scripts for Court</h2>
+                  <h2 className="text-sm font-bold text-ui-text">Scripts for Court</h2>
                   <span className="text-xs text-slate-400">Record-first</span>
                 </div>
 
                 <details className="group rounded-2xl border border-slate-200 bg-slate-50 open:bg-slate-100">
-                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-accentBlue">
+                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-ui-primary">
                     Ex Parte (Temporary Order)
                   </summary>
                   <div className="px-4 pb-4">
@@ -644,7 +644,7 @@ export default function RoadmapPage() {
                 </details>
 
                 <details className="group rounded-2xl border border-slate-200 bg-slate-50 open:bg-slate-100">
-                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-accentBlue">
+                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-ui-primary">
                     Return Date
                   </summary>
                   <div className="px-4 pb-4">
@@ -655,7 +655,7 @@ export default function RoadmapPage() {
                 </details>
 
                 <details className="group rounded-2xl border border-slate-200 bg-slate-50 open:bg-slate-100">
-                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-accentBlue">
+                  <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-ui-primary">
                     Fact-Finding Outline
                   </summary>
                   <div className="px-4 pb-4">
@@ -672,15 +672,15 @@ export default function RoadmapPage() {
               </GlassCard>
 
               {/* Judge Q&A */}
-              <GlassCard className="p-5 text-ink">
-                <h2 className="text-sm font-bold text-ink">Common Judge Questions</h2>
+              <GlassCard className="p-5 text-ui-text">
+                <h2 className="text-sm font-bold text-ui-text">Common Judge Questions</h2>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {scripts.judgeQuestions.map((qa, idx) => (
                     <div
                       key={`${idx}-${qa.q}`}
                       className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-accentBlue">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-ui-primary">
                         {qa.q}
                       </p>
                       <p className="mt-2 text-sm text-slate-700 italic leading-relaxed">
@@ -695,9 +695,9 @@ export default function RoadmapPage() {
             {/* RIGHT */}
             <aside className="space-y-6">
               {/* Evidence */}
-              <GlassCard className="p-5 text-ink">
+              <GlassCard className="p-5 text-ui-text">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-ink">Evidence</h3>
+                  <h3 className="text-sm font-bold text-ui-text">Evidence</h3>
                   <span className="text-xs text-slate-400">Top 8</span>
                 </div>
                 <div className="mt-4">
@@ -708,7 +708,7 @@ export default function RoadmapPage() {
                           key={`${index}-${item}`}
                           className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
                         >
-                          <span className="text-accentRose mt-[1px]">✓</span>
+                          <span className="text-ui-danger mt-[1px]">✓</span>
                           <span>{item}</span>
                         </li>
                       ))}
@@ -723,7 +723,7 @@ export default function RoadmapPage() {
 
               {/* Strategy tips */}
               {tips.length > 0 ? (
-                <GlassCard className="p-5 border border-amber-400/20 bg-amber-50 text-ink">
+                <GlassCard className="p-5 border border-amber-400/20 bg-amber-50 text-ui-text">
                   <h3 className="text-sm font-bold text-amber-700">Personalized Strategy</h3>
                   <ul className="mt-3 space-y-2">
                     {tips.map((tip, i) => (
@@ -736,8 +736,8 @@ export default function RoadmapPage() {
               ) : null}
 
               {/* Safety */}
-              <GlassCard className="p-5 border border-accentRose/20 bg-accentRose/5 text-ink">
-                <h3 className="text-sm font-bold text-accentRose">Safety First</h3>
+              <GlassCard className="p-5 border border-ui-danger/20 bg-ui-danger/5 text-ui-text">
+                <h3 className="text-sm font-bold text-ui-danger">Safety First</h3>
                 <p className="mt-2 text-xs text-slate-700 leading-relaxed">
                   If you are in immediate danger, call 911. This tool is informational only.
                 </p>

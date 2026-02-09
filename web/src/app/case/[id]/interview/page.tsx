@@ -157,7 +157,7 @@ export default function InterviewPage() {
   if (!caseFile) {
     return (
       <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20">
-        <h1 className="text-2xl font-display font-semibold text-ink">Case not found</h1>
+        <h1 className="text-2xl font-display font-semibold text-ui-text">Case not found</h1>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/"
@@ -187,13 +187,13 @@ export default function InterviewPage() {
           <GlassCard className="p-4 space-y-4">
             <div className="space-y-1">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Navigation</p>
-              <h2 className="text-sm font-bold text-ink">Case Dashboard</h2>
+              <h2 className="text-sm font-bold text-ui-text">Case Dashboard</h2>
             </div>
 
             <div className="space-y-2">
               <Link
                 href={`/case/${caseFile.id}/interview`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-ink hover:bg-slate-50"
+                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-ui-text hover:bg-slate-50"
               >
                 <span>Interview</span>
                 <span className="text-slate-400">●</span>
@@ -221,24 +221,24 @@ export default function InterviewPage() {
               <div className="mt-2 space-y-2 text-xs text-slate-700">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Mode</span>
-                  <span className="font-semibold text-ink">{modeLabel}</span>
+                  <span className="font-semibold text-ui-text">{modeLabel}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Turns</span>
-                  <span className="font-semibold text-ink">
+                  <span className="font-semibold text-ui-text">
                     {turnsUsed} / {MAX_TURNS}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Missing</span>
-                  <span className="font-semibold text-ink">{missingFields.length}</span>
+                  <span className="font-semibold text-ui-text">{missingFields.length}</span>
                 </div>
               </div>
             </div>
 
             {!done ? (
-              <div className="rounded-xl border border-accentRose/25 bg-accentRose/10 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-accentRose/90">Interview</p>
+              <div className="rounded-xl border border-ui-danger/25 bg-ui-danger/10 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ui-danger/90">Interview</p>
                 <p className="mt-2 text-xs text-slate-700 leading-relaxed">
                   Answer in short, factual sentences. Dates, locations, injuries, threats, evidence.
                 </p>
@@ -249,7 +249,7 @@ export default function InterviewPage() {
                 <p className="mt-2 text-xs text-slate-700 leading-relaxed">You can generate the final roadmap now.</p>
                 <Link
                   href={`/case/${caseFile.id}/roadmap`}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-ink hover:opacity-95"
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-ui-text hover:opacity-95"
                 >
                   Generate Roadmap
                 </Link>
@@ -265,7 +265,7 @@ export default function InterviewPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Dashboard</p>
-                <h1 className="text-2xl md:text-3xl font-display font-bold text-ink">Interview</h1>
+                <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">Interview</h1>
                 <p className="text-sm text-slate-600 max-w-2xl">
                   Informational only (not legal advice). Focused on missing critical details.
                 </p>
@@ -292,7 +292,7 @@ export default function InterviewPage() {
               <div className="rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Turns</p>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ink">{turnsUsed}</span>
+                  <span className="text-3xl font-display font-bold text-ui-text">{turnsUsed}</span>
                   <span className="text-xs text-slate-500">of {MAX_TURNS}</span>
                 </div>
                 <p className="mt-2 text-xs text-slate-600">Max turns before auto-complete.</p>
@@ -301,7 +301,7 @@ export default function InterviewPage() {
               <div className="rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Missing</p>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ink">{missingFields.length}</span>
+                  <span className="text-3xl font-display font-bold text-ui-text">{missingFields.length}</span>
                   <span className="text-xs text-slate-500">fields</span>
                 </div>
                 <p className="mt-2 text-xs text-slate-600">Dates, locations, injuries, threats, evidence.</p>
@@ -310,7 +310,7 @@ export default function InterviewPage() {
               <div className="rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ink">{done ? "Done" : "In progress"}</span>
+                  <span className="text-3xl font-display font-bold text-ui-text">{done ? "Done" : "In progress"}</span>
                 </div>
                 <p className="mt-2 text-xs text-slate-600">Complete to unlock Roadmap.</p>
               </div>
@@ -322,7 +322,7 @@ export default function InterviewPage() {
             {/* Chat */}
             <GlassCard className="flex h-[640px] flex-col p-5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-ink">Conversation</h2>
+                <h2 className="text-sm font-bold text-ui-text">Conversation</h2>
                 <span className="text-xs text-slate-500">No suggestion chips</span>
               </div>
 
@@ -333,7 +333,7 @@ export default function InterviewPage() {
                       key={msg.id}
                       className={`rounded-2xl border px-4 py-3 text-xs ${
                         msg.role === "user"
-                          ? "border-slate-200 bg-white text-ink"
+                          ? "border-slate-200 bg-white text-ui-text"
                           : "border-slate-200 bg-slate-50 text-slate-700"
                       }`}
                     >
@@ -356,7 +356,7 @@ export default function InterviewPage() {
     className={[
       "flex-1 rounded-full border px-4 py-2 text-xs",
       // outlined look (like your other outline buttons)
-      "border-slate-200 bg-white text-ink shadow-sm outline-none",
+      "border-slate-200 bg-white text-ui-text shadow-sm outline-none",
       "placeholder:text-slate-400",
       // clearer focus ring + border so it reads as “outlined”
       "focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
@@ -372,7 +372,7 @@ export default function InterviewPage() {
     disabled={loading || done}
   />
   <button
-    className="rounded-full bg-accentBlue px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+    className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
     onClick={() => void handleSend()}
     disabled={loading || done}
   >
@@ -386,7 +386,7 @@ export default function InterviewPage() {
                   </p>
                   <Link
                     href={`/case/${caseFile.id}/roadmap`}
-                    className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ink hover:opacity-95"
+                    className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ui-text hover:opacity-95"
                   >
                     Generate Roadmap
                   </Link>
@@ -397,21 +397,21 @@ export default function InterviewPage() {
             {/* Right panel */}
             <aside className="space-y-6">
               <GlassCard className="p-5">
-                <h3 className="text-sm font-bold text-ink">Interview status</h3>
+                <h3 className="text-sm font-bold text-ui-text">Interview status</h3>
                 <div className="mt-3 space-y-2 text-xs text-slate-700">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Turns used</span>
-                    <span className="font-semibold text-ink">
+                    <span className="font-semibold text-ui-text">
                       {turnsUsed} / {MAX_TURNS}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Missing fields</span>
-                    <span className="font-semibold text-ink">{missingFields.length}</span>
+                    <span className="font-semibold text-ui-text">{missingFields.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Mode</span>
-                    <span className="font-semibold text-ink">{modeLabel}</span>
+                    <span className="font-semibold text-ui-text">{modeLabel}</span>
                   </div>
                 </div>
 
@@ -432,7 +432,7 @@ export default function InterviewPage() {
                 {done ? (
                   <Link
                     href={`/case/${caseFile.id}/roadmap`}
-                    className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ink hover:opacity-95"
+                    className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-ui-text hover:opacity-95"
                   >
                     Generate Roadmap
                   </Link>
@@ -443,8 +443,8 @@ export default function InterviewPage() {
                 )}
               </GlassCard>
 
-              <GlassCard className="p-5 border border-accentRose/20 bg-accentRose/5">
-                <h3 className="text-sm font-bold text-ink">Safety First</h3>
+              <GlassCard className="p-5 border border-ui-danger/20 bg-ui-danger/5">
+                <h3 className="text-sm font-bold text-ui-text">Safety First</h3>
                 <p className="mt-2 text-xs text-slate-600 leading-relaxed">
                   If you are in immediate danger, call 911. This tool is informational only.
                 </p>

@@ -25,8 +25,33 @@ const logger = winston.createLogger({
 const app = express();
 app.use(helmet()); 
 
-// --- FIX 1: Allow Extension to Connect (CORS) ---
-app.use(cors()); 
+// --- CORS: Restrict to known origins ---
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:3000,chrome-extension://")
+  .split(",")
+  .map(s => s.trim());
+
+app.use(cors({
+  origin(origin, callback) {
+    // Allow requests with no origin (curl, server-to-server, extensions)
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))) {
+      return callback(null, true);
+    }
+    callback(new Error("Not allowed by CORS"));
+  }
+}));
+
+// --- API Key Auth Middleware ---
+const SERVER_API_KEY = process.env.SERVER_API_KEY || "";
+function requireApiKey(req, res, next) {
+  if (!SERVER_API_KEY) return next(); // skip if not configured
+  const provided = req.headers["x-api-key"] || req.query.apiKey;
+  if (provided === SERVER_API_KEY) return next();
+  return res.status(401).json({ action: "ERROR", error: "Unauthorized: invalid or missing API key" });
+}
+app.use("/analyze", requireApiKey);
+app.use("/generateFollowUpQuestions", requireApiKey);
+app.use("/questionnaire", requireApiKey);
 
 // --- CONSTANTS ---
 const THROTTLE_MS = 3000;
@@ -141,6 +166,16 @@ function recordAnswer(tabIdHash, transcript) {
       history.lastAnswers.shift();
     }
   }
+}
+
+// --- Input Sanitization (prompt injection mitigation) ---
+function sanitizeForPrompt(text) {
+  if (!text || typeof text !== "string") return "";
+  // Strip common prompt injection patterns
+  return text
+    .replace(/\b(system|assistant|ignore previous|forget|override|pretend)\b.*?:/gi, "[filtered]")
+    .replace(/```[\s\S]*?```/g, "[code-block-removed]")
+    .slice(0, 10000); // hard cap on input length
 }
 
 // --- Helpers ---
@@ -367,7 +402,7 @@ app.post("/analyze", async (req, res) => {
   // Create a tab identifier hash from provider + pageUrl
   const tabIdHash = crypto.createHash('md5').update((provider || '') + (pageUrl || '')).digest('hex');
 
-  const trimmedTranscript = (transcript || "").split("\n").slice(-MAX_TRANSCRIPT_LINES).join("\n");
+  const trimmedTranscript = sanitizeForPrompt((transcript || "").split("\n").slice(-MAX_TRANSCRIPT_LINES).join("\n"));
   const transcriptHash = crypto.createHash('md5').update(trimmedTranscript + (userContext || "")).digest('hex');
   
   const cached = draftCache.get(transcriptHash);
@@ -397,7 +432,7 @@ app.post("/analyze", async (req, res) => {
     `- If agent is evasive or unhelpful: Suggest escalation.\n` +
     `- If you have all info and agent can't help: "Let me check if there's anything else. Can I put you on hold while I look into this?"\n\n` +
     
-    `CUSTOMER SETUP INFO:\n${userContext || "User hasn't filled out questionnaire yet"}\n\n` +
+    `CUSTOMER SETUP INFO:\n${sanitizeForPrompt(userContext) || "User hasn't filled out questionnaire yet"}\n\n` +
     
     `CHAT TRANSCRIPT:\n${trimmedTranscript}\n\n` +
     

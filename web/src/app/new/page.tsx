@@ -45,30 +45,30 @@ export default function NewIntakePage() {
   };
 
   // Light-dashboard input styles (consistent + readable)
-  const labelCls = "text-xs font-medium text-slate-700";
-  const helpCls = "text-[11px] text-slate-500";
+  const labelCls = "text-xs font-medium text-ui-text";
+  const helpCls = "text-[11px] text-ui-textMuted";
   const inputCls =
-    "w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-ink " +
-    "placeholder:text-slate-400 shadow-sm outline-none " +
-    "focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
+    "w-full rounded-xl border border-ui-border bg-ui-surface px-4 py-2 text-sm text-ui-text " +
+    "placeholder:text-ui-textMuted shadow-sm outline-none " +
+    "focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft";
   const textareaCls =
-    "w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-ink " +
-    "placeholder:text-slate-400 shadow-sm outline-none " +
-    "focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
+    "w-full rounded-xl border border-ui-border bg-ui-surface px-4 py-2 text-sm text-ui-text " +
+    "placeholder:text-ui-textMuted shadow-sm outline-none " +
+    "focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft";
   const selectCls =
-    "w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-ink " +
-    "shadow-sm outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
+    "w-full rounded-xl border border-ui-border bg-ui-surface px-4 py-2 text-sm text-ui-text " +
+    "shadow-sm outline-none focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft";
 
   return (
     // Force readable “light mode” text defaults even if GlassCard applies text-white internally
-    <div className="mx-auto max-w-5xl space-y-8 text-ink">
+    <div className="mx-auto max-w-5xl space-y-8 text-ui-text">
       {/* Ensure the card content is dark text */}
-      <GlassCardStrong className="space-y-4 text-ink">
+      <GlassCardStrong className="space-y-4 text-ui-text">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
             New Order of Protection Intake
           </p>
-          <h1 className="text-2xl font-semibold text-ink">NY Family Court OP Intake</h1>
+          <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Intake</h1>
         </div>
 
         <p className="text-sm text-slate-600">
@@ -95,7 +95,7 @@ export default function NewIntakePage() {
               className={[
                 "rounded-full border px-3 py-1 transition",
                 active
-                  ? "border-accentBlue/30 bg-accentBlue text-white"
+                  ? "border-ui-primary/30 bg-ui-primary text-white"
                   : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
               ].join(" ")}
               aria-current={active ? "step" : undefined}
@@ -107,10 +107,10 @@ export default function NewIntakePage() {
       </div>
 
       {/* Ensure the card content is dark text */}
-      <GlassCard className="space-y-6 text-ink">
+      <GlassCard className="space-y-6 text-ui-text">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <h2 className="text-sm font-semibold text-ink">{stepLabel}</h2>
+            <h2 className="text-sm font-semibold text-ui-text">{stepLabel}</h2>
             <p className={helpCls}>
               Step {step + 1} of {steps.length}
             </p>
@@ -302,7 +302,7 @@ export default function NewIntakePage() {
           {step < steps.length - 1 ? (
             <button
               type="button"
-              className="rounded-full bg-accentBlue px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+              className="rounded-full bg-ui-primary px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
               onClick={goNext}
             >
               Next
@@ -310,7 +310,7 @@ export default function NewIntakePage() {
           ) : (
             <button
               type="button"
-              className="rounded-full bg-accentBlue px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+              className="rounded-full bg-ui-primary px-6 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
               onClick={handleSubmit}
             >
               Start Interview
