@@ -10,8 +10,8 @@ export function AssumptionsPanel({
   return (
     <GlassCard className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-white">Assumptions</h3>
-        <ul className="mt-2 space-y-1 text-xs text-white/70">
+        <h3 className="text-sm font-semibold text-ui-text">Assumptions</h3>
+        <ul className="mt-2 space-y-1 text-xs text-ui-textMuted" aria-label="Case assumptions">
           {assumptions.length ? (
             assumptions.map((item, index) => <li key={index}>- {item}</li>)
           ) : (
@@ -20,8 +20,8 @@ export function AssumptionsPanel({
         </ul>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-white">Uncertainties</h3>
-        <ul className="mt-2 space-y-1 text-xs text-white/70">
+        <h3 className="text-sm font-semibold text-ui-text">Uncertainties</h3>
+        <ul className="mt-2 space-y-1 text-xs text-ui-textMuted" aria-label="Case uncertainties">
           {uncertainties.length ? (
             uncertainties.map((item, index) => <li key={index}>- {item}</li>)
           ) : (

@@ -17,14 +17,14 @@ export function HomeActions() {
     : "/";
 
   const primaryBtn =
-    "inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 " +
+    "inline-flex items-center justify-center rounded-full bg-ui-primary px-6 py-3 " +
     "text-xs font-semibold uppercase tracking-wide text-white shadow-sm " +
-    "hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-100";
+    "hover:opacity-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ui-primarySoft";
 
   const outlineBtn =
-    "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-3 " +
-    "text-xs font-semibold uppercase tracking-wide text-slate-700 shadow-sm " +
-    "hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-100";
+    "inline-flex items-center justify-center rounded-full border border-ui-border bg-ui-surface px-6 py-3 " +
+    "text-xs font-semibold uppercase tracking-wide text-ui-text shadow-sm " +
+    "hover:bg-ui-surface2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ui-primarySoft";
 
   return (
     <div className="flex flex-wrap gap-3">

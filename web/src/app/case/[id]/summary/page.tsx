@@ -14,7 +14,7 @@ export default function CaseSummaryPage() {
   if (!caseFile) {
     return (
       <GlassCard className="space-y-4">
-        <h1 className="text-xl font-semibold text-ink">Case not found</h1>
+        <h1 className="text-xl font-semibold text-ui-text">Case not found</h1>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/"
@@ -44,12 +44,12 @@ export default function CaseSummaryPage() {
     <div className="space-y-8">
       <GlassCardStrong className="space-y-3 no-print">
         <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Printable Summary</p>
-        <h1 className="text-2xl font-semibold text-ink">NY Family Court OP Summary</h1>
+        <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Summary</h1>
         <p className="text-sm text-slate-600">Information-only summary for Orders of Protection. Not legal advice.</p>
 
         <div className="flex flex-wrap gap-3">
           <button
-            className="w-fit rounded-full bg-accentBlue px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+            className="w-fit rounded-full bg-ui-primary px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
             onClick={() => window.print()}
           >
             Print / Export
@@ -67,7 +67,7 @@ export default function CaseSummaryPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
           <GlassCard className="space-y-3">
-            <h2 className="text-sm font-semibold text-ink">Facts snapshot</h2>
+            <h2 className="text-sm font-semibold text-ui-text">Facts snapshot</h2>
 
             <p className="text-xs text-slate-700">
               <strong>Parties:</strong> {facts.parties.petitioner || "Petitioner"} vs.{" "}
@@ -88,7 +88,7 @@ export default function CaseSummaryPage() {
           </GlassCard>
 
           <GlassCard className="space-y-3">
-            <h2 className="text-sm font-semibold text-ink">Outputs (info-only)</h2>
+            <h2 className="text-sm font-semibold text-ui-text">Outputs (info-only)</h2>
 
             <div className="space-y-3 text-xs text-slate-700">
               <div>
@@ -146,7 +146,7 @@ export default function CaseSummaryPage() {
 
         <div className="space-y-6">
           <GlassCard className="space-y-3">
-            <h2 className="text-sm font-semibold text-ink">Intake details</h2>
+            <h2 className="text-sm font-semibold text-ui-text">Intake details</h2>
             <ul className="space-y-2 text-xs text-slate-700">
               <li>Relationship: {intake.relationshipCategory || "-"}</li>
               <li>Cohabitation: {intake.cohabitation || "-"}</li>
@@ -161,7 +161,7 @@ export default function CaseSummaryPage() {
           </GlassCard>
 
           <GlassCard className="space-y-3">
-            <h2 className="text-sm font-semibold text-ink">Filing basics (info-only)</h2>
+            <h2 className="text-sm font-semibold text-ui-text">Filing basics (info-only)</h2>
             <ul className="space-y-2 text-xs text-slate-700">
               <li>- Family Offense Petition (UCS-FC8-2) requesting an Order of Protection.</li>
               <li>- Address confidentiality or safety request if revealing your address creates risk.</li>
@@ -171,7 +171,7 @@ export default function CaseSummaryPage() {
 
           {showHotlines ? (
             <GlassCard className="space-y-2">
-              <h2 className="text-sm font-semibold text-ink">Safety resources</h2>
+              <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
               <p className="text-xs text-slate-700">
                 If you are in immediate danger, call 911 or your local emergency number.
               </p>

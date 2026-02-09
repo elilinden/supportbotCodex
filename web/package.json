@@ -1,7 +1,7 @@
 {
-  "name": "support-bot-web",
+  "name": "pro-se-prime-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "next": "14.2.35",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -26,6 +27,9 @@
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
