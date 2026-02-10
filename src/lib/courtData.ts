@@ -100,6 +100,23 @@ export const COURT_FORMS: CourtForm[] = [
     url: "https://www.nycourts.gov/LegacyPDFS/FORMS/familycourt/pdfs/GF-10a.pdf",
     category: "modification",
   },
+  // D-2) Modification — rare / situational
+  {
+    id: "affidavit-modify-op",
+    name: "Affidavit in Support of Modification of OP",
+    formNumber: "GF-5d",
+    description: "Use this to support a request to modify an existing temporary or final order of protection.",
+    url: "https://ww2.nycourts.gov/forms/familycourt/domesticviolence.shtml",
+    category: "modification",
+  },
+  {
+    id: "out-of-state-op-registry",
+    name: "Affidavit to Register Out-of-State OP",
+    formNumber: "GF-5e",
+    description: "File this to enter an order of protection from another state onto the New York statewide registry.",
+    url: "https://ww2.nycourts.gov/forms/familycourt/domesticviolence.shtml",
+    category: "modification",
+  },
   // E) Guides
   {
     id: "faq-guide",
@@ -107,6 +124,14 @@ export const COURT_FORMS: CourtForm[] = [
     formNumber: "Guide",
     description: "Official NYC Family Court walkthrough: what to include, how to serve, return dates, violations, and more.",
     url: "https://ww2.nycourts.gov/COURTS/nyc/family/faqs_domesticviolence.shtml",
+    category: "guide",
+  },
+  {
+    id: "nys-courthelp-filing",
+    name: "NYS CourtHelp — Family Court Filing Walkthrough",
+    formNumber: "Guide",
+    description: "Statewide step-by-step guide for filing a Family Offense Petition. Covers TOP service rules, what to bring, and key procedural reminders.",
+    url: "https://nycourts.gov/Courthelp/Safety/familyfiling.shtml",
     category: "guide",
   },
   {
@@ -123,6 +148,22 @@ export const COURT_FORMS: CourtForm[] = [
     formNumber: "Guide",
     description: "NYC311 reference page with pointers and current resources.",
     url: "https://portal.311.nyc.gov/article/?kanumber=KA-02904",
+    category: "guide",
+  },
+  {
+    id: "nys-dv-forms-index",
+    name: "NYS DV Forms Index (All Family Court DV Forms)",
+    formNumber: "Guide",
+    description: "Complete official index of all domestic violence forms available for Family Court proceedings.",
+    url: "https://ww2.nycourts.gov/forms/familycourt/domesticviolence.shtml",
+    category: "guide",
+  },
+  {
+    id: "nyc-family-home-forms",
+    name: "NYC Family Court — Forms & Resources",
+    formNumber: "Guide",
+    description: "Centralized forms and resources page for NYC Family Court, including service-related affidavits and proof of service documents.",
+    url: "https://ww2.nycourts.gov/COURTS/nyc/family/homeforms.shtml",
     category: "guide",
   },
   // F) Remote filing (EDDS)
@@ -261,7 +302,9 @@ export const COURT_PROCESS_STEPS: ProcessStep[] = [
     timeEstimate: "Varies — usually days to a couple weeks before the return date.",
     tips: [
       "Don't wait until the last minute to arrange service.",
-      "If you can't locate the respondent, tell the court — they may allow alternative service methods.",
+      "Personal service is the default and you should assume you need it. If you genuinely cannot locate the respondent after diligent efforts, you can ask the court what options exist — but alternatives are not guaranteed and depend on the judge and court rules.",
+      "If the respondent is served in court (or appears voluntarily), the service issue resolves immediately.",
+      "A Temporary Order of Protection is NOT in effect until it has been served on the respondent (NYS CourtHelp).",
     ],
   },
   {
@@ -311,6 +354,9 @@ export const AVAILABLE_RELIEF: ReliefOption[] = [
   { label: "Temporary child support", description: "Family Court can include temporary child support as part of an OP case." },
   { label: "Custody/visitation provisions", description: "Temporary custody or supervised visitation can be included in the order." },
   { label: "Firearms restrictions", description: "Court can order surrender of firearms and revocation of firearms licenses." },
+  { label: "Restitution (case-dependent)", description: "A final OP can include restitution for property damage caused by the respondent. Availability depends on the circumstances." },
+  { label: "Medical expenses (case-dependent)", description: "In some cases, the court can order the respondent to pay for medical expenses resulting from the abuse." },
+  { label: "Counseling / program participation (case-dependent)", description: "The court may order the respondent to attend a batterer's intervention program or other counseling. This is sometimes available as part of a disposition." },
 ];
 
 export const QUALIFYING_OFFENSES = [
@@ -328,6 +374,21 @@ export const QUALIFYING_OFFENSES = [
   "Identity theft",
   "Grand larceny",
   "Coercion",
+];
+
+/**
+ * In Article 8 practice, cases can end in dispositions other than
+ * "consent OP" or "fact-finding → final OP."
+ * See FCA §842: https://www.nysenate.gov/legislation/laws/FCT/842
+ */
+export type CaseDisposition = { label: string; description: string };
+
+export const CASE_DISPOSITIONS: CaseDisposition[] = [
+  { label: "Consent Order of Protection", description: "Most common outcome. The respondent agrees to the order, often 'without admission' — but the order is still fully enforceable." },
+  { label: "Final Order after Fact-Finding", description: "The judge finds a family offense occurred by a 'fair preponderance of the evidence' and issues a final order." },
+  { label: "Dismissal", description: "If the petitioner does not prove a family offense, the case is dismissed. This does not prevent filing again if new incidents occur." },
+  { label: "Suspended Judgment", description: "The court may issue a suspended judgment for a set period — essentially a conditional outcome where no order is entered unless the respondent violates conditions." },
+  { label: "Adjournment in Contemplation of Dismissal (ACD)", description: "The case is adjourned for a period (e.g., 6 months). If no new incidents occur, the case is dismissed. If they do, the case can be restored." },
 ];
 
 export const ORDER_DURATION_INFO = {

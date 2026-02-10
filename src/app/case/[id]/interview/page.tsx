@@ -242,7 +242,13 @@ export default function InterviewPage() {
             notes: "Safety interrupt triggered during interview.",
             flags: data.safety_flags
           };
-          setInterruptOpen(true);
+          // Only show the safety interrupt once per case per session
+          try {
+            const dismissKey = `safety-dismissed-${caseFile.id}`;
+            if (!sessionStorage.getItem(dismissKey)) {
+              setInterruptOpen(true);
+            }
+          } catch { setInterruptOpen(true); }
         } else if (data.safety_flags.length) {
           safetyUpdate = {
             immediateDanger: caseFile.safety.immediateDanger,
@@ -532,7 +538,10 @@ export default function InterviewPage() {
             </aside>
           </div>
 
-          <SafetyInterrupt open={interruptOpen} onClose={() => setInterruptOpen(false)} />
+          <SafetyInterrupt open={interruptOpen} onClose={() => {
+            setInterruptOpen(false);
+            try { sessionStorage.setItem(`safety-dismissed-${caseFile.id}`, "1"); } catch {}
+          }} />
         </main>
       </div>
     </div>
