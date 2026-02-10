@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
+import { requireSupabase } from "@/lib/supabase";
 
 /**
  * Cloud sync helpers.
@@ -30,7 +30,7 @@ function setLocalEncrypted(blob: string): void {
 
 /** Fetch the user's encrypted data from Supabase. Returns null if none exists. */
 export async function cloudLoad(userId: string): Promise<string | null> {
-  const { data, error } = await supabase
+  const { data, error } = await requireSupabase()
     .from(TABLE)
     .select("encrypted_data")
     .eq("user_id", userId)
@@ -49,7 +49,7 @@ export async function cloudSave(userId: string): Promise<{ error: string | null 
   const blob = getLocalEncrypted();
   if (!blob) return { error: "No local data to save." };
 
-  const { error } = await supabase.from(TABLE).upsert(
+  const { error } = await requireSupabase().from(TABLE).upsert(
     {
       user_id: userId,
       encrypted_data: blob,
