@@ -77,13 +77,9 @@ export default function SettingsPage() {
 
       <GlassCard className="space-y-3">
         <h2 className="text-sm font-semibold text-ui-text">Safety reminder</h2>
-        <p className="text-xs text-ui-textMuted">
+        <div className="rounded-2xl border border-ui-warning/30 bg-ui-warningSoft p-4 text-xs text-ui-text">
           If you are in immediate danger, call 911 or your local emergency number. This tool does not
           replace professional support.
-        </p>
-
-        <div className="rounded-2xl border border-ui-warning/30 bg-ui-warningSoft p-4 text-xs text-ui-text">
-          If you are in immediate danger, call 911 or your local emergency number.
         </div>
       </GlassCard>
     </div>

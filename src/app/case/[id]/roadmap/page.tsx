@@ -6,7 +6,7 @@ import { useMemo, useState, useCallback } from "react";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { SafetyUpdateInput } from "@/components/SafetyUpdateInput";
 import { SafetyInterrupt } from "@/components/SafetyInterrupt";
-import { useCaseStore } from "@/store/useCaseStore";
+import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import type { CaseFile, IntakeData } from "@/lib/types";
 
 const FAMILY_COURT_RELATIONSHIPS = new Set<string>([
@@ -101,6 +101,17 @@ export default function RoadmapPage() {
   const now = useMemo(() => new Date(), []);
   const dayGreeting = now.getHours() < 12 ? "morning" : "afternoon";
 
+  const hydrated = useHydrated();
+
+  if (!hydrated) {
+    return (
+      <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20 animate-pulse">
+        <div className="h-6 w-48 rounded bg-slate-200" />
+        <div className="h-4 w-64 rounded bg-slate-100" />
+      </GlassCard>
+    );
+  }
+
   if (!caseFile) {
     return (
       <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20 text-ui-text">
@@ -126,19 +137,16 @@ export default function RoadmapPage() {
   const { intake, facts, outputs, safety, status } = caseFile;
 
   const incidents = useMemo<FactsIncident[]>(
-    () => (Array.isArray((facts as any)?.incidents) ? ((facts as any).incidents as FactsIncident[]) : []),
+    () => (Array.isArray(facts.incidents) ? facts.incidents : []),
     [facts]
   );
 
   const getField = useCallback(
     (key: keyof IntakeData): string => {
-      const fromIntake = safeString((intake as any)?.[key]);
+      const fromIntake = safeString(intake[key]);
       if (fromIntake) return fromIntake;
 
-      const fromFactsDirect = safeString((facts as any)?.[key]);
-      if (fromFactsDirect) return fromFactsDirect;
-
-      const safetyConcerns = Array.isArray((facts as any)?.safetyConcerns) ? (facts as any).safetyConcerns : [];
+      const safetyConcerns = facts.safetyConcerns ?? [];
 
       if (key === "firearmsAccess") {
         const joined = safetyConcerns.join(" ").toLowerCase();
@@ -150,7 +158,7 @@ export default function RoadmapPage() {
       }
 
       if (key === "safetyStatus") {
-        if ((safety as any)?.immediateDanger || (safety as any)?.flags?.includes("immediate_danger")) {
+        if (safety.immediateDanger || safety.flags.includes("immediate_danger")) {
           return "Immediate danger";
         }
       }
@@ -174,8 +182,8 @@ export default function RoadmapPage() {
     const showHotlines =
       safetyStatus === "Unsafe" ||
       safetyStatus === "Immediate danger" ||
-      Boolean((safety as any)?.immediateDanger) ||
-      Boolean((safety as any)?.flags?.includes("immediate_danger"));
+      safety.immediateDanger ||
+      safety.flags.includes("immediate_danger");
 
     const cohabitation = getField("cohabitation");
     const childrenInvolved = getField("childrenInvolved");
@@ -191,20 +199,20 @@ export default function RoadmapPage() {
 
     const evidenceList = uniq([
       ...splitToList(getField("evidenceInventory")),
-      ...splitToList((facts as any)?.evidenceList),
+      ...splitToList(facts.evidenceList),
       ...topIncidents.flatMap((i) => splitToList(i?.evidence))
     ]);
 
     const reliefList = uniq([
       ...splitToList(getField("requestedRelief")),
-      ...splitToList((facts as any)?.requestedRelief)
+      ...splitToList(facts.requestedRelief)
     ]);
 
     const timelineItems: string[] = (() => {
-      if (Array.isArray((outputs as any)?.timelineSummary) && (outputs as any).timelineSummary.length) {
-        return (outputs as any).timelineSummary;
+      if (outputs.timelineSummary.length) {
+        return outputs.timelineSummary;
       }
-      if (Array.isArray((facts as any)?.timeline) && (facts as any).timeline.length) return (facts as any).timeline;
+      if (facts.timeline.length) return facts.timeline;
       if (topIncidents.length) {
         return topIncidents.map((inc) => {
           const d = safeString(inc?.date) || "[date]";
@@ -217,11 +225,11 @@ export default function RoadmapPage() {
       return [];
     })();
 
-    const scriptText = safeString((outputs as any)?.script2Min);
+    const scriptText = safeString(outputs.script2Min);
 
     const evidenceChecklist: string[] =
-      Array.isArray((outputs as any)?.evidenceChecklist) && (outputs as any).evidenceChecklist.length
-        ? ((outputs as any).evidenceChecklist as string[]).filter((x: unknown): x is string => typeof x === "string")
+      outputs.evidenceChecklist.length
+        ? outputs.evidenceChecklist.filter((x): x is string => typeof x === "string")
         : evidenceList;
 
     return {

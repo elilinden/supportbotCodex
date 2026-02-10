@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist, type PersistOptions } from "zustand/middleware";
 import type { StateStorage } from "zustand/middleware";
@@ -244,3 +245,18 @@ export const useCaseStore = create<CaseStoreState>()(
     persistOptions
   )
 );
+
+/**
+ * Returns false until the persisted Zustand store has rehydrated from storage.
+ * Use this to avoid showing "Case not found" before data is loaded.
+ */
+export function useHydrated() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    const unsub = useCaseStore.persist.onFinishHydration(() => setHydrated(true));
+    // If already hydrated (e.g., SSR → client), set immediately
+    if (useCaseStore.persist.hasHydrated()) setHydrated(true);
+    return unsub;
+  }, []);
+  return hydrated;
+}

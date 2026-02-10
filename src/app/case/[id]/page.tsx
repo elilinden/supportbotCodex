@@ -4,13 +4,23 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { AssumptionsPanel } from "@/components/AssumptionsPanel";
-import { useCaseStore } from "@/store/useCaseStore";
+import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import { safeText } from "@/lib/utils";
 
 export default function CaseDashboardPage() {
   const params = useParams();
   const caseId = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const caseFile = useCaseStore((state) => state.cases.find((item) => item.id === caseId));
+  const hydrated = useHydrated();
+
+  if (!hydrated) {
+    return (
+      <GlassCard className="space-y-4 animate-pulse">
+        <div className="h-6 w-48 rounded bg-slate-200" />
+        <div className="h-4 w-64 rounded bg-slate-100" />
+      </GlassCard>
+    );
+  }
 
   if (!caseFile) {
     return (

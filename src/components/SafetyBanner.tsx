@@ -16,7 +16,7 @@ export function SafetyBanner() {
             aria-expanded={open}
             aria-controls="safety-info"
           >
-            {open ? "Hide safety" : "Safety"}
+            {open ? "Hide safety info" : "Show safety info"}
           </button>
         </div>
         {open ? (

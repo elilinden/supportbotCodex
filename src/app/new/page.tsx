@@ -29,23 +29,35 @@ export default function NewIntakePage() {
   const createCase = useCaseStore((state) => state.createCase);
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<IntakeData>({ ...defaultIntake });
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const stepLabel = useMemo(() => steps[step] || "", [step]);
 
   const updateField = <K extends keyof IntakeData>(key: K, value: IntakeData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setValidationError(null);
   };
 
   const goNext = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const goBack = () => setStep((prev) => Math.max(prev - 1, 0));
 
   const handleSubmit = () => {
+    if (!form.relationshipCategory) {
+      setValidationError("Please select a relationship category (Step 1) before starting the interview.");
+      setStep(0);
+      return;
+    }
+    if (!form.patternOfIncidents && !form.mostRecentIncidentAt) {
+      setValidationError("Please provide at least an incident date or pattern summary (Step 2) before starting the interview.");
+      setStep(1);
+      return;
+    }
     const id = createCase(form);
     router.push(`/case/${id}/interview`);
   };
 
   // Light-dashboard input styles (consistent + readable)
-  const labelCls = "text-xs font-medium text-ui-text";
+  const labelCls = "block text-xs font-medium text-ui-text";
   const helpCls = "text-[11px] text-ui-textMuted";
   const inputCls =
     "w-full rounded-xl border border-ui-border bg-ui-surface px-4 py-2 text-sm text-ui-text " +
@@ -60,9 +72,7 @@ export default function NewIntakePage() {
     "shadow-sm outline-none focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft";
 
   return (
-    // Force readable “light mode” text defaults even if GlassCard applies text-white internally
     <div className="mx-auto max-w-5xl space-y-8 text-ui-text">
-      {/* Ensure the card content is dark text */}
       <GlassCardStrong className="space-y-4 text-ui-text">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
@@ -106,7 +116,6 @@ export default function NewIntakePage() {
         })}
       </div>
 
-      {/* Ensure the card content is dark text */}
       <GlassCard className="space-y-6 text-ui-text">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
@@ -120,11 +129,18 @@ export default function NewIntakePage() {
           </div>
         </div>
 
+        {validationError ? (
+          <div className="rounded-xl border border-ui-danger/30 bg-ui-dangerSoft px-4 py-3" role="alert">
+            <p className="text-xs text-ui-danger font-medium">{validationError}</p>
+          </div>
+        ) : null}
+
         {step === 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className={labelCls}>Petitioner name (optional)</label>
+              <label htmlFor="petitionerName" className={labelCls}>Petitioner name (optional)</label>
               <input
+                id="petitionerName"
                 className={inputCls}
                 value={form.petitionerName}
                 onChange={(event) => updateField("petitionerName", event.target.value)}
@@ -133,18 +149,20 @@ export default function NewIntakePage() {
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Respondent name (optional)</label>
+              <label htmlFor="respondentName" className={labelCls}>Respondent name (optional)</label>
               <input
+                id="respondentName"
                 className={inputCls}
                 value={form.respondentName}
                 onChange={(event) => updateField("respondentName", event.target.value)}
-                placeholder="Other person’s name"
+                placeholder="Other person's name"
               />
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Relationship category</label>
+              <label htmlFor="relationshipCategory" className={labelCls}>Relationship category</label>
               <select
+                id="relationshipCategory"
                 className={selectCls}
                 value={form.relationshipCategory}
                 onChange={(event) =>
@@ -161,8 +179,9 @@ export default function NewIntakePage() {
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Cohabitation / living situation</label>
+              <label htmlFor="cohabitation" className={labelCls}>Cohabitation / living situation</label>
               <select
+                id="cohabitation"
                 className={selectCls}
                 value={form.cohabitation}
                 onChange={(event) => updateField("cohabitation", event.target.value as IntakeData["cohabitation"])}
@@ -177,8 +196,9 @@ export default function NewIntakePage() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className={labelCls}>Children involved or witnessed</label>
+              <label htmlFor="childrenInvolved" className={labelCls}>Children involved or witnessed</label>
               <select
+                id="childrenInvolved"
                 className={selectCls}
                 value={form.childrenInvolved}
                 onChange={(event) =>
@@ -199,19 +219,21 @@ export default function NewIntakePage() {
         {step === 1 ? (
           <div className="grid gap-4">
             <div className="space-y-2">
-              <label className={labelCls}>Most recent incident date/time</label>
+              <label htmlFor="mostRecentIncidentAt" className={labelCls}>Most recent incident date/time</label>
               <input
+                id="mostRecentIncidentAt"
                 type="datetime-local"
                 className={inputCls}
                 value={form.mostRecentIncidentAt}
                 onChange={(event) => updateField("mostRecentIncidentAt", event.target.value)}
               />
-              <p className={helpCls}>If unknown, approximate (e.g., “early January”).</p>
+              <p className={helpCls}>If unknown, approximate (e.g., &quot;early January&quot;).</p>
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Pattern of incidents (summary)</label>
+              <label htmlFor="patternOfIncidents" className={labelCls}>Pattern of incidents (summary)</label>
               <textarea
+                id="patternOfIncidents"
                 className={`${textareaCls} min-h-[140px]`}
                 value={form.patternOfIncidents}
                 onChange={(event) => updateField("patternOfIncidents", event.target.value)}
@@ -224,8 +246,9 @@ export default function NewIntakePage() {
         {step === 2 ? (
           <div className="grid gap-4">
             <div className="space-y-2">
-              <label className={labelCls}>Existing cases/orders</label>
+              <label htmlFor="existingCasesOrders" className={labelCls}>Existing cases/orders</label>
               <textarea
+                id="existingCasesOrders"
                 className={`${textareaCls} min-h-[110px]`}
                 value={form.existingCasesOrders}
                 onChange={(event) => updateField("existingCasesOrders", event.target.value)}
@@ -235,8 +258,9 @@ export default function NewIntakePage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className={labelCls}>Firearms access</label>
+                <label htmlFor="firearmsAccess" className={labelCls}>Firearms access</label>
                 <select
+                  id="firearmsAccess"
                   className={selectCls}
                   value={form.firearmsAccess}
                   onChange={(event) => updateField("firearmsAccess", event.target.value as IntakeData["firearmsAccess"])}
@@ -251,8 +275,9 @@ export default function NewIntakePage() {
               </div>
 
               <div className="space-y-2">
-                <label className={labelCls}>Safety status</label>
+                <label htmlFor="safetyStatus" className={labelCls}>Safety status</label>
                 <select
+                  id="safetyStatus"
                   className={selectCls}
                   value={form.safetyStatus}
                   onChange={(event) => updateField("safetyStatus", event.target.value as IntakeData["safetyStatus"])}
@@ -268,8 +293,9 @@ export default function NewIntakePage() {
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Evidence inventory</label>
+              <label htmlFor="evidenceInventory" className={labelCls}>Evidence inventory</label>
               <textarea
+                id="evidenceInventory"
                 className={`${textareaCls} min-h-[120px]`}
                 value={form.evidenceInventory}
                 onChange={(event) => updateField("evidenceInventory", event.target.value)}
@@ -278,8 +304,9 @@ export default function NewIntakePage() {
             </div>
 
             <div className="space-y-2">
-              <label className={labelCls}>Requested relief (optional)</label>
+              <label htmlFor="requestedRelief" className={labelCls}>Requested relief (optional)</label>
               <textarea
+                id="requestedRelief"
                 className={`${textareaCls} min-h-[90px]`}
                 value={form.requestedRelief}
                 onChange={(event) => updateField("requestedRelief", event.target.value)}

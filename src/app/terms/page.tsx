@@ -189,16 +189,11 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">16) Contact</h2>
             <p>
               Questions about these Terms:{" "}
-              <span className="font-semibold text-slate-900">support@yourdomain.com</span>
+              <a href="mailto:support@proseprime.com" className="font-semibold text-slate-900 underline underline-offset-4">
+                support@proseprime.com
+              </a>
             </p>
           </section>
-
-          <div className="rounded-xl border border-black/10 bg-white/60 p-4">
-            <p className="text-xs text-slate-600">
-              Tip: Replace <span className="font-semibold">support@yourdomain.com</span> with your real contact email.
-              If you want arbitration/class-action language, tell me your preference and your business entity/state.
-            </p>
-          </div>
         </div>
       </GlassCard>
     </div>
