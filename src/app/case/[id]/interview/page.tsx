@@ -54,9 +54,13 @@ export default function InterviewPage() {
     setError(null);
 
     try {
+      // ✅ FIX: Added x-api-secret header to authorize the request
       const response = await fetch("/api/coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-api-secret": process.env.NEXT_PUBLIC_API_SECRET || "" 
+        },
         body: JSON.stringify({
           mode: "interview",
           caseId: caseFile.id,
@@ -67,7 +71,10 @@ export default function InterviewPage() {
         })
       });
 
-      if (!response.ok) throw new Error(`Interview error ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("Unauthorized: Check API Secret in Vercel.");
+        throw new Error(`Interview error ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -113,20 +120,18 @@ export default function InterviewPage() {
   useEffect(() => {
     if (!caseFile || initialized.current) return;
 
+    // Only start if we have work to do
     const shouldAsk = missingFields.length > 0 && (caseFile.turnCount ?? 0) < MAX_TURNS;
-    if (!shouldAsk) {
-      initialized.current = true;
-      return;
-    }
-
+    
+    // Check if we already have an assistant greeting to avoid double-firing
     const hasAssistant = caseFile.messages.some((msg) => msg.role === "assistant");
-    if (hasAssistant) {
-      initialized.current = true;
-      return;
-    }
 
-    initialized.current = true;
-    void askInterviewQuestion("");
+    if (shouldAsk && !hasAssistant) {
+      initialized.current = true;
+      void askInterviewQuestion("");
+    } else {
+      initialized.current = true;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseFile, missingFields]);
 
@@ -197,7 +202,7 @@ export default function InterviewPage() {
         <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR — visible on all screens, collapses in single-column on mobile */}
+        {/* LEFT SIDEBAR */}
         <aside>
           <GlassCard className="p-4 space-y-4">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -244,7 +249,6 @@ export default function InterviewPage() {
 
         {/* MAIN */}
         <main className="space-y-6">
-          {/* Header row (dashboard-like) */}
           <GlassCardStrong className="p-5">
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Interview</p>
@@ -254,7 +258,6 @@ export default function InterviewPage() {
               </p>
             </div>
 
-            {/* KPI row (same vibe as Roadmap) */}
             <div className="mt-5 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Turns</p>
