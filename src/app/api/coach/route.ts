@@ -1,3 +1,4 @@
+// src/app/api/coach/route.ts
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { callGemini } from "@/lib/gemini";
@@ -14,8 +15,25 @@ import { mergeFacts } from "@/lib/mergeFacts";
 import type { Facts, IntakeData } from "@/lib/types";
 
 const IMMEDIATE_DANGER_FLAG = "immediate_danger";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
-/** Zod schema for validating incoming coach requests */
+// If you want to REQUIRE a secret in production, set true.
+const REQUIRE_API_SECRET_IN_PROD = false;
+
+function json(data: unknown, status = 200) {
+  return NextResponse.json(data, { status });
+}
+
+function uniqStrings(xs: unknown): string[] {
+  if (!Array.isArray(xs)) return [];
+  return Array.from(new Set(xs.filter((x) => typeof x === "string"))) as string[];
+}
+
+/**
+ * Zod schema validates "shape + max lengths" from the client.
+ * We intentionally keep these as generic strings and later coerce into IntakeData/Facts
+ * (because IntakeData uses narrow unions like "" | RelationshipCategory).
+ */
 const CoachRequestSchema = z.object({
   intake: z.object({
     petitionerName: z.string().max(500).default(""),
@@ -31,32 +49,86 @@ const CoachRequestSchema = z.object({
     evidenceInventory: z.string().max(5000).default(""),
     requestedRelief: z.string().max(2000).default("")
   }),
-  facts: z.object({
-    parties: z.object({
-      petitioner: z.string().max(500).default(""),
-      respondent: z.string().max(500).default("")
-    }).default({ petitioner: "", respondent: "" }),
-    relationship: z.string().max(500).default(""),
-    incidents: z.array(z.record(z.unknown())).default([]),
-    safetyConcerns: z.array(z.string()).default([]),
-    requestedRelief: z.array(z.string()).default([]),
-    evidenceList: z.array(z.string()).default([]),
-    timeline: z.array(z.string()).default([])
-  }),
-  lastMessages: z.array(z.object({
-    role: z.enum(["user", "assistant"]),
-    content: z.string().max(5000)
-  })).max(20).default([]),
+
+  facts: z
+    .object({
+      parties: z
+        .object({
+          petitioner: z.string().max(500).default(""),
+          respondent: z.string().max(500).default("")
+        })
+        .default({ petitioner: "", respondent: "" }),
+      relationship: z.string().max(500).default(""),
+      incidents: z.array(z.record(z.unknown())).default([]),
+      safetyConcerns: z.array(z.string()).default([]),
+      requestedRelief: z.array(z.string()).default([]),
+      evidenceList: z.array(z.string()).default([]),
+      timeline: z.array(z.string()).default([])
+    })
+    .default({
+      parties: { petitioner: "", respondent: "" },
+      relationship: "",
+      incidents: [],
+      safetyConcerns: [],
+      requestedRelief: [],
+      evidenceList: [],
+      timeline: []
+    }),
+
+  lastMessages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().max(5000)
+      })
+    )
+    .max(20)
+    .default([]),
+
   userMessage: z.string().max(5000).default(""),
   mode: z.enum(["interview", "update"]).default("interview")
 });
 
+type CoachRequest = z.infer<typeof CoachRequestSchema>;
+
+/**
+ * Coerce parsed data into your strict types.
+ * This resolves TS errors where IntakeData expects narrow unions.
+ *
+ * If you want stronger runtime enforcement, replace these casts with
+ * "allowed value" checks based on your UI option arrays/constants.
+ */
+function coerceIntake(raw: CoachRequest["intake"]): IntakeData {
+  // Cast the union-like fields into the narrow types your app expects.
+  // Safe because (a) UI should send only allowed options, (b) you still keep server guardrails elsewhere.
+  return {
+    petitionerName: raw.petitionerName ?? "",
+    respondentName: raw.respondentName ?? "",
+    relationshipCategory: (raw.relationshipCategory ?? "") as IntakeData["relationshipCategory"],
+    cohabitation: (raw.cohabitation ?? "") as IntakeData["cohabitation"],
+    mostRecentIncidentAt: raw.mostRecentIncidentAt ?? "",
+    patternOfIncidents: raw.patternOfIncidents ?? "",
+    childrenInvolved: (raw.childrenInvolved ?? "") as IntakeData["childrenInvolved"],
+    existingCasesOrders: raw.existingCasesOrders ?? "",
+    firearmsAccess: (raw.firearmsAccess ?? "") as IntakeData["firearmsAccess"],
+    safetyStatus: (raw.safetyStatus ?? "") as IntakeData["safetyStatus"],
+    evidenceInventory: raw.evidenceInventory ?? "",
+    requestedRelief: raw.requestedRelief ?? ""
+  };
+}
+
+function coerceFacts(raw: CoachRequest["facts"]): Facts {
+  // Facts is usually already string/arrays, but we still cast to the app type.
+  return raw as unknown as Facts;
+}
+
 function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: string) {
   const missingFields = computeMissingFields(intake, facts);
   const nextQuestions = buildQuestionsFromMissing(missingFields, 3);
-  const safetyFlags = [] as string[];
-  if (intake.safetyStatus === "Immediate danger") safetyFlags.push(IMMEDIATE_DANGER_FLAG);
-  if (detectImmediateDanger(userMessage)) safetyFlags.push(IMMEDIATE_DANGER_FLAG);
+
+  const safetyFlags = new Set<string>();
+  if (intake.safetyStatus === "Immediate danger") safetyFlags.add(IMMEDIATE_DANGER_FLAG);
+  if (detectImmediateDanger(userMessage)) safetyFlags.add(IMMEDIATE_DANGER_FLAG);
 
   const questionsText = nextQuestions.length
     ? `\n\nTo keep this court-friendly and clear, I still need:\n- ${nextQuestions.join("\n- ")}`
@@ -71,40 +143,59 @@ function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: st
     extracted_facts: {},
     missing_fields: missingFields,
     progress_percent: calculateProgress(missingFields),
-    safety_flags: Array.from(new Set(safetyFlags))
+    safety_flags: Array.from(safetyFlags)
   };
 }
 
+function isAuthorized(req: Request) {
+  const envSecret = process.env.API_SECRET;
+
+  if (REQUIRE_API_SECRET_IN_PROD && process.env.NODE_ENV === "production" && !envSecret) {
+    return false;
+  }
+
+  // Dev-friendly: if no secret configured, allow.
+  if (!envSecret) return true;
+
+  const headerSecret = req.headers.get("x-api-secret");
+  return headerSecret === envSecret;
+}
+
 export async function POST(request: Request) {
+  // ✅ API secret check (quota protection)
+  if (!isAuthorized(request)) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return json({ error: "Invalid JSON body" }, 400);
   }
 
-  const parsed = CoachRequestSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid request", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+  const parsedReq = CoachRequestSchema.safeParse(body);
+  if (!parsedReq.success) {
+    return json(
+      { error: "Invalid request", details: parsedReq.error.flatten().fieldErrors },
+      400
     );
   }
 
-  const { intake, facts, lastMessages, userMessage, mode: parsedMode } = parsed.data as unknown as {
-    intake: IntakeData;
-    facts: Facts;
-    lastMessages: { role: "user" | "assistant"; content: string }[];
-    userMessage: string;
-    mode: "interview" | "update";
-  };
+  // ✅ Coerce into strict app types (fixes RelationshipCategory union TS errors)
+  const reqData = parsedReq.data as CoachRequest;
+  const intake = coerceIntake(reqData.intake);
+  const facts = coerceFacts(reqData.facts);
+  const lastMessages = reqData.lastMessages ?? [];
+  const userMessage = reqData.userMessage ?? "";
+  const mode = reqData.mode ?? "interview";
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 
   if (!apiKey) {
     const fallback = buildFallbackResponse(intake, facts, userMessage);
-    return NextResponse.json({
+    return json({
       ...fallback,
       assistant_message:
         "Gemini is not configured. Add GEMINI_API_KEY to web/.env.local to enable coach responses. " +
@@ -115,52 +206,58 @@ export async function POST(request: Request) {
     });
   }
 
-  const mode = parsedMode;
+  const baseSafetyFlags = new Set<string>();
+  if (intake.safetyStatus === "Immediate danger") baseSafetyFlags.add(IMMEDIATE_DANGER_FLAG);
+  if (detectImmediateDanger(userMessage)) baseSafetyFlags.add(IMMEDIATE_DANGER_FLAG);
 
   const { systemInstruction, userPrompt } = buildCoachPrompt({
     intake,
     facts,
-    lastMessages: lastMessages || [],
+    lastMessages,
     userMessage,
     mode
   });
+
+  // Your additional safety clarifier
   const systemInstructionWithSafetyPrompt =
     `${systemInstruction}\n\n` +
     "If the user describes general arguing, explicitly ask if there was any physical contact, threats of harm with a weapon, or unwanted repetitive contact (harassment/stalking).";
 
-  const baseSafetyFlags = [] as string[];
-  if (intake.safetyStatus === "Immediate danger") baseSafetyFlags.push(IMMEDIATE_DANGER_FLAG);
-  if (detectImmediateDanger(userMessage)) baseSafetyFlags.push(IMMEDIATE_DANGER_FLAG);
-
   try {
-    const response = await callGemini({ systemInstruction: systemInstructionWithSafetyPrompt, userPrompt }, apiKey, model);
-    const parsed = parseCoachResponse(response.text);
+    const llmResponse = await callGemini(
+      { systemInstruction: systemInstructionWithSafetyPrompt, userPrompt },
+      apiKey,
+      model
+    );
 
-    if (!parsed || !parsed.assistantMessage) {
-      return NextResponse.json(buildFallbackResponse(intake, facts, userMessage));
+    const parsed = parseCoachResponse(llmResponse.text);
+    if (!parsed?.assistantMessage) {
+      return json(buildFallbackResponse(intake, facts, userMessage));
     }
 
-    const extractedFacts = coerceExtractedFacts(parsed.extractedFacts) || undefined;
-    
-    // Merge the new facts (including virtual fields) into the existing facts
-    const mergedFacts = mergeFacts(facts, extractedFacts);
-    
-    // Compute missing fields using the MERGED facts (so we don't ask for things we just learned)
+    const extractedFacts = (coerceExtractedFacts(parsed.extractedFacts) ?? {}) as object;
+
+    // Merge new facts into existing, then compute missing based on merged (important)
+    const mergedFacts = mergeFacts(facts, extractedFacts as any);
     const missingFields = computeMissingFields(intake, mergedFacts);
+
     const nextQuestions =
       mode === "interview" ? buildQuestionsFromMissing(missingFields, 3) : [];
-    const progressPercent = calculateProgress(missingFields);
-    const safetyFlags = Array.from(new Set([...baseSafetyFlags, ...parsed.safetyFlags]));
 
-    return NextResponse.json({
+    const safetyFlags = Array.from(
+      new Set([...Array.from(baseSafetyFlags), ...uniqStrings(parsed.safetyFlags)])
+    );
+
+    return json({
       assistant_message: parsed.assistantMessage,
       next_questions: nextQuestions,
-      extracted_facts: extractedFacts || {},
+      extracted_facts: extractedFacts,
       missing_fields: missingFields,
-      progress_percent: progressPercent,
+      progress_percent: calculateProgress(missingFields),
       safety_flags: safetyFlags
     });
-  } catch {
-    return NextResponse.json(buildFallbackResponse(intake, facts, userMessage));
+  } catch (e) {
+    console.error("[coach] POST failed", e);
+    return json(buildFallbackResponse(intake, facts, userMessage));
   }
 }
