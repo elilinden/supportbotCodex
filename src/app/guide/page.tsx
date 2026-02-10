@@ -18,9 +18,10 @@ const CATEGORY_LABELS: Record<string, string> = {
   modification: "Extension / Modification",
   guide: "Official Guides & Resources",
   remote: "Remote Filing (EDDS)",
+  service: "Service Notification",
 };
 
-const CATEGORY_ORDER = ["filing", "court-issued", "violation", "modification", "guide", "remote"];
+const CATEGORY_ORDER = ["filing", "court-issued", "violation", "modification", "guide", "remote", "service"];
 
 function FormLink({ form }: { form: CourtForm }) {
   return (
@@ -317,6 +318,30 @@ export default function GuidePage() {
             <strong>Proof of service:</strong> If a friend/relative serves, you need an affidavit of service at the next court date.
             If police serve, they provide a Statement of Personal Service. If the sheriff serves, the court typically receives proof directly.
           </p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Optional: OP Notification System</p>
+            <p className="mt-2 text-xs text-slate-700">
+              New York offers an Order of Protection Notification System so you can receive updates about service and enforcement status:
+            </p>
+            <div className="mt-2 space-y-1">
+              <a
+                href="https://oopalert.ny.gov/oopalert/xhtml/subscriptionRenewal.xhtml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-ui-primary underline hover:no-underline"
+              >
+                NY-Alert OOP Notification Portal &#8599;
+              </a>
+              <a
+                href="https://sheriff-assist.org/order-of-protection-notification/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-ui-primary underline hover:no-underline"
+              >
+                Sheriffs&apos; Institute — How OP Notification Works &#8599;
+              </a>
+            </div>
+          </div>
         </div>
       </GlassCard>
 

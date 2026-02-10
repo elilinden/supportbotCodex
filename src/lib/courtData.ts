@@ -9,7 +9,7 @@ export type CourtForm = {
   formNumber: string;
   description: string;
   url: string;
-  category: "filing" | "court-issued" | "violation" | "modification" | "guide" | "remote";
+  category: "filing" | "court-issued" | "violation" | "modification" | "guide" | "remote" | "service";
   required?: boolean;
 };
 
@@ -141,6 +141,23 @@ export const COURT_FORMS: CourtForm[] = [
     description: "Entry point for electronic document submission to Family Court.",
     url: "https://iappscontent.courts.state.ny.us/NYSCEF/live/edds.htm",
     category: "remote",
+  },
+  // G) Service notification
+  {
+    id: "oop-alert",
+    name: "Order of Protection Notification System (NY-Alert OOP)",
+    formNumber: "Portal",
+    description: "Sign up to receive notifications about the status of your order of protection service and enforcement.",
+    url: "https://oopalert.ny.gov/oopalert/xhtml/subscriptionRenewal.xhtml",
+    category: "service",
+  },
+  {
+    id: "sheriff-op-notification",
+    name: "Sheriffs' Institute — OP Notification Explainer",
+    formNumber: "Guide",
+    description: "Explains how the Order of Protection notification system works and how sheriffs assist with service.",
+    url: "https://sheriff-assist.org/order-of-protection-notification/",
+    category: "service",
   },
 ];
 
