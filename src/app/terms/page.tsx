@@ -5,14 +5,15 @@ export default function TermsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <GlassCardStrong className="border border-black/10 bg-white/80 text-slate-900">
         <h1 className="text-2xl font-semibold">Terms of Service</h1>
-        <p className="mt-2 text-sm text-slate-600">Last updated: February 9, 2026</p>
+        <p className="mt-2 text-sm text-slate-600">Last updated: February 10, 2026</p>
       </GlassCardStrong>
 
       <GlassCard className="border border-black/10 bg-white/70 text-slate-900">
         <div className="space-y-6 text-sm text-slate-700">
           <p>
-            These Terms of Service (“Terms”) govern your access to and use of Pro-Se Prime (the “Service”). By accessing
-            or using the Service, you agree to be bound by these Terms. If you do not agree, do not use the Service.
+            These Terms of Service (“Terms”) govern your access to and use of Pro-Se Prime (the “Service”).
+            By accessing or using the Service, you agree to be bound by these Terms. If you do not agree,
+            do not use the Service.
           </p>
 
           <section className="space-y-2">
@@ -21,16 +22,16 @@ export default function TermsPage() {
               The Service provides general, educational information and self-help tools related to New York Family Court
               Orders of Protection. The Service is not a law firm, does not provide legal advice, and does not provide
               attorney services. Any outputs (including summaries, scripts, checklists, suggested questions, or timelines)
-              are information-only and may be incomplete, inaccurate, or not applicable to your situation.
+              are information-only and may be incomplete, inaccurate, outdated, or not applicable to your situation.
             </p>
             <p>
               You are solely responsible for verifying information with official court resources and for your decisions,
-              filings, communications, and actions.
+              filings, communications, and actions. You should consult a licensed attorney for legal advice.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-base font-semibold text-slate-900">2) No Attorney–Client Relationship</h2>
+            <h2 className="text-base font-semibold text-slate-900">2) No Attorney–Client Relationship; No Confidentiality</h2>
             <p>
               Use of the Service does not create an attorney–client relationship, fiduciary relationship, or any duty of
               confidentiality beyond what is described in our Privacy Policy. Do not submit information you consider
@@ -41,18 +42,19 @@ export default function TermsPage() {
           <section className="space-y-2">
             <h2 className="text-base font-semibold text-slate-900">3) Emergencies and Safety</h2>
             <p>
-              The Service is not designed for emergencies. If you are in immediate danger or need urgent help, call 911
-              or your local emergency number immediately. Do not rely on the Service for crisis response, safety planning,
-              or time-sensitive protective actions.
+              The Service is not designed for emergencies. If you are in immediate danger or need urgent help, call 911 or
+              your local emergency number immediately. Do not rely on the Service for crisis response, safety planning, or
+              time-sensitive protective actions.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-base font-semibold text-slate-900">4) Eligibility; Geographic Scope</h2>
             <p>
-              The Service is intended for general information related to New York Family Court Orders of Protection.
-              Laws and court procedures change frequently and may vary by county, judge, and individual circumstances.
-              We do not represent that the Service is appropriate or available for use in all locations.
+              The Service is intended for general information related to New York Family Court Orders of Protection. Laws
+              and court procedures change frequently and may vary by county, judge, and individual circumstances. We do not
+              represent that the Service is appropriate or available for use in all locations, or that it reflects the most
+              current law or court practice.
             </p>
           </section>
 
@@ -61,9 +63,14 @@ export default function TermsPage() {
             <ul className="list-disc space-y-1 pl-5">
               <li>You will provide accurate information to the best of your ability.</li>
               <li>You will not use the Service as a substitute for advice from a licensed attorney.</li>
-              <li>You will independently confirm court forms, filing requirements, deadlines, and service rules.</li>
               <li>
-                You will use the Service in a manner that is lawful, respectful, and consistent with these Terms.
+                You will independently confirm court forms, filing requirements, deadlines, service rules, and local
+                procedures.
+              </li>
+              <li>You will use the Service in a lawful, respectful manner consistent with these Terms.</li>
+              <li>
+                You are responsible for maintaining the confidentiality of any device, browser, account, or access method
+                you use to access the Service.
               </li>
             </ul>
           </section>
@@ -72,16 +79,20 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">6) Prohibited Uses</h2>
             <p>You agree not to:</p>
             <ul className="list-disc space-y-1 pl-5">
-              <li>Use the Service for unlawful, harmful, abusive, or fraudulent purposes.</li>
+              <li>Use the Service for unlawful, harmful, abusive, harassing, threatening, or fraudulent purposes.</li>
+              <li>
+                Use the Service to harass, threaten, stalk, intimidate, defame, or endanger any person, or to facilitate
+                wrongdoing.
+              </li>
               <li>Attempt to reverse engineer, scrape, disrupt, or interfere with the Service or its security.</li>
-              <li>Upload malware or attempt to gain unauthorized access to systems or data.</li>
+              <li>Upload malware, exploit vulnerabilities, or attempt to gain unauthorized access to systems or data.</li>
               <li>Misrepresent your identity or impersonate another person.</li>
-              <li>Use the Service to harass, threaten, or endanger others.</li>
+              <li>Use automated means to access the Service in a way that burdens or degrades it.</li>
             </ul>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-base font-semibold text-slate-900">7) Intellectual Property</h2>
+            <h2 className="text-base font-semibold text-slate-900">7) Intellectual Property; License</h2>
             <p>
               The Service, including its design, text, templates, and software, is owned by us and protected by
               intellectual property laws. Subject to these Terms, we grant you a limited, non-exclusive, non-transferable,
@@ -89,7 +100,8 @@ export default function TermsPage() {
             </p>
             <p>
               You retain ownership of the information you enter into the Service (“User Content”). You grant us a limited
-              license to process User Content solely to operate and improve the Service, consistent with our Privacy Policy.
+              license to process User Content solely to operate, maintain, secure, and improve the Service, consistent with
+              our Privacy Policy.
             </p>
           </section>
 
@@ -97,8 +109,8 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">8) Third-Party Links and Services</h2>
             <p>
               The Service may reference or link to third-party resources (including court sites, hotlines, or informational
-              sources). We do not control and are not responsible for third-party content, policies, availability, or actions.
-              Your use of third-party sites is at your own risk and subject to their terms.
+              sources). We do not control and are not responsible for third-party content, policies, availability, or
+              actions. Your use of third-party sites is at your own risk and subject to their terms.
             </p>
           </section>
 
@@ -106,10 +118,10 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">9) Disclaimers</h2>
             <p className="font-semibold text-slate-900">THE SERVICE IS PROVIDED “AS IS” AND “AS AVAILABLE.”</p>
             <p>
-              To the maximum extent permitted by law, we disclaim all warranties of any kind, whether express, implied,
-              or statutory, including warranties of merchantability, fitness for a particular purpose, non-infringement,
-              accuracy, and availability. We do not warrant that the Service will be uninterrupted, error-free, secure,
-              or that outputs will be correct, complete, or suitable for your circumstances.
+              To the maximum extent permitted by law, we disclaim all warranties of any kind, whether express, implied, or
+              statutory, including warranties of merchantability, fitness for a particular purpose, non-infringement,
+              accuracy, and availability. We do not warrant that the Service will be uninterrupted, error-free, secure, or
+              that outputs will be correct, complete, current, or suitable for your circumstances.
             </p>
           </section>
 
@@ -146,6 +158,7 @@ export default function TermsPage() {
             <p>
               We may suspend or terminate your access to the Service at any time if we believe you violated these Terms or
               if your use poses risk to others, the Service, or our operations. You may stop using the Service at any time.
+              Sections that by their nature should survive termination will survive (including Sections 7–15).
             </p>
           </section>
 
@@ -171,8 +184,8 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">15) Miscellaneous</h2>
             <ul className="list-disc space-y-1 pl-5">
               <li>
-                <span className="font-semibold text-slate-900">Severability:</span> If any provision is found unenforceable,
-                the remaining provisions remain in effect.
+                <span className="font-semibold text-slate-900">Severability:</span> If any provision is found
+                unenforceable, the remaining provisions remain in effect.
               </li>
               <li>
                 <span className="font-semibold text-slate-900">No waiver:</span> Our failure to enforce a provision is not a
@@ -182,6 +195,10 @@ export default function TermsPage() {
                 <span className="font-semibold text-slate-900">Entire agreement:</span> These Terms and the Privacy Policy
                 constitute the entire agreement regarding the Service.
               </li>
+              <li>
+                <span className="font-semibold text-slate-900">Assignment:</span> You may not assign these Terms without our
+                prior written consent. We may assign these Terms as part of a merger, acquisition, or sale of assets.
+              </li>
             </ul>
           </section>
 
@@ -189,7 +206,10 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold text-slate-900">16) Contact</h2>
             <p>
               Questions about these Terms:{" "}
-              <a href="mailto:support@proseprime.com" className="font-semibold text-slate-900 underline underline-offset-4">
+              <a
+                href="mailto:support@proseprime.com"
+                className="font-semibold text-slate-900 underline underline-offset-4"
+              >
                 support@proseprime.com
               </a>
             </p>
