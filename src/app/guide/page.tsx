@@ -9,6 +9,7 @@ import {
   AVAILABLE_RELIEF,
   QUALIFYING_OFFENSES,
   ORDER_DURATION_INFO,
+  CASE_DISPOSITIONS,
 } from "@/lib/courtData";
 import type { CourtForm } from "@/lib/courtData";
 
@@ -209,6 +210,38 @@ export default function GuidePage() {
         </div>
       </GlassCard>
 
+      {/* Who Can Be Protected — FAQ */}
+      <GlassCard className="space-y-4">
+        <h2 className="text-lg font-bold text-slate-900">Who Can Be Protected by the Order?</h2>
+        <p className="text-sm text-slate-700 leading-relaxed">
+          People frequently ask whether the order can cover more than just themselves. The short answer: <strong>yes</strong>.
+          Family Court can include protections for additional people and locations.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">People</p>
+            <ul className="mt-2 space-y-1.5 text-xs text-slate-700">
+              <li><span className="mr-1 text-green-600">&#10003;</span> You (the petitioner)</li>
+              <li><span className="mr-1 text-green-600">&#10003;</span> Your children (the order can include them)</li>
+              <li><span className="mr-1 text-green-600">&#10003;</span> Other family/household members named in the petition</li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Locations</p>
+            <ul className="mt-2 space-y-1.5 text-xs text-slate-700">
+              <li><span className="mr-1 text-green-600">&#10003;</span> Your home / residence</li>
+              <li><span className="mr-1 text-green-600">&#10003;</span> Your workplace</li>
+              <li><span className="mr-1 text-green-600">&#10003;</span> Your child&apos;s school / daycare</li>
+              <li><span className="mr-1 text-green-600">&#10003;</span> Any other location specified by the court</li>
+            </ul>
+          </div>
+        </div>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
+          <strong>Custody note:</strong> Temporary custody and visitation provisions can also be addressed in a Family Court
+          family offense proceeding. If you need temporary custody as part of the order, tell the judge explicitly.
+        </div>
+      </GlassCard>
+
       {/* Qualifying Offenses */}
       <GlassCard className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900">What Conduct Qualifies (Family Offenses)</h2>
@@ -367,6 +400,31 @@ export default function GuidePage() {
         </ol>
       </GlassCard>
 
+      {/* Other Possible Outcomes */}
+      <GlassCard className="space-y-4">
+        <h2 className="text-lg font-bold text-slate-900">Other Possible Case Outcomes</h2>
+        <p className="text-sm text-slate-700 leading-relaxed">
+          Not every case ends with a consent order or a trial-issued final order. Under{" "}
+          <a
+            href="https://www.nysenate.gov/legislation/laws/FCT/842"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-ui-primary underline decoration-ui-primary/30 hover:decoration-ui-primary"
+          >
+            FCA &sect;842<span className="text-[10px]">&#8599;</span>
+          </a>
+          , Family Court can enter several types of &ldquo;orders of disposition&rdquo;:
+        </p>
+        <div className="space-y-3">
+          {CASE_DISPOSITIONS.map((d) => (
+            <div key={d.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-900">{d.label}</p>
+              <p className="mt-1 text-xs text-slate-600">{d.description}</p>
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+
       {/* Service Requirements */}
       <GlassCard className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900">Service Requirements</h2>
@@ -385,6 +443,30 @@ export default function GuidePage() {
             <strong>Proof of service:</strong> If a friend/relative serves, you need an affidavit of service at the next court date.
             If police serve, they provide a Statement of Personal Service. If the sheriff serves, the court typically receives proof directly.
           </p>
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-700">Proof of Service Resources</p>
+            <p className="mt-2 text-xs text-blue-800">
+              You can find service-related affidavits and forms at your local court&apos;s filing office or online:
+            </p>
+            <div className="mt-2 space-y-1">
+              <a
+                href="https://ww2.nycourts.gov/COURTS/nyc/family/homeforms.shtml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-ui-primary underline hover:no-underline"
+              >
+                NYC Family Court Forms &amp; Resources (includes service documents) &#8599;
+              </a>
+              <a
+                href="https://nycourts.gov/Courthelp/Safety/familyfiling.shtml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-xs text-ui-primary underline hover:no-underline"
+              >
+                NYS CourtHelp — Filing Walkthrough (explains TOP must be served before it&apos;s in effect) &#8599;
+              </a>
+            </div>
+          </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Optional: OP Notification System</p>
             <p className="mt-2 text-xs text-slate-700">
