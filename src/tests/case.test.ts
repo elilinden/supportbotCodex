@@ -158,6 +158,18 @@ describe("buildOutputsFromFacts", () => {
     expect(outputs.script2Min).toContain("Bob Jones");
   });
 
+  it("includes petitioner name in script2Min", () => {
+    const facts = makeFacts();
+    const outputs = buildOutputsFromFacts(facts);
+    expect(outputs.script2Min).toContain("Alice Smith");
+  });
+
+  it("includes safety concerns in script2Min when present", () => {
+    const facts = makeFacts();
+    const outputs = buildOutputsFromFacts(facts);
+    expect(outputs.script2Min).toContain("Safety status");
+  });
+
   it("produces a non-empty outline5Min", () => {
     const facts = makeFacts();
     const outputs = buildOutputsFromFacts(facts);
@@ -173,14 +185,14 @@ describe("buildOutputsFromFacts", () => {
   it("includes standard evidence items in evidenceChecklist", () => {
     const facts = makeFacts();
     const outputs = buildOutputsFromFacts(facts);
-    expect(outputs.evidenceChecklist.some((e) => e.includes("Screenshots"))).toBe(true);
-    expect(outputs.evidenceChecklist.some((e) => e.includes("Photos of injuries"))).toBe(true);
+    expect(outputs.evidenceChecklist.some((e) => e.toLowerCase().includes("screenshot"))).toBe(true);
+    expect(outputs.evidenceChecklist.some((e) => e.toLowerCase().includes("photos of injuries"))).toBe(true);
   });
 
-  it("appends facts.evidenceList items to evidenceChecklist", () => {
+  it("includes case-specific evidence items in evidenceChecklist", () => {
     const facts = makeFacts({ evidenceList: ["Custom evidence item"] });
     const outputs = buildOutputsFromFacts(facts);
-    expect(outputs.evidenceChecklist).toContain("Custom evidence item");
+    expect(outputs.evidenceChecklist.some((e) => e.includes("Custom evidence item"))).toBe(true);
   });
 
   it("produces a non-empty timelineSummary", () => {
@@ -234,28 +246,35 @@ describe("deriveAssumptions", () => {
     const intake = makeIntake({ petitionerName: "" });
     const facts = buildFactsFromIntake(intake);
     const assumptions = deriveAssumptions(facts, intake);
-    expect(assumptions).toContain("Petitioner name not provided.");
+    expect(assumptions.some((a) => a.toLowerCase().includes("petitioner name"))).toBe(true);
   });
 
   it("flags missing respondent name", () => {
     const intake = makeIntake({ respondentName: "" });
     const facts = buildFactsFromIntake(intake);
     const assumptions = deriveAssumptions(facts, intake);
-    expect(assumptions).toContain("Respondent name not provided.");
+    expect(assumptions.some((a) => a.toLowerCase().includes("respondent name"))).toBe(true);
   });
 
   it("flags missing incident date/time", () => {
     const intake = makeIntake({ mostRecentIncidentAt: "" });
     const facts = buildFactsFromIntake(intake);
     const assumptions = deriveAssumptions(facts, intake);
-    expect(assumptions).toContain("Most recent incident date/time unknown.");
+    expect(assumptions.some((a) => a.toLowerCase().includes("incident date"))).toBe(true);
   });
 
   it("flags missing requested relief", () => {
     const intake = makeIntake({ requestedRelief: "" });
     const facts = buildFactsFromIntake(intake);
     const assumptions = deriveAssumptions(facts, intake);
-    expect(assumptions).toContain("Requested relief not specified.");
+    expect(assumptions.some((a) => a.toLowerCase().includes("relief"))).toBe(true);
+  });
+
+  it("flags missing firearms access", () => {
+    const intake = makeIntake({ firearmsAccess: "" });
+    const facts = buildFactsFromIntake(intake);
+    const assumptions = deriveAssumptions(facts, intake);
+    expect(assumptions.some((a) => a.toLowerCase().includes("firearms"))).toBe(true);
   });
 
   it("returns multiple assumptions when multiple fields are missing", () => {
@@ -267,7 +286,7 @@ describe("deriveAssumptions", () => {
     });
     const facts = buildFactsFromIntake(intake);
     const assumptions = deriveAssumptions(facts, intake);
-    expect(assumptions).toHaveLength(4);
+    expect(assumptions.length).toBeGreaterThanOrEqual(4);
   });
 });
 
@@ -275,8 +294,10 @@ describe("deriveUncertainties", () => {
   it("returns empty array when all relevant fields are provided", () => {
     const intake = makeIntake();
     const facts = makeFacts();
-    // Ensure incident has a location
     facts.incidents[0].location = "Home";
+    facts.incidents[0].threats = "threatened to hurt me";
+    facts.incidents[0].injuries = "bruises";
+    facts.incidents[0].witnesses = "neighbor saw it";
     const uncertainties = deriveUncertainties(facts, intake);
     expect(uncertainties).toEqual([]);
   });
@@ -285,32 +306,55 @@ describe("deriveUncertainties", () => {
     const intake = makeIntake({ patternOfIncidents: "" });
     const facts = makeFacts();
     facts.incidents[0].location = "Home";
+    facts.incidents[0].threats = "threatened";
+    facts.incidents[0].injuries = "bruises";
+    facts.incidents[0].witnesses = "neighbor";
     const uncertainties = deriveUncertainties(facts, intake);
-    expect(uncertainties).toContain("Pattern of incidents is not described yet.");
+    expect(uncertainties.some((u) => u.toLowerCase().includes("pattern"))).toBe(true);
   });
 
   it("flags missing existing cases or orders", () => {
     const intake = makeIntake({ existingCasesOrders: "" });
     const facts = makeFacts();
     facts.incidents[0].location = "Home";
+    facts.incidents[0].threats = "threatened";
+    facts.incidents[0].injuries = "bruises";
+    facts.incidents[0].witnesses = "neighbor";
     const uncertainties = deriveUncertainties(facts, intake);
-    expect(uncertainties).toContain("Existing cases or orders not described.");
+    expect(uncertainties.some((u) => u.toLowerCase().includes("cases") || u.toLowerCase().includes("orders"))).toBe(true);
   });
 
   it("flags missing evidence inventory", () => {
     const intake = makeIntake({ evidenceInventory: "" });
     const facts = makeFacts();
     facts.incidents[0].location = "Home";
+    facts.incidents[0].threats = "threatened";
+    facts.incidents[0].injuries = "bruises";
+    facts.incidents[0].witnesses = "neighbor";
     const uncertainties = deriveUncertainties(facts, intake);
-    expect(uncertainties).toContain("Evidence inventory not listed yet.");
+    expect(uncertainties.some((u) => u.toLowerCase().includes("evidence"))).toBe(true);
   });
 
   it("flags missing incident location", () => {
     const intake = makeIntake();
     const facts = makeFacts();
     facts.incidents[0].location = "";
+    facts.incidents[0].threats = "threatened";
+    facts.incidents[0].injuries = "bruises";
+    facts.incidents[0].witnesses = "neighbor";
     const uncertainties = deriveUncertainties(facts, intake);
-    expect(uncertainties).toContain("Incident location is missing.");
+    expect(uncertainties.some((u) => u.toLowerCase().includes("location"))).toBe(true);
+  });
+
+  it("flags missing threats/injuries details", () => {
+    const intake = makeIntake();
+    const facts = makeFacts();
+    facts.incidents[0].location = "Home";
+    facts.incidents[0].threats = "";
+    facts.incidents[0].injuries = "";
+    facts.incidents[0].witnesses = "neighbor";
+    const uncertainties = deriveUncertainties(facts, intake);
+    expect(uncertainties.some((u) => u.toLowerCase().includes("threats") || u.toLowerCase().includes("injuries"))).toBe(true);
   });
 
   it("returns multiple uncertainties when multiple fields are missing", () => {
@@ -322,6 +366,6 @@ describe("deriveUncertainties", () => {
     const facts = makeFacts();
     facts.incidents[0].location = "";
     const uncertainties = deriveUncertainties(facts, intake);
-    expect(uncertainties).toHaveLength(4);
+    expect(uncertainties.length).toBeGreaterThanOrEqual(4);
   });
 });

@@ -10,15 +10,15 @@ import {
   calculateProgress,
   coerceExtractedFacts
 } from "@/lib/coach";
-import { detectImmediateDanger } from "@/lib/safety";
+import { detectImmediateDanger, detectDanger } from "@/lib/safety";
 import { mergeFacts } from "@/lib/mergeFacts";
 import type { Facts, IntakeData } from "@/lib/types";
 
 const IMMEDIATE_DANGER_FLAG = "immediate_danger";
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
-// If you want to REQUIRE a secret in production, set true.
-const REQUIRE_API_SECRET_IN_PROD = false;
+// Require API_SECRET in production to prevent abuse
+const REQUIRE_API_SECRET_IN_PROD = true;
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
@@ -93,14 +93,8 @@ type CoachRequest = z.infer<typeof CoachRequestSchema>;
 
 /**
  * Coerce parsed data into your strict types.
- * This resolves TS errors where IntakeData expects narrow unions.
- *
- * If you want stronger runtime enforcement, replace these casts with
- * "allowed value" checks based on your UI option arrays/constants.
  */
 function coerceIntake(raw: CoachRequest["intake"]): IntakeData {
-  // Cast the union-like fields into the narrow types your app expects.
-  // Safe because (a) UI should send only allowed options, (b) you still keep server guardrails elsewhere.
   return {
     petitionerName: raw.petitionerName ?? "",
     respondentName: raw.respondentName ?? "",
@@ -118,17 +112,45 @@ function coerceIntake(raw: CoachRequest["intake"]): IntakeData {
 }
 
 function coerceFacts(raw: CoachRequest["facts"]): Facts {
-  // Facts is usually already string/arrays, but we still cast to the app type.
   return raw as unknown as Facts;
 }
 
-function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: string) {
+/**
+ * Collect safety flags from multiple sources: intake status, user message text analysis,
+ * and conversation history.
+ */
+function collectSafetyFlags(intake: IntakeData, userMessage: string, lastMessages: { role: string; content: string }[]): Set<string> {
+  const flags = new Set<string>();
+
+  // Check intake safety status
+  if (intake.safetyStatus === "Immediate danger") flags.add(IMMEDIATE_DANGER_FLAG);
+
+  // Analyze current user message
+  const dangerResult = detectDanger(userMessage);
+  if (dangerResult.immediateDanger) flags.add(IMMEDIATE_DANGER_FLAG);
+  for (const cat of dangerResult.matchedCategories) {
+    flags.add(cat);
+  }
+
+  // Also check recent user messages for patterns across the conversation
+  for (const msg of lastMessages) {
+    if (msg.role === "user") {
+      const result = detectDanger(msg.content);
+      if (result.immediateDanger) flags.add(IMMEDIATE_DANGER_FLAG);
+      for (const cat of result.matchedCategories) {
+        flags.add(cat);
+      }
+    }
+  }
+
+  return flags;
+}
+
+function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: string, lastMessages: { role: string; content: string }[] = []) {
   const missingFields = computeMissingFields(intake, facts);
   const nextQuestions = buildQuestionsFromMissing(missingFields, 3);
 
-  const safetyFlags = new Set<string>();
-  if (intake.safetyStatus === "Immediate danger") safetyFlags.add(IMMEDIATE_DANGER_FLAG);
-  if (detectImmediateDanger(userMessage)) safetyFlags.add(IMMEDIATE_DANGER_FLAG);
+  const safetyFlags = collectSafetyFlags(intake, userMessage, lastMessages);
 
   const questionsText = nextQuestions.length
     ? `\n\nTo keep this court-friendly and clear, I still need:\n- ${nextQuestions.join("\n- ")}`
@@ -137,7 +159,7 @@ function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: st
   return {
     assistant_message:
       "Thanks for sharing. I can help organize New York Family Court Order of Protection information in a neutral, factual way." +
-      " If anything feels unsafe right now, contact emergency services." +
+      " If anything feels unsafe right now, contact emergency services (911) or the National DV Hotline (1-800-799-7233)." +
       questionsText,
     next_questions: nextQuestions,
     extracted_facts: {},
@@ -162,7 +184,6 @@ function isAuthorized(req: Request) {
 }
 
 export async function POST(request: Request) {
-  // ✅ API secret check (quota protection)
   if (!isAuthorized(request)) {
     return json({ error: "Unauthorized" }, 401);
   }
@@ -182,7 +203,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // ✅ Coerce into strict app types (fixes RelationshipCategory union TS errors)
   const reqData = parsedReq.data as CoachRequest;
   const intake = coerceIntake(reqData.intake);
   const facts = coerceFacts(reqData.facts);
@@ -194,7 +214,7 @@ export async function POST(request: Request) {
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 
   if (!apiKey) {
-    const fallback = buildFallbackResponse(intake, facts, userMessage);
+    const fallback = buildFallbackResponse(intake, facts, userMessage, lastMessages);
     return json({
       ...fallback,
       assistant_message:
@@ -206,9 +226,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const baseSafetyFlags = new Set<string>();
-  if (intake.safetyStatus === "Immediate danger") baseSafetyFlags.add(IMMEDIATE_DANGER_FLAG);
-  if (detectImmediateDanger(userMessage)) baseSafetyFlags.add(IMMEDIATE_DANGER_FLAG);
+  const baseSafetyFlags = collectSafetyFlags(intake, userMessage, lastMessages);
 
   const { systemInstruction, userPrompt } = buildCoachPrompt({
     intake,
@@ -218,10 +236,12 @@ export async function POST(request: Request) {
     mode
   });
 
-  // Your additional safety clarifier
+  // Additional safety clarifier appended to system instruction
   const systemInstructionWithSafetyPrompt =
     `${systemInstruction}\n\n` +
-    "If the user describes general arguing, explicitly ask if there was any physical contact, threats of harm with a weapon, or unwanted repetitive contact (harassment/stalking).";
+    "ADDITIONAL SAFETY PROBE: If the user describes general arguing or conflict without specifics, " +
+    "explicitly ask if there was any physical contact, threats of harm, use of or access to weapons, " +
+    "or unwanted repetitive contact (harassment/stalking). These details are critical for the petition.";
 
   try {
     const llmResponse = await callGemini(
@@ -232,18 +252,19 @@ export async function POST(request: Request) {
 
     const parsed = parseCoachResponse(llmResponse.text);
     if (!parsed?.assistantMessage) {
-      return json(buildFallbackResponse(intake, facts, userMessage));
+      return json(buildFallbackResponse(intake, facts, userMessage, lastMessages));
     }
 
     const extractedFacts = (coerceExtractedFacts(parsed.extractedFacts) ?? {}) as object;
 
-    // Merge new facts into existing, then compute missing based on merged (important)
-    const mergedFacts = mergeFacts(facts, extractedFacts as any);
+    // Merge new facts into existing, then compute missing based on merged
+    const mergedFacts = mergeFacts(facts, extractedFacts as Partial<Facts>);
     const missingFields = computeMissingFields(intake, mergedFacts);
 
     const nextQuestions =
       mode === "interview" ? buildQuestionsFromMissing(missingFields, 3) : [];
 
+    // Combine server-side safety detection with LLM-reported flags
     const safetyFlags = Array.from(
       new Set([...Array.from(baseSafetyFlags), ...uniqStrings(parsed.safetyFlags)])
     );
@@ -258,6 +279,6 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     console.error("[coach] POST failed", e);
-    return json(buildFallbackResponse(intake, facts, userMessage));
+    return json(buildFallbackResponse(intake, facts, userMessage, lastMessages));
   }
 }

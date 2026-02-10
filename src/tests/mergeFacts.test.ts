@@ -26,7 +26,6 @@ describe("mergeFacts", () => {
     it("returns current facts when incoming is an empty object", () => {
       const current = makeEmptyFacts();
       const result = mergeFacts(current, {});
-      // parties should still be the current ones
       expect(result.parties.petitioner).toBe("Alice");
       expect(result.parties.respondent).toBe("Bob");
     });
@@ -52,8 +51,8 @@ describe("mergeFacts", () => {
     });
   });
 
-  describe("incidents override behavior", () => {
-    it("overrides current incidents when incoming incidents are non-empty", () => {
+  describe("incidents append + deduplicate behavior", () => {
+    it("appends new incidents with different dates", () => {
       const current = makeEmptyFacts({
         incidents: [
           {
@@ -81,8 +80,42 @@ describe("mergeFacts", () => {
         }
       ];
       const result = mergeFacts(current, { incidents: newIncidents });
-      expect(result.incidents).toEqual(newIncidents);
-      expect(result.incidents).not.toEqual(current.incidents);
+      expect(result.incidents).toHaveLength(2);
+      expect(result.incidents[0].date).toBe("Jan 01");
+      expect(result.incidents[1].date).toBe("Feb 15");
+    });
+
+    it("merges matching incidents (same date) instead of duplicating", () => {
+      const current = makeEmptyFacts({
+        incidents: [
+          {
+            date: "Jan 01",
+            time: "10:00",
+            location: "",
+            whatHappened: "Something happened",
+            injuries: "",
+            threats: "",
+            witnesses: "",
+            evidence: ""
+          }
+        ]
+      });
+      const incoming = [
+        {
+          date: "Jan 01",
+          time: "10:00",
+          location: "Home",
+          whatHappened: "Something happened with more details added",
+          injuries: "bruises",
+          threats: "",
+          witnesses: "",
+          evidence: ""
+        }
+      ];
+      const result = mergeFacts(current, { incidents: incoming });
+      expect(result.incidents).toHaveLength(1);
+      expect(result.incidents[0].location).toBe("Home");
+      expect(result.incidents[0].injuries).toBe("bruises");
     });
 
     it("preserves current incidents when incoming incidents array is empty", () => {
@@ -122,11 +155,17 @@ describe("mergeFacts", () => {
     });
   });
 
-  describe("safetyConcerns override behavior", () => {
-    it("overrides when incoming safetyConcerns are non-empty", () => {
+  describe("safetyConcerns append + deduplicate behavior", () => {
+    it("appends new unique concerns to existing ones", () => {
       const current = makeEmptyFacts({ safetyConcerns: ["Old concern"] });
       const result = mergeFacts(current, { safetyConcerns: ["New concern"] });
-      expect(result.safetyConcerns).toEqual(["New concern"]);
+      expect(result.safetyConcerns).toEqual(["Old concern", "New concern"]);
+    });
+
+    it("deduplicates identical concerns", () => {
+      const current = makeEmptyFacts({ safetyConcerns: ["Same concern"] });
+      const result = mergeFacts(current, { safetyConcerns: ["Same concern"] });
+      expect(result.safetyConcerns).toEqual(["Same concern"]);
     });
 
     it("preserves current when incoming safetyConcerns is empty", () => {
@@ -136,11 +175,11 @@ describe("mergeFacts", () => {
     });
   });
 
-  describe("requestedRelief override behavior", () => {
-    it("overrides when incoming requestedRelief is non-empty", () => {
+  describe("requestedRelief append + deduplicate behavior", () => {
+    it("appends new unique relief to existing ones", () => {
       const current = makeEmptyFacts({ requestedRelief: ["Stay away order"] });
       const result = mergeFacts(current, { requestedRelief: ["Full order of protection"] });
-      expect(result.requestedRelief).toEqual(["Full order of protection"]);
+      expect(result.requestedRelief).toEqual(["Stay away order", "Full order of protection"]);
     });
 
     it("preserves current when incoming requestedRelief is empty", () => {
@@ -150,11 +189,17 @@ describe("mergeFacts", () => {
     });
   });
 
-  describe("evidenceList override behavior", () => {
-    it("overrides when incoming evidenceList is non-empty", () => {
+  describe("evidenceList append + deduplicate behavior", () => {
+    it("appends new unique evidence items", () => {
       const current = makeEmptyFacts({ evidenceList: ["Photos"] });
       const result = mergeFacts(current, { evidenceList: ["Videos", "Texts"] });
-      expect(result.evidenceList).toEqual(["Videos", "Texts"]);
+      expect(result.evidenceList).toEqual(["Photos", "Videos", "Texts"]);
+    });
+
+    it("deduplicates case-insensitively", () => {
+      const current = makeEmptyFacts({ evidenceList: ["Photos"] });
+      const result = mergeFacts(current, { evidenceList: ["photos", "Videos"] });
+      expect(result.evidenceList).toEqual(["Photos", "Videos"]);
     });
 
     it("preserves current when incoming evidenceList is empty", () => {
@@ -164,11 +209,11 @@ describe("mergeFacts", () => {
     });
   });
 
-  describe("timeline override behavior", () => {
-    it("overrides when incoming timeline is non-empty", () => {
+  describe("timeline append + deduplicate behavior", () => {
+    it("appends new unique timeline events", () => {
       const current = makeEmptyFacts({ timeline: ["Old event"] });
       const result = mergeFacts(current, { timeline: ["New event"] });
-      expect(result.timeline).toEqual(["New event"]);
+      expect(result.timeline).toEqual(["Old event", "New event"]);
     });
 
     it("preserves current when incoming timeline is empty", () => {

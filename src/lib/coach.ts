@@ -124,83 +124,100 @@ export const INTAKE_FIELD_DEFINITIONS: IntakeFieldDefinition[] = [
   {
     label: "relationship_category",
     intakeKey: "relationshipCategory",
-    question: "What is the relationship category between you and the other person?",
+    question: "What is the relationship between you and the other person? (spouse, former spouse, parent of child in common, family member, intimate/dating partner, or household member)",
     priority: 1
   },
   {
     label: "cohabitation",
     intakeKey: "cohabitation",
-    question: "Do you currently live together, previously live together, or never lived together?",
+    question: "Do you currently live together, previously lived together, or never lived together? This affects which court has jurisdiction.",
     priority: 2
   },
   {
     label: "most_recent_incident_datetime",
     intakeKey: "mostRecentIncidentAt",
-    question: "What is the date and time of the most recent incident?",
+    question: "When did the most recent incident happen? Please give a date and approximate time. If the exact date is unknown, an approximation like 'early January 2026' is fine.",
     priority: 3
   },
   {
     label: "pattern_summary",
     intakeKey: "patternOfIncidents",
-    question: "Please summarize the pattern of incidents and note any reported injuries or threats (brief and factual).",
+    question: "Describe the pattern of behavior: Has the conduct escalated over time? How frequent are the incidents? Include any reported injuries, threats (with exact words if possible), and whether the behavior is getting worse.",
     priority: 4
   },
   {
     label: "safety_status",
     intakeKey: "safetyStatus",
-    question: "Are you safe right now? (safe now / unsafe / immediate danger / unsure)",
+    question: "Are you safe right now? (safe now / unsafe / immediate danger / unsure). The court considers current safety level when deciding whether to grant a temporary order.",
     priority: 5
   },
   {
     label: "firearms_access",
     intakeKey: "firearmsAccess",
-    question: "Does the other person have access to firearms? (yes / no / unknown)",
+    question: "Does the other person have access to guns, firearms, or other weapons? (yes / no / unknown). The court must consider this when issuing an order of protection.",
     priority: 6
   },
   {
     label: "children_involved",
     intakeKey: "childrenInvolved",
-    question: "Were any children involved or did they witness the incidents?",
+    question: "Are any children involved? Did children witness incidents, or are they directly affected? This may affect whether child protective provisions are included in the order.",
     priority: 7
   },
   {
     label: "existing_cases_orders",
     intakeKey: "existingCasesOrders",
-    question: "Are there any existing cases or orders between you and this person?",
+    question: "Are there any existing court cases, orders of protection, custody agreements, or criminal cases involving you and this person? Include case numbers if known.",
     priority: 8
   },
   {
     label: "evidence_inventory",
     intakeKey: "evidenceInventory",
-    question: "What evidence do you have (texts, photos, reports, witnesses, etc.)?",
+    question: "What evidence do you have? (text messages, photos, medical records, police reports, witness names, voicemails, social media screenshots, etc.)",
     priority: 9
   },
   {
-    // Keep your label for backward compatibility (even though parentheses are awkward).
     label: "requested_relief(optional)",
     intakeKey: "requestedRelief",
-    question: "What relief are you asking for (stay-away, no contact, custody, etc.)? (optional)",
+    question: "What specific protections are you seeking? (e.g., stay-away order, refrain from harassment, temporary custody, exclusive use of home, surrender of firearms, etc.)",
     priority: 10,
     optional: true
   },
   {
     label: "top_events",
     intakeKey: null,
-    question: "Please list 1-3 most important events with dates or approximate dates, locations, and what was reported to happen.",
+    question: "Please describe the 1-3 most serious incidents in detail: For each, give the date (or approximate date), location, exactly what happened, any injuries, any exact words of threats, and any witnesses present.",
     priority: 11
+  },
+  {
+    label: "prior_dv_history",
+    intakeKey: null,
+    question: "Has the other person been violent or threatening in past relationships that you know of? Have they ever been arrested for domestic violence or violated a prior order of protection?",
+    priority: 12
+  },
+  {
+    label: "isolation_control",
+    intakeKey: null,
+    question: "Has the other person tried to control your daily life — such as monitoring your phone, controlling finances, isolating you from family/friends, or preventing you from working or leaving the home?",
+    priority: 13
+  },
+  {
+    label: "stalking_harassment",
+    intakeKey: null,
+    question: "Has the other person followed you, shown up uninvited at your home/work/school, tracked your location, or sent unwanted repeated messages after being told to stop?",
+    priority: 14
   },
   {
     label: "petitioner_name(optional)",
     intakeKey: "petitionerName",
     question: "What is the petitioner's name? (optional)",
-    priority: 12,
+    priority: 15,
     optional: true
   },
   {
     label: "respondent_name(optional)",
     intakeKey: "respondentName",
     question: "What is the respondent's name? (optional)",
-    priority: 13,
+    priority: 16,
     optional: true
   }
 ];
@@ -314,19 +331,48 @@ This is NOT legal advice.
 STYLE RULES:
 - Be neutral, factual, and chronological.
 - Avoid emotional or inflammatory language. Prefer "reported" / "alleged".
-- Avoid legal conclusions. Describe actions.
+- Avoid legal conclusions. Describe actions and reported events.
 - If uncertainties exist, explicitly flag them in assistant_message.
 - DO NOT invent facts. Only use INTAKE DATA or RECENT CONVERSATION.
-- Output STRICT JSON ONLY (no markdown, no extra text).`;
+- Output STRICT JSON ONLY (no markdown, no extra text).
+
+COURT CONTEXT (use to guide questions — do NOT recite to user unless directly relevant):
+- NY Family Court Act §812 defines family offenses: assault, stalking, harassment, menacing, reckless endangerment, strangulation, sexual offenses, disorderly conduct, intimidation of a victim/witness, identity theft, grand larceny, and coercion.
+- Judges evaluate: severity and frequency of incidents, escalation pattern, presence of weapons, impact on children, prior violations of orders, credibility of the account.
+- Strangulation is treated as a high-lethality indicator in DV risk assessment.
+- Temporary (ex parte) orders can be granted same-day if there is immediate risk. The standard is "good cause shown" (FCA §828).
+- The petitioner's detailed, date-specific, factual account is the strongest evidence.
+- WHO CAN FILE: Must be related by blood/marriage, married/formerly married, have a child in common, or be/have been in an intimate relationship (not casual).
+- WHAT JUDGE WANTS TO HEAR: (1) Most recent incident with date/time/location/details, (2) Why the risk is ongoing (escalation, stalking, threats, weapons access), (3) Specific relief requested (stay-away, no-contact, exclusion, firearms restriction, temporary custody/support).
+- KEY PAPERWORK: Family Offense Petition (UCS-FC 8-2), Address Confidentiality (GF-21 if needed), Intake/ID Sheet.
+- SERVICE: Order not enforceable until served on respondent. Petitioner cannot serve it themselves.
+- DURATION: Final orders up to 2 years standard, up to 5 years with aggravating circumstances (injury, weapons, repeated violations, prior DV convictions).
+- TRIAL STANDARD: "Fair preponderance of the evidence" (more likely than not).
+- LAWYER: Both sides can request court-appointed attorneys (18-B) if indigent — must ask the judge.
+- The petition should include: the MOST RECENT incident, the FIRST incident, and the WORST incident, with exact quotes of threats if possible.
+
+SAFETY AWARENESS:
+- If user mentions strangulation, choking, weapons, threats to kill, threats to children, suicide threats, stalking, or sexual violence, set safety_flags and include a brief safety note in assistant_message reminding them to contact 911 or the National DV Hotline (1-800-799-7233) if in immediate danger.
+- Do NOT minimize reported violence. Acknowledge what was shared and ask clarifying questions.`;
 
   const interviewInstruction = `${baseStyle}
+
 MODE: Interview (investigator). Your goal is to fill missing critical fields with concise, petition-style facts.
-For each key incident, ask for: date/time (or approximate date like "early Jan 2026" if exact is unknown), location,
-what happened (clear verbs), reported injuries, reported threats (exact quotes if possible), witnesses, and evidence.`;
+
+INTERVIEW STRATEGY:
+- Ask ONE focused question at a time (max 2 if closely related). Do not overwhelm.
+- For each key incident, collect: date/time (or approximate date like "early Jan 2026"), location, what happened (use clear action verbs), reported injuries, reported threats (exact quotes if possible), witnesses present, and evidence available.
+- After gathering basic facts, probe for ESCALATION PATTERNS: "Has the behavior gotten worse over time?" "When did it start?"
+- Ask about CONTROL behaviors: financial control, isolation from family/friends, monitoring phone/location, preventing from leaving.
+- Check for prior DV history or order violations by the respondent.
+- If user's answer is vague (e.g., "he was mean"), follow up: "Can you describe what specifically happened? What did he say or do?"
+- If user's answer contradicts earlier facts, gently note: "Earlier you mentioned X. Can you help me understand how that relates to Y?"
+- Prioritize collecting the most serious/recent incidents first — these matter most for the petition.`;
 
   const updateInstruction = `${baseStyle}
+
 MODE: Roadmap Update (updater). The user is providing a new fact to add. Extract and update the JSON.
-Do NOT ask follow-up questions unless the new fact is unclear.`;
+Do NOT ask follow-up questions unless the new fact is unclear or contradicts existing information.`;
 
   const systemInstruction = mode === "update" ? updateInstruction : interviewInstruction;
 
@@ -347,12 +393,21 @@ Do NOT ask follow-up questions unless the new fact is unclear.`;
   "safety_flags": string[]
 }
 
-Allowed missing field labels ONLY (exact text): ${allowedLabels}
+Allowed missing_fields labels ONLY (exact text): ${allowedLabels}
 
-PRIORITY for follow-up questions (max 3):
-relationship/cohabitation -> most recent incident datetime -> injuries/threats -> firearms -> children -> existing cases/orders -> evidence -> requested relief -> top_events.
+QUESTION PRIORITY (ask max 2 per turn, in this order):
+1. relationship_category / cohabitation (jurisdiction)
+2. most_recent_incident_datetime (recency for temporary order)
+3. pattern_summary (escalation pattern)
+4. safety_status / firearms_access (immediate risk)
+5. children_involved (child protective provisions)
+6. top_events (detailed incident accounts — most important for petition)
+7. prior_dv_history / stalking_harassment / isolation_control (pattern evidence)
+8. existing_cases_orders (procedural context)
+9. evidence_inventory (documentation)
+10. requested_relief (what protections to seek)
 
-extracted_facts should align to this structure when possible:
+extracted_facts: Put any NEW facts from the user's message here. Only include fields that have new information. Structure:
 {
   "parties": { "petitioner": string, "respondent": string },
   "relationship": string,
@@ -362,6 +417,10 @@ extracted_facts should align to this structure when possible:
   "evidenceList": [],
   "timeline": []
 }
+
+safety_flags: Include "immediate_danger" if the user describes life-threatening situations, strangulation, weapons pointed at them, or active threats. Include descriptive flags like "strangulation_reported", "weapon_access", "stalking_reported", "child_safety_concern", "suicide_threat", "order_violation" as appropriate.
+
+progress_percent: Estimate 0-100 based on how complete the case information is for filing a petition. Weight serious incident details and safety information more heavily than optional fields.
 
 INTAKE DATA:
 ${JSON.stringify(intake, null, 2)}

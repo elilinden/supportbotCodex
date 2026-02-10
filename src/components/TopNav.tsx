@@ -46,6 +46,13 @@ export function TopNav() {
           ) : null}
 
           <Link
+            href="/guide"
+            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+          >
+            Court Guide
+          </Link>
+
+          <Link
             href="/settings"
             className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
           >
