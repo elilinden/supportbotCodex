@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { CaseOutputs, Facts, IntakeData } from "@/lib/types";
+import { QUALIFYING_OFFENSES, AVAILABLE_RELIEF, ORDER_DURATION_INFO, COURT_FORMS } from "@/lib/courtData";
 
 /**
  * Small helpers to make LLM outputs resilient.
@@ -124,7 +125,7 @@ export const INTAKE_FIELD_DEFINITIONS: IntakeFieldDefinition[] = [
   {
     label: "relationship_category",
     intakeKey: "relationshipCategory",
-    question: "What is the relationship between you and the other person? (spouse, former spouse, parent of child in common, family member, intimate/dating partner, or household member)",
+    question: "What is the relationship between you and the other person? Family Court requires a qualifying relationship: spouse, former spouse, parent of child in common, family member (by blood/marriage/adoption), intimate partner (dating — not casual), or household member. Which applies?",
     priority: 1
   },
   {
@@ -134,59 +135,59 @@ export const INTAKE_FIELD_DEFINITIONS: IntakeFieldDefinition[] = [
     priority: 2
   },
   {
+    label: "top_events",
+    intakeKey: null,
+    question: "Please describe three key incidents: (1) the MOST RECENT incident, (2) the FIRST incident, and (3) the WORST incident. For each, give the date (or approximate date), location, exactly what happened, any injuries, exact words of threats if possible, and any witnesses present.",
+    priority: 3
+  },
+  {
     label: "most_recent_incident_datetime",
     intakeKey: "mostRecentIncidentAt",
     question: "When did the most recent incident happen? Please give a date and approximate time. If the exact date is unknown, an approximation like 'early January 2026' is fine.",
-    priority: 3
+    priority: 4
   },
   {
     label: "pattern_summary",
     intakeKey: "patternOfIncidents",
     question: "Describe the pattern of behavior: Has the conduct escalated over time? How frequent are the incidents? Include any reported injuries, threats (with exact words if possible), and whether the behavior is getting worse.",
-    priority: 4
+    priority: 5
   },
   {
     label: "safety_status",
     intakeKey: "safetyStatus",
     question: "Are you safe right now? (safe now / unsafe / immediate danger / unsure). The court considers current safety level when deciding whether to grant a temporary order.",
-    priority: 5
+    priority: 6
   },
   {
     label: "firearms_access",
     intakeKey: "firearmsAccess",
     question: "Does the other person have access to guns, firearms, or other weapons? (yes / no / unknown). The court must consider this when issuing an order of protection.",
-    priority: 6
+    priority: 7
   },
   {
     label: "children_involved",
     intakeKey: "childrenInvolved",
     question: "Are any children involved? Did children witness incidents, or are they directly affected? This may affect whether child protective provisions are included in the order.",
-    priority: 7
+    priority: 8
   },
   {
     label: "existing_cases_orders",
     intakeKey: "existingCasesOrders",
     question: "Are there any existing court cases, orders of protection, custody agreements, or criminal cases involving you and this person? Include case numbers if known.",
-    priority: 8
+    priority: 9
   },
   {
     label: "evidence_inventory",
     intakeKey: "evidenceInventory",
     question: "What evidence do you have? (text messages, photos, medical records, police reports, witness names, voicemails, social media screenshots, etc.)",
-    priority: 9
+    priority: 10
   },
   {
     label: "requested_relief(optional)",
     intakeKey: "requestedRelief",
     question: "What specific protections are you seeking? (e.g., stay-away order, refrain from harassment, temporary custody, exclusive use of home, surrender of firearms, etc.)",
-    priority: 10,
+    priority: 11,
     optional: true
-  },
-  {
-    label: "top_events",
-    intakeKey: null,
-    question: "Please describe the 1-3 most serious incidents in detail: For each, give the date (or approximate date), location, exactly what happened, any injuries, any exact words of threats, and any witnesses present.",
-    priority: 11
   },
   {
     label: "prior_dv_history",
@@ -316,6 +317,33 @@ export function coerceExtractedOutputs(input: Record<string, unknown>): Partial<
   return parsed.data;
 }
 
+/**
+ * Build court context dynamically from courtData.ts instead of hardcoding.
+ */
+function buildCourtContext(): string {
+  const offenses = QUALIFYING_OFFENSES.join(", ");
+  const reliefOptions = AVAILABLE_RELIEF.map((r) => r.label).join(", ");
+  const keyForms = COURT_FORMS
+    .filter((f) => f.required || f.category === "filing")
+    .map((f) => `${f.name} (${f.formNumber})`)
+    .join(", ");
+
+  return `COURT CONTEXT (use to guide questions — do NOT recite to user unless directly relevant):
+- NY Family Court Act §812 defines family offenses: ${offenses}.
+- Judges evaluate: severity and frequency of incidents, escalation pattern, presence of weapons, impact on children, prior violations of orders, credibility of the account.
+- Strangulation is treated as a high-lethality indicator in DV risk assessment.
+- Temporary (ex parte) orders can be granted same-day if there is immediate risk. The standard is "good cause shown" (FCA §828).
+- The petitioner's detailed, date-specific, factual account is the strongest evidence.
+- WHO CAN FILE: Must be related by blood/marriage, married/formerly married, have a child in common, or be/have been in an intimate relationship (not casual). Qualifying relationship categories: Spouse, Former spouse, Parent of child in common, Family member (blood/marriage/adoption), Intimate partner (dating), Household member.
+- WHAT JUDGE WANTS TO HEAR: (1) Most recent incident with date/time/location/details, (2) Why the risk is ongoing (escalation, stalking, threats, weapons access), (3) Specific relief requested (${reliefOptions}).
+- KEY PAPERWORK: ${keyForms}.
+- SERVICE: Order not enforceable until served on respondent. Petitioner cannot serve it themselves.
+- DURATION: ${ORDER_DURATION_INFO.standard} standard, ${ORDER_DURATION_INFO.aggravated} with aggravating circumstances.
+- TRIAL STANDARD: "Fair preponderance of the evidence" (more likely than not).
+- LAWYER: Both sides can request court-appointed attorneys (18-B) if indigent — must ask the judge.
+- The petition should include: the MOST RECENT incident, the FIRST incident, and the WORST incident, with exact quotes of threats if possible.`;
+}
+
 export function buildCoachPrompt(params: {
   intake: IntakeData;
   facts: Facts;
@@ -324,6 +352,8 @@ export function buildCoachPrompt(params: {
   mode: "interview" | "update";
 }): { systemInstruction: string; userPrompt: string } {
   const { intake, facts, lastMessages, userMessage, mode } = params;
+
+  const courtContext = buildCourtContext();
 
   const baseStyle = `You are a safety-first, court-friendly information assistant focused ONLY on New York Family Court Orders of Protection.
 This is NOT legal advice.
@@ -336,23 +366,14 @@ STYLE RULES:
 - DO NOT invent facts. Only use INTAKE DATA or RECENT CONVERSATION.
 - Output STRICT JSON ONLY (no markdown, no extra text).
 
-COURT CONTEXT (use to guide questions — do NOT recite to user unless directly relevant):
-- NY Family Court Act §812 defines family offenses: assault, stalking, harassment, menacing, reckless endangerment, strangulation, sexual offenses, disorderly conduct, intimidation of a victim/witness, identity theft, grand larceny, and coercion.
-- Judges evaluate: severity and frequency of incidents, escalation pattern, presence of weapons, impact on children, prior violations of orders, credibility of the account.
-- Strangulation is treated as a high-lethality indicator in DV risk assessment.
-- Temporary (ex parte) orders can be granted same-day if there is immediate risk. The standard is "good cause shown" (FCA §828).
-- The petitioner's detailed, date-specific, factual account is the strongest evidence.
-- WHO CAN FILE: Must be related by blood/marriage, married/formerly married, have a child in common, or be/have been in an intimate relationship (not casual).
-- WHAT JUDGE WANTS TO HEAR: (1) Most recent incident with date/time/location/details, (2) Why the risk is ongoing (escalation, stalking, threats, weapons access), (3) Specific relief requested (stay-away, no-contact, exclusion, firearms restriction, temporary custody/support).
-- KEY PAPERWORK: Family Offense Petition (UCS-FC 8-2), Address Confidentiality (GF-21 if needed), Intake/ID Sheet.
-- SERVICE: Order not enforceable until served on respondent. Petitioner cannot serve it themselves.
-- DURATION: Final orders up to 2 years standard, up to 5 years with aggravating circumstances (injury, weapons, repeated violations, prior DV convictions).
-- TRIAL STANDARD: "Fair preponderance of the evidence" (more likely than not).
-- LAWYER: Both sides can request court-appointed attorneys (18-B) if indigent — must ask the judge.
-- The petition should include: the MOST RECENT incident, the FIRST incident, and the WORST incident, with exact quotes of threats if possible.
+${courtContext}
+
+RELATIONSHIP VALIDATION:
+- The relationship category MUST be one of: Spouse, Former spouse, Parent of child in common, Family member (blood/marriage/adoption), Intimate partner (dating), or Household member.
+- If the user describes a relationship that doesn't clearly fit (e.g., "neighbor", "coworker", "friend"), note in assistant_message that Family Court requires a qualifying relationship and ask them to clarify whether they are/were in an intimate relationship, related by blood/marriage, or household members.
 
 SAFETY AWARENESS:
-- If user mentions strangulation, choking, weapons, threats to kill, threats to children, suicide threats, stalking, or sexual violence, set safety_flags and include a brief safety note in assistant_message reminding them to contact 911 or the National DV Hotline (1-800-799-7233) if in immediate danger.
+- If user mentions strangulation, choking, suffocation, weapons, threats to kill, threats to children, suicide threats, stalking, sexual violence, or controlling behavior (financial, medical, isolation), set safety_flags and include a brief safety note in assistant_message reminding them to contact 911 or the National DV Hotline (1-800-799-7233) if in immediate danger.
 - Do NOT minimize reported violence. Acknowledge what was shared and ask clarifying questions.`;
 
   const interviewInstruction = `${baseStyle}
@@ -396,12 +417,12 @@ Do NOT ask follow-up questions unless the new fact is unclear or contradicts exi
 Allowed missing_fields labels ONLY (exact text): ${allowedLabels}
 
 QUESTION PRIORITY (ask max 2 per turn, in this order):
-1. relationship_category / cohabitation (jurisdiction)
-2. most_recent_incident_datetime (recency for temporary order)
-3. pattern_summary (escalation pattern)
-4. safety_status / firearms_access (immediate risk)
-5. children_involved (child protective provisions)
-6. top_events (detailed incident accounts — most important for petition)
+1. relationship_category / cohabitation (jurisdiction — validate against FCA qualifying relationships)
+2. top_events (three critical incidents: most recent, first, worst — most important for petition)
+3. most_recent_incident_datetime (recency for temporary order)
+4. pattern_summary (escalation pattern)
+5. safety_status / firearms_access (immediate risk)
+6. children_involved (child protective provisions)
 7. prior_dv_history / stalking_harassment / isolation_control (pattern evidence)
 8. existing_cases_orders (procedural context)
 9. evidence_inventory (documentation)

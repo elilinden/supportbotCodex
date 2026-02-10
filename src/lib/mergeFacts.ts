@@ -17,11 +17,59 @@ function dedupeStrings(existing: string[], incoming: string[]): string[] {
 }
 
 /**
+ * Normalize date strings so "January 5, 2026", "01/05/2026", "Jan 5 2026"
+ * all compare as equal for deduplication.
+ */
+const MONTH_MAP: Record<string, string> = {
+  january: "01", february: "02", march: "03", april: "04",
+  may: "05", june: "06", july: "07", august: "08",
+  september: "09", october: "10", november: "11", december: "12",
+  jan: "01", feb: "02", mar: "03", apr: "04",
+  jun: "06", jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12",
+};
+
+function normalizeDate(raw: string): string {
+  const s = raw.trim();
+  if (!s) return "";
+  const lower = s.toLowerCase();
+
+  // "Month Day, Year" or "Month Day Year" or "Month Day"
+  const namedMatch = lower.match(
+    /^(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})(?:\s*,?\s*(\d{4}))?/
+  );
+  if (namedMatch) {
+    const mm = MONTH_MAP[namedMatch[1]] || "00";
+    const dd = namedMatch[2].padStart(2, "0");
+    const yyyy = namedMatch[3] || "0000";
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  // "MM/DD/YYYY" or "M/D/YYYY"
+  const slashMatch = lower.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slashMatch) {
+    const mm = slashMatch[1].padStart(2, "0");
+    const dd = slashMatch[2].padStart(2, "0");
+    return `${slashMatch[3]}-${mm}-${dd}`;
+  }
+
+  // "YYYY-MM-DD"
+  const isoMatch = lower.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (isoMatch) {
+    return `${isoMatch[1]}-${isoMatch[2].padStart(2, "0")}-${isoMatch[3].padStart(2, "0")}`;
+  }
+
+  return lower;
+}
+
+/**
  * Check if two incidents are likely the same event (same date + similar description).
+ * Uses normalized dates so "January 5" and "01/05/2026" can match.
  */
 function incidentMatches(a: Incident, b: Incident): boolean {
   if (!a.date && !b.date) return false;
-  if (a.date.trim().toLowerCase() !== b.date.trim().toLowerCase()) return false;
+  const aNorm = normalizeDate(a.date);
+  const bNorm = normalizeDate(b.date);
+  if (aNorm !== bNorm) return false;
   // Same date — check if whatHappened overlaps significantly
   if (a.whatHappened && b.whatHappened) {
     const aLower = a.whatHappened.trim().toLowerCase();
@@ -33,23 +81,36 @@ function incidentMatches(a: Incident, b: Incident): boolean {
 }
 
 /**
- * Merge two incident objects, preferring longer/non-empty values from incoming.
+ * Merge two incident objects.
+ * Identity fields (date, time, location): keep the more specific (longer) value.
+ * Detail fields (whatHappened, injuries, threats, witnesses, evidence): concatenate unique content.
  */
 function mergeIncident(existing: Incident, incoming: Incident): Incident {
-  const pick = (a: string, b: string) => {
+  const pickSpecific = (a: string, b: string) => {
     if (!b.trim()) return a;
     if (!a.trim()) return b;
     return b.length >= a.length ? b : a;
   };
+
+  const concat = (a: string, b: string) => {
+    if (!b.trim()) return a;
+    if (!a.trim()) return b;
+    const aLower = a.trim().toLowerCase();
+    const bLower = b.trim().toLowerCase();
+    if (aLower.includes(bLower)) return a;
+    if (bLower.includes(aLower)) return b;
+    return `${a.trim()}; ${b.trim()}`;
+  };
+
   return {
-    date: pick(existing.date, incoming.date),
-    time: pick(existing.time, incoming.time),
-    location: pick(existing.location, incoming.location),
-    whatHappened: pick(existing.whatHappened, incoming.whatHappened),
-    injuries: pick(existing.injuries, incoming.injuries),
-    threats: pick(existing.threats, incoming.threats),
-    witnesses: pick(existing.witnesses, incoming.witnesses),
-    evidence: pick(existing.evidence, incoming.evidence),
+    date: pickSpecific(existing.date, incoming.date),
+    time: pickSpecific(existing.time, incoming.time),
+    location: pickSpecific(existing.location, incoming.location),
+    whatHappened: concat(existing.whatHappened, incoming.whatHappened),
+    injuries: concat(existing.injuries, incoming.injuries),
+    threats: concat(existing.threats, incoming.threats),
+    witnesses: concat(existing.witnesses, incoming.witnesses),
+    evidence: concat(existing.evidence, incoming.evidence),
   };
 }
 

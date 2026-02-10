@@ -183,11 +183,6 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
     const familyCourtLikely = relationshipKnown && FAMILY_COURT_RELATIONSHIPS.has(relationshipCategory);
 
     const safetyStatus = getField("safetyStatus");
-    const showHotlines =
-      safetyStatus === "Unsafe" ||
-      safetyStatus === "Immediate danger" ||
-      safety.immediateDanger ||
-      safety.flags.includes("immediate_danger");
 
     const cohabitation = getField("cohabitation");
     const childrenInvolved = getField("childrenInvolved");
@@ -241,7 +236,6 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
       relationshipKnown,
       familyCourtLikely,
       safetyStatus,
-      showHotlines,
       cohabitation,
       childrenInvolved,
       firearmsAccess,
@@ -429,8 +423,8 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
         <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR (dashboard-style) */}
-        <aside className="hidden lg:block">
+        {/* LEFT SIDEBAR — visible on all screens */}
+        <aside>
           <GlassCard className="p-4 space-y-4 text-ui-text">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</p>
@@ -741,20 +735,18 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                   If you are in immediate danger, call 911. This tool is informational only.
                 </p>
 
-                {derived.showHotlines ? (
-                  <div className="mt-4 space-y-3">
-                    <div className="rounded-xl border border-slate-200 bg-white p-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        Hotlines (confidential)
-                      </p>
-                      <p className="mt-2 text-xs text-slate-700">
-                        NY State Domestic & Sexual Violence: 800-942-6906
-                      </p>
-                      <p className="text-xs text-slate-700">Text: 844-997-2121</p>
-                      <p className="text-xs text-slate-700">NYC Safe Horizon: 800-621-4673</p>
-                    </div>
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Hotlines (confidential)
+                    </p>
+                    <p className="mt-2 text-xs text-slate-700">
+                      NY State Domestic & Sexual Violence: 800-942-6906
+                    </p>
+                    <p className="text-xs text-slate-700">Text: 844-997-2121</p>
+                    <p className="text-xs text-slate-700">NYC Safe Horizon: 800-621-4673</p>
                   </div>
-                ) : null}
+                </div>
               </GlassCard>
             </aside>
           </div>

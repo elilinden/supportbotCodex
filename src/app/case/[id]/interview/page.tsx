@@ -197,8 +197,8 @@ export default function InterviewPage() {
         <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR */}
-        <aside className="hidden lg:block">
+        {/* LEFT SIDEBAR — visible on all screens, collapses in single-column on mobile */}
+        <aside>
           <GlassCard className="p-4 space-y-4">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
@@ -314,7 +314,7 @@ export default function InterviewPage() {
                 )}
               </div>
 
-              {error ? <p className="mt-3 text-xs text-rose-600">{error}</p> : null}
+              {error ? <p className="mt-3 text-xs text-rose-600" role="alert">{error}</p> : null}
 
               <div className="mt-4 flex items-center gap-2">
                 <input
@@ -322,9 +322,10 @@ export default function InterviewPage() {
                     "flex-1 rounded-full border px-4 py-2 text-xs",
                     "border-slate-200 bg-white text-ui-text shadow-sm outline-none",
                     "placeholder:text-slate-400",
-                    "focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
+                    "focus:border-ui-primary focus:ring-4 focus:ring-ui-primary/20",
                     "disabled:cursor-not-allowed disabled:opacity-60"
                   ].join(" ")}
+                  aria-label="Interview response"
                   placeholder={done ? "Interview complete" : "Answer the interview question..."}
                   value={input}
                   onChange={(event) => setInput(event.target.value)}

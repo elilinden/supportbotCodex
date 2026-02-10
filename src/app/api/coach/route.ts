@@ -151,15 +151,20 @@ function buildFallbackResponse(intake: IntakeData, facts: Facts, userMessage: st
   const nextQuestions = buildQuestionsFromMissing(missingFields, 3);
 
   const safetyFlags = collectSafetyFlags(intake, userMessage, lastMessages);
+  const hasDanger = safetyFlags.has(IMMEDIATE_DANGER_FLAG);
 
   const questionsText = nextQuestions.length
     ? `\n\nTo keep this court-friendly and clear, I still need:\n- ${nextQuestions.join("\n- ")}`
     : "";
 
+  const safetyMessage = hasDanger
+    ? " IMPORTANT: Based on what you've shared, your safety may be at immediate risk. Please contact 911 if you are in danger right now, or call the National DV Hotline (1-800-799-7233) or NY State Hotline (800-942-6906) for immediate support."
+    : " If anything feels unsafe right now, contact emergency services (911) or the National DV Hotline (1-800-799-7233).";
+
   return {
     assistant_message:
       "Thanks for sharing. I can help organize New York Family Court Order of Protection information in a neutral, factual way." +
-      " If anything feels unsafe right now, contact emergency services (911) or the National DV Hotline (1-800-799-7233)." +
+      safetyMessage +
       questionsText,
     next_questions: nextQuestions,
     extracted_facts: {},

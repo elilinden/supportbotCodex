@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const CASE_TABS = [
   { label: "Interview", segment: "interview" },
-  { label: "Facts", segment: "summary" },
+  { label: "Summary", segment: "summary" },
   { label: "Roadmap", segment: "roadmap" },
 ] as const;
 
@@ -37,9 +37,9 @@ export function CaseSubNav({ caseId }: { caseId: string }) {
       })}
       <Link
         href="/guide"
-        className="rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+        className="ml-1 rounded-full border border-dashed border-slate-300 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-slate-500 hover:border-ui-primary/40 hover:bg-ui-primary/5 hover:text-ui-primary"
       >
-        Court Guide
+        Court Guide &#8599;
       </Link>
     </nav>
   );

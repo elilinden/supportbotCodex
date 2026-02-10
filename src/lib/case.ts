@@ -165,6 +165,10 @@ export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
     "Case numbers for any related family, criminal, or supreme court matters",
     "If you need address confidentiality, be ready to file form GF-21 (do NOT write your address on the petition)",
     "Contact info for your local domestic violence advocate or hotline (if applicable)",
+    "Proof of income (pay stubs, tax returns, benefits letters) if requesting temporary child support",
+    "Phone records or device screenshots showing calls, texts, or location tracking",
+    "Paternity documents (birth certificate, acknowledgment of paternity, DNA test) if relevant",
+    "Prior custody or divorce orders/agreements between the parties",
   ];
 
   const whatToExpect = [

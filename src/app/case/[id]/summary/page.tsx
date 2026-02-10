@@ -45,11 +45,6 @@ export default function CaseSummaryPage() {
   }
 
   const { intake, facts, outputs, assumptions, uncertainties } = caseFile;
-  const showHotlines =
-    intake.safetyStatus === "Unsafe" ||
-    intake.safetyStatus === "Immediate danger" ||
-    caseFile.safety.immediateDanger ||
-    caseFile.safety.flags.includes("immediate_danger");
 
   return (
     <div className="space-y-8">
@@ -177,19 +172,18 @@ export default function CaseSummaryPage() {
             </ul>
           </GlassCard>
 
-          {showHotlines ? (
-            <GlassCard className="space-y-2">
-              <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
-              <p className="text-xs text-slate-700">
-                If you are in immediate danger, call 911 or your local emergency number.
-              </p>
-              <div className="text-xs text-slate-700">
-                <p>NY State Domestic and Sexual Violence Hotline: 800-942-6906</p>
-                <p>Text: 844-997-2121</p>
-                <p>NYC Safe Horizon Hotline: 800-621-4673</p>
-              </div>
-            </GlassCard>
-          ) : null}
+          <GlassCard className="space-y-2">
+            <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
+            <p className="text-xs text-slate-700">
+              If you are in immediate danger, call 911 or your local emergency number.
+            </p>
+            <div className="text-xs text-slate-700">
+              <p>NY State Domestic and Sexual Violence Hotline: 800-942-6906</p>
+              <p>Text: 844-997-2121</p>
+              <p>NYC Safe Horizon Hotline: 800-621-4673</p>
+              <p>National DV Hotline: 1-800-799-7233</p>
+            </div>
+          </GlassCard>
 
           <AssumptionsPanel assumptions={assumptions} uncertainties={uncertainties} />
         </div>
