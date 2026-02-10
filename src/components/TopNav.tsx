@@ -1,24 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useCaseStore } from "@/store/useCaseStore";
 
 export function TopNav() {
-  const caseCount = useCaseStore((state) => state.cases.length);
-  const activeCaseId = useCaseStore((state) => state.activeCaseId);
-  const activeCase = useCaseStore((state) =>
-    state.cases.find((item) => item.id === state.activeCaseId)
-  );
-
-  const dashboardHref = activeCaseId
-    ? activeCase?.status === "interview"
-      ? `/case/${activeCaseId}/interview`
-      : `/case/${activeCaseId}/roadmap`
-    : "/";
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="w-full px-4 py-4 sm:px-6 lg:px-10">
-      <div className="flex w-full flex-wrap items-center justify-between gap-4">
+      <div className="flex w-full items-center justify-between gap-4">
         <div className="min-w-[220px]">
           <Link href="/" className="text-lg font-semibold tracking-tight text-ui-text" aria-label="Home">
             Pro-Se Prime
@@ -26,24 +16,37 @@ export function TopNav() {
           <p className="text-xs text-ui-textMuted">NY Family Court / Orders of Protection / Information-only</p>
         </div>
 
-        <nav className="flex items-center gap-3 text-sm text-ui-textMuted" aria-label="Main navigation">
-          {activeCaseId ? (
-            <Link
-              href={dashboardHref}
-              className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
-            >
-              Dashboard
-            </Link>
-          ) : null}
+        {/* Hamburger button — mobile only */}
+        <button
+          className="rounded-lg border border-ui-border bg-ui-surface p-2 text-ui-text lg:hidden"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            {menuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
 
-          {caseCount === 0 ? (
-            <Link
-              href="/new"
-              className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
-            >
-              New Intake
-            </Link>
-          ) : null}
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center gap-3 text-sm text-ui-textMuted" aria-label="Main navigation">
+          <Link
+            href="/"
+            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+          >
+            Home
+          </Link>
+
+          <Link
+            href="/new"
+            className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+          >
+            New Intake
+          </Link>
 
           <Link
             href="/guide"
@@ -60,6 +63,40 @@ export function TopNav() {
           </Link>
         </nav>
       </div>
+
+      {/* Mobile nav dropdown */}
+      {menuOpen && (
+        <nav className="mt-3 flex flex-col gap-2 lg:hidden" aria-label="Main navigation">
+          <Link
+            href="/"
+            className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href="/new"
+            className="rounded-xl bg-ui-primary px-4 py-3 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+            onClick={() => setMenuOpen(false)}
+          >
+            New Intake
+          </Link>
+          <Link
+            href="/guide"
+            className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+            onClick={() => setMenuOpen(false)}
+          >
+            Court Guide
+          </Link>
+          <Link
+            href="/settings"
+            className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+            onClick={() => setMenuOpen(false)}
+          >
+            Settings
+          </Link>
+        </nav>
+      )}
     </div>
   );
 }

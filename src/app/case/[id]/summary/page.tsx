@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+import { CaseSubNav } from "@/components/CaseSubNav";
 import { AssumptionsPanel } from "@/components/AssumptionsPanel";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 
@@ -44,16 +45,15 @@ export default function CaseSummaryPage() {
   }
 
   const { intake, facts, outputs, assumptions, uncertainties } = caseFile;
-  const showHotlines =
-    intake.safetyStatus === "Unsafe" ||
-    intake.safetyStatus === "Immediate danger" ||
-    caseFile.safety.immediateDanger ||
-    caseFile.safety.flags.includes("immediate_danger");
 
   return (
     <div className="space-y-8">
+      <div className="no-print">
+        <CaseSubNav caseId={caseFile.id} />
+      </div>
+
       <GlassCardStrong className="space-y-3 no-print">
-        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Printable Summary</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Facts Summary</p>
         <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Summary</h1>
         <p className="text-sm text-slate-600">Information-only summary for Orders of Protection. Not legal advice.</p>
 
@@ -64,13 +64,6 @@ export default function CaseSummaryPage() {
           >
             Print / Export
           </button>
-
-          <Link
-            href={`/case/${caseFile.id}/roadmap`}
-            className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            Roadmap
-          </Link>
         </div>
       </GlassCardStrong>
 
@@ -179,19 +172,18 @@ export default function CaseSummaryPage() {
             </ul>
           </GlassCard>
 
-          {showHotlines ? (
-            <GlassCard className="space-y-2">
-              <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
-              <p className="text-xs text-slate-700">
-                If you are in immediate danger, call 911 or your local emergency number.
-              </p>
-              <div className="text-xs text-slate-700">
-                <p>NY State Domestic and Sexual Violence Hotline: 800-942-6906</p>
-                <p>Text: 844-997-2121</p>
-                <p>NYC Safe Horizon Hotline: 800-621-4673</p>
-              </div>
-            </GlassCard>
-          ) : null}
+          <GlassCard className="space-y-2">
+            <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
+            <p className="text-xs text-slate-700">
+              If you are in immediate danger, call 911 or your local emergency number.
+            </p>
+            <div className="text-xs text-slate-700">
+              <p>NY State Domestic and Sexual Violence Hotline: 800-942-6906</p>
+              <p>Text: 844-997-2121</p>
+              <p>NYC Safe Horizon Hotline: 800-621-4673</p>
+              <p>National DV Hotline: 1-800-799-7233</p>
+            </div>
+          </GlassCard>
 
           <AssumptionsPanel assumptions={assumptions} uncertainties={uncertainties} />
         </div>

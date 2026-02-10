@@ -38,7 +38,7 @@ export default function HomePage() {
         </GlassCard>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[
           {
             title: "Court Guide",
@@ -46,19 +46,14 @@ export default function HomePage() {
             href: "/guide"
           },
           {
-            title: "Guided Intake",
+            title: "Start New Intake",
             text: "Step-by-step collection of relationship, incident, and safety details for NY Family Court OPs.",
             href: "/new"
           },
           {
-            title: "Case Dashboard",
-            text: "Centralize facts, evidence, and outputs for a single Order of Protection workflow.",
+            title: "Settings",
+            text: "Configure your Gemini API key and manage your cases.",
             href: "/settings"
-          },
-          {
-            title: "Coach Mode",
-            text: "Ask questions and refine facts while staying within NY Family Court scope.",
-            href: "/about"
           }
         ].map((item) => (
           <Link key={item.title} href={item.href}>
