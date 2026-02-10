@@ -406,12 +406,12 @@ export default function GuidePage() {
         <p className="text-sm text-slate-700 leading-relaxed">
           Not every case ends with a consent order or a trial-issued final order. Under{" "}
           <a
-            href="https://www.nysenate.gov/legislation/laws/FCT/842"
+            href="https://www.nysenate.gov/legislation/laws/FCT/841"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-ui-primary underline decoration-ui-primary/30 hover:decoration-ui-primary"
           >
-            FCA &sect;842<span className="text-[10px]">&#8599;</span>
+            FCA &sect;841<span className="text-[10px]">&#8599;</span>
           </a>
           , Family Court can enter several types of &ldquo;orders of disposition&rdquo;:
         </p>
