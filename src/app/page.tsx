@@ -42,21 +42,26 @@ export default function HomePage() {
         {[
           {
             title: "Guided Intake",
-            text: "Step-by-step collection of relationship, incident, and safety details for NY Family Court OPs."
+            text: "Step-by-step collection of relationship, incident, and safety details for NY Family Court OPs.",
+            href: "/new"
           },
           {
             title: "Case Dashboard",
-            text: "Centralize facts, evidence, and outputs for a single Order of Protection workflow."
+            text: "Centralize facts, evidence, and outputs for a single Order of Protection workflow.",
+            href: "/settings"
           },
           {
             title: "Coach Mode",
-            text: "Ask questions and refine facts while staying within NY Family Court scope."
+            text: "Ask questions and refine facts while staying within NY Family Court scope.",
+            href: "/about"
           }
         ].map((item) => (
-          <GlassCard key={item.title} className="space-y-2">
-            <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-            <p className="text-xs text-slate-600">{item.text}</p>
-          </GlassCard>
+          <Link key={item.title} href={item.href}>
+            <GlassCard className="space-y-2 transition-all hover:border-ui-primary/30 hover:shadow-lg">
+              <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
+              <p className="text-xs text-slate-600">{item.text}</p>
+            </GlassCard>
+          </Link>
         ))}
       </section>
     </div>

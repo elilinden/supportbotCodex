@@ -175,7 +175,8 @@ export default function PrivacyPage() {
           <section className="space-y-3">
             <h2 className="text-base font-semibold text-slate-900">Contact</h2>
             <p>
-              Questions or requests about this policy can be sent to: <strong>support@yourdomain.com</strong>
+              Questions or requests about this policy can be sent to:{" "}
+              <a href="mailto:support@proseprime.com" className="font-semibold underline underline-offset-4">support@proseprime.com</a>
             </p>
           </section>
         </div>

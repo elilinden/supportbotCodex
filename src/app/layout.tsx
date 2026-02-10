@@ -17,13 +17,13 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "NY Family Court OP Navigator",
+  title: "Pro-Se Prime",
   description: "Information-only guidance for New York Family Court Orders of Protection."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
         className={[
           spaceGrotesk.variable,
@@ -40,6 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <div className="min-h-screen">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ui-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+          >
+            Skip to main content
+          </a>
+
           {/* Sticky "app header" */}
           <header className="sticky top-0 z-50 border-b border-ui-border bg-ui-surface/75 backdrop-blur">
             <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -51,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </header>
 
           {/* Main content */}
-          <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
+          <main id="main-content" className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
             <ErrorBoundary>{children}</ErrorBoundary>
           </main>
 

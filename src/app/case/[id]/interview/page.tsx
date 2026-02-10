@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { SafetyInterrupt } from "@/components/SafetyInterrupt";
-import { useCaseStore } from "@/store/useCaseStore";
+import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import { computeMissingFields } from "@/lib/coach";
 import { mergeFacts } from "@/lib/mergeFacts";
 import { buildOutputsFromFacts } from "@/lib/case";
@@ -153,6 +153,17 @@ export default function InterviewPage() {
 
     await askInterviewQuestion(message, nextTurn);
   };
+
+  const hydrated = useHydrated();
+
+  if (!hydrated) {
+    return (
+      <GlassCard className="space-y-4 max-w-2xl mx-auto mt-20 animate-pulse">
+        <div className="h-6 w-48 rounded bg-slate-200" />
+        <div className="h-4 w-64 rounded bg-slate-100" />
+      </GlassCard>
+    );
+  }
 
   if (!caseFile) {
     return (
@@ -323,7 +334,6 @@ export default function InterviewPage() {
             <GlassCard className="flex h-[640px] flex-col p-5">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-ui-text">Conversation</h2>
-                <span className="text-xs text-slate-500">No suggestion chips</span>
               </div>
 
               <div className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
@@ -350,35 +360,31 @@ export default function InterviewPage() {
 
               {error ? <p className="mt-3 text-xs text-rose-600">{error}</p> : null}
 
-             {/* DROP-IN REPLACEMENT */}
-<div className="mt-4 flex items-center gap-2">
-  <input
-    className={[
-      "flex-1 rounded-full border px-4 py-2 text-xs",
-      // outlined look (like your other outline buttons)
-      "border-slate-200 bg-white text-ui-text shadow-sm outline-none",
-      "placeholder:text-slate-400",
-      // clearer focus ring + border so it reads as “outlined”
-      "focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
-      // disabled
-      "disabled:cursor-not-allowed disabled:opacity-60"
-    ].join(" ")}
-    placeholder={done ? "Interview complete" : "Answer the interview question..."}
-    value={input}
-    onChange={(event) => setInput(event.target.value)}
-    onKeyDown={(event) => {
-      if (event.key === "Enter") void handleSend();
-    }}
-    disabled={loading || done}
-  />
-  <button
-    className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
-    onClick={() => void handleSend()}
-    disabled={loading || done}
-  >
-    {loading ? "Sending" : "Send"}
-  </button>
-</div>
+              <div className="mt-4 flex items-center gap-2">
+                <input
+                  className={[
+                    "flex-1 rounded-full border px-4 py-2 text-xs",
+                    "border-slate-200 bg-white text-ui-text shadow-sm outline-none",
+                    "placeholder:text-slate-400",
+                    "focus:border-blue-400 focus:ring-4 focus:ring-blue-100",
+                    "disabled:cursor-not-allowed disabled:opacity-60"
+                  ].join(" ")}
+                  placeholder={done ? "Interview complete" : "Answer the interview question..."}
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void handleSend();
+                  }}
+                  disabled={loading || done}
+                />
+                <button
+                  className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={() => void handleSend()}
+                  disabled={loading || done}
+                >
+                  {loading ? "Sending" : "Send"}
+                </button>
+              </div>
               {done ? (
                 <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs text-slate-700 leading-relaxed">
