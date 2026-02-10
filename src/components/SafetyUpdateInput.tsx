@@ -31,9 +31,13 @@ export function SafetyUpdateInput({
     setNote(null);
 
     try {
+      // ✅ FIX: Added x-api-secret header to authorize the request
       const response = await fetch("/api/coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-api-secret": process.env.NEXT_PUBLIC_API_SECRET || "" 
+        },
         body: JSON.stringify({
           mode: "update",
           caseId: caseFile.id,
@@ -45,6 +49,7 @@ export function SafetyUpdateInput({
       });
 
       if (!response.ok) {
+        if (response.status === 401) throw new Error("Unauthorized: Check API Secret in Vercel.");
         throw new Error(`Update error ${response.status}`);
       }
 
