@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import {
@@ -22,6 +23,72 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_ORDER = ["filing", "court-issued", "violation", "modification", "guide", "remote", "service"];
+
+/** Map of form-number patterns to their URLs for inline linking. */
+const FORM_URL_MAP: Record<string, string> = {};
+for (const form of COURT_FORMS) {
+  FORM_URL_MAP[form.formNumber] = form.url;
+}
+
+/** Inline clickable reference for a specific form. */
+function InlineForm({ formNumber, label }: { formNumber: string; label?: string }) {
+  const form = COURT_FORMS.find((f) => f.formNumber === formNumber || f.id === formNumber);
+  if (!form) return <span>{label ?? formNumber}</span>;
+  return (
+    <a
+      href={form.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-0.5 font-semibold text-ui-primary underline decoration-ui-primary/30 hover:decoration-ui-primary"
+    >
+      {label ?? `${form.formNumber} — ${form.name}`}
+      <span className="text-[10px]">&#8599;</span>
+    </a>
+  );
+}
+
+/**
+ * Replaces known form references (e.g., "GF-21", "8-2", "GF-8") in a plain
+ * text string with clickable links. Returns a React fragment.
+ */
+function linkifyFormRefs(text: string): React.ReactNode {
+  // Match form numbers that appear in the text
+  const pattern = /\b(GF-\d+[a-z]?|UCS-FC 8-2|8-2)\b/gi;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const ref = match[0];
+    const form = COURT_FORMS.find(
+      (f) => f.formNumber.toLowerCase() === ref.toLowerCase() ||
+        f.formNumber.toLowerCase().includes(ref.toLowerCase())
+    );
+    if (form) {
+      parts.push(
+        <a
+          key={`${match.index}-${ref}`}
+          href={form.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-ui-primary underline decoration-ui-primary/30 hover:decoration-ui-primary"
+        >
+          {ref}<span className="text-[10px]">&#8599;</span>
+        </a>
+      );
+    } else {
+      parts.push(ref);
+    }
+    lastIndex = match.index + ref.length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? <>{parts}</> : text;
+}
 
 function FormLink({ form }: { form: CourtForm }) {
   return (
@@ -102,7 +169,7 @@ export default function GuidePage() {
           <p>
             A <strong>Family Court Order of Protection</strong> is part of a civil (non-criminal) case called a{" "}
             <strong>Family Offense proceeding</strong>. You start it by filing a{" "}
-            <strong>Family Offense Petition</strong>.
+            <InlineForm formNumber="UCS-FC 8-2" label="Family Offense Petition" />.
           </p>
           <p>
             Family Court and Criminal Court often have <strong>concurrent jurisdiction</strong> over
@@ -146,7 +213,7 @@ export default function GuidePage() {
       <GlassCard className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900">What Conduct Qualifies (Family Offenses)</h2>
         <p className="text-sm text-slate-700">
-          Your petition must allege that a legally recognized family offense occurred. Qualifying offenses include:
+          Your <InlineForm formNumber="UCS-FC 8-2" label="petition" /> must allege that a legally recognized family offense occurred. Qualifying offenses include:
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {QUALIFYING_OFFENSES.map((offense) => (
@@ -189,7 +256,7 @@ export default function GuidePage() {
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-bold text-slate-900">{step.title}</h3>
-                <p className="mt-1 text-sm text-slate-700 leading-relaxed">{step.description}</p>
+                <p className="mt-1 text-sm text-slate-700 leading-relaxed">{linkifyFormRefs(step.description)}</p>
               </div>
             </div>
 
@@ -199,7 +266,7 @@ export default function GuidePage() {
                 <ul className="mt-2 space-y-1.5">
                   {step.details.map((d, i) => (
                     <li key={i} className="text-xs text-slate-700 leading-relaxed">
-                      <span className="mr-1 text-slate-400">&#8226;</span> {d}
+                      <span className="mr-1 text-slate-400">&#8226;</span> {linkifyFormRefs(d)}
                     </li>
                   ))}
                 </ul>
@@ -217,7 +284,7 @@ export default function GuidePage() {
                   <ul className="mt-1.5 space-y-1">
                     {step.tips.map((tip, i) => (
                       <li key={i} className="text-xs text-amber-800 leading-relaxed">
-                        <span className="mr-1">&#9733;</span> {tip}
+                        <span className="mr-1">&#9733;</span> {linkifyFormRefs(tip)}
                       </li>
                     ))}
                   </ul>
@@ -368,7 +435,9 @@ export default function GuidePage() {
             ))}
           </ul>
         </div>
-        <p className="text-xs text-slate-600">{ORDER_DURATION_INFO.extension}</p>
+        <p className="text-xs text-slate-600">
+          Extensions can be granted by motion (<InlineForm formNumber="GF-10" label="form GF-10" />) for good cause.
+        </p>
       </GlassCard>
 
       {/* Violations */}
@@ -457,18 +526,27 @@ export default function GuidePage() {
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Must-Haves</p>
             <ul className="mt-2 space-y-1.5">
-              {[
-                "The relationship basis (why Family Court has jurisdiction)",
-                "At least one qualifying family offense, with facts",
-                "Dates and locations of incidents",
-                "Details of injuries and weapons (if any)",
-                "Specific terms of relief requested (stay-away, no-contact, etc.)",
-                "Service plan + proof of service for the return date",
-              ].map((item, i) => (
-                <li key={i} className="text-xs text-slate-700">
-                  <span className="mr-1 text-green-600">&#10003;</span> {item}
-                </li>
-              ))}
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> The relationship basis (why Family Court has jurisdiction)
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> At least one qualifying family offense, with facts
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> Completed <InlineForm formNumber="UCS-FC 8-2" label="Family Offense Petition (8-2)" /> with dates and locations of incidents
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> Details of injuries and weapons (if any)
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> Specific terms of relief requested (stay-away, no-contact, etc.)
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> <InlineForm formNumber="GF-21" label="Address Confidentiality (GF-21)" /> if your address needs to be hidden
+              </li>
+              <li className="text-xs text-slate-700">
+                <span className="mr-1 text-green-600">&#10003;</span> Service plan + proof of service for the return date
+              </li>
             </ul>
           </div>
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
@@ -494,7 +572,8 @@ export default function GuidePage() {
       <GlassCard className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900">How to Write Your Incident Narrative</h2>
         <p className="text-sm text-slate-700">
-          Use this structure for each incident you include in your petition:
+          Use this structure for each incident you include in your{" "}
+          <InlineForm formNumber="UCS-FC 8-2" label="petition (8-2)" />:
         </p>
         <ol className="space-y-2">
           {[

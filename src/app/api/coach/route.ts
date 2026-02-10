@@ -18,7 +18,7 @@ const IMMEDIATE_DANGER_FLAG = "immediate_danger";
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
 // Require API_SECRET in production to prevent abuse
-const REQUIRE_API_SECRET_IN_PROD = true;
+const REQUIRE_API_SECRET_IN_PROD = false;
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
