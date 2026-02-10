@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+import { CaseSubNav } from "@/components/CaseSubNav";
 import { AssumptionsPanel } from "@/components/AssumptionsPanel";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 
@@ -52,8 +53,12 @@ export default function CaseSummaryPage() {
 
   return (
     <div className="space-y-8">
+      <div className="no-print">
+        <CaseSubNav caseId={caseFile.id} />
+      </div>
+
       <GlassCardStrong className="space-y-3 no-print">
-        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Printable Summary</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Facts Summary</p>
         <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Summary</h1>
         <p className="text-sm text-slate-600">Information-only summary for Orders of Protection. Not legal advice.</p>
 
@@ -64,13 +69,6 @@ export default function CaseSummaryPage() {
           >
             Print / Export
           </button>
-
-          <Link
-            href={`/case/${caseFile.id}/roadmap`}
-            className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            Roadmap
-          </Link>
         </div>
       </GlassCardStrong>
 

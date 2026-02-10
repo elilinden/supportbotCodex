@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+import { CaseSubNav } from "@/components/CaseSubNav";
 import { SafetyInterrupt } from "@/components/SafetyInterrupt";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import { computeMissingFields } from "@/lib/coach";
@@ -192,41 +193,13 @@ export default function InterviewPage() {
 
   return (
     <div className="min-h-[calc(100vh-120px)]">
+      <div className="mb-6">
+        <CaseSubNav caseId={caseFile.id} />
+      </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR (same style as Roadmap) */}
+        {/* LEFT SIDEBAR */}
         <aside className="hidden lg:block">
           <GlassCard className="p-4 space-y-4">
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Navigation</p>
-              <h2 className="text-sm font-bold text-ui-text">Case Dashboard</h2>
-            </div>
-
-            <div className="space-y-2">
-              <Link
-                href={`/case/${caseFile.id}/interview`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-ui-text hover:bg-slate-50"
-              >
-                <span>Interview</span>
-                <span className="text-slate-400">●</span>
-              </Link>
-
-              <Link
-                href={`/case/${caseFile.id}/summary`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                <span>Facts Summary</span>
-                <span className="text-slate-400">↗</span>
-              </Link>
-
-              <Link
-                href={`/case/${caseFile.id}/roadmap`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                <span>Roadmap</span>
-                <span className="text-slate-400">↗</span>
-              </Link>
-            </div>
-
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
               <div className="mt-2 space-y-2 text-xs text-slate-700">
@@ -273,29 +246,12 @@ export default function InterviewPage() {
         <main className="space-y-6">
           {/* Header row (dashboard-like) */}
           <GlassCardStrong className="p-5">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Dashboard</p>
-                <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">Interview</h1>
-                <p className="text-sm text-slate-600 max-w-2xl">
-                  Informational only (not legal advice). Focused on missing critical details.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={`/case/${caseFile.id}/summary`}
-                  className="rounded-full border border-slate-200 bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-                >
-                  Facts
-                </Link>
-                <Link
-                  href={`/case/${caseFile.id}/roadmap`}
-                  className="rounded-full border border-slate-200 bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-                >
-                  Roadmap
-                </Link>
-              </div>
+            <div className="space-y-1">
+              <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Interview</p>
+              <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">Guided Interview</h1>
+              <p className="text-sm text-slate-600 max-w-2xl">
+                Informational only (not legal advice). Focused on missing critical details.
+              </p>
             </div>
 
             {/* KPI row (same vibe as Roadmap) */}

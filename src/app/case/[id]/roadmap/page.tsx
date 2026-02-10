@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useMemo, useState, useCallback } from "react";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { SafetyUpdateInput } from "@/components/SafetyUpdateInput";
+import { CaseSubNav } from "@/components/CaseSubNav";
 import { SafetyInterrupt } from "@/components/SafetyInterrupt";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import type { CaseFile, IntakeData } from "@/lib/types";
@@ -424,57 +425,13 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
 
   return (
     <div className="min-h-[calc(100vh-120px)] animate-float-in text-ui-text">
-      <div className="mb-4 flex flex-wrap gap-2 lg:hidden">
-        <Link
-          href={`/case/${caseFile.id}/interview`}
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-        >
-          Back to Interview
-        </Link>
-        <Link
-          href={`/case/${caseFile.id}/summary`}
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-        >
-          View Facts
-        </Link>
+      <div className="mb-6">
+        <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         {/* LEFT SIDEBAR (dashboard-style) */}
         <aside className="hidden lg:block">
           <GlassCard className="p-4 space-y-4 text-ui-text">
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
-                Navigation
-              </p>
-              <h2 className="text-sm font-bold text-ui-text">Case Dashboard</h2>
-            </div>
-
-            <div className="space-y-2">
-              <Link
-                href={`/case/${caseFile.id}/interview`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                <span>Interview</span>
-                <span className="text-slate-400">↗</span>
-              </Link>
-
-              <Link
-                href={`/case/${caseFile.id}/summary`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-              >
-                <span>Facts Summary</span>
-                <span className="text-slate-400">↗</span>
-              </Link>
-
-              <Link
-                href="/guide"
-                className="flex items-center justify-between rounded-xl border border-ui-primary/20 bg-ui-primary/5 px-3 py-2 text-xs font-semibold text-ui-primary hover:bg-ui-primary/10"
-              >
-                <span>Court Guide & Forms</span>
-                <span className="text-ui-primary/50">↗</span>
-              </Link>
-            </div>
-
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</p>
               <div className="mt-2 space-y-2 text-xs text-slate-700">
@@ -516,33 +473,16 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
         <main className="space-y-6">
           {/* Header row (dashboard-like) */}
           <GlassCardStrong className="p-5 text-ui-text">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-ui-primary">
-                  Dashboard
-                </p>
-                <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">
-                  Your Filing Roadmap
-                </h1>
-                <p className="text-sm text-slate-600 max-w-2xl">
-                  Informational only (not legal advice). Optimized for clear, chronological, court-ready speaking.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={`/case/${caseFile.id}/interview`}
-                  className="rounded-full border border-slate-200 bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-                >
-                  Interview
-                </Link>
-                <Link
-                  href={`/case/${caseFile.id}/summary`}
-                  className="rounded-full border border-slate-200 bg-white px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
-                >
-                  Facts
-                </Link>
-              </div>
+            <div className="space-y-1">
+              <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-ui-primary">
+                Roadmap
+              </p>
+              <h1 className="text-2xl md:text-3xl font-display font-bold text-ui-text">
+                Your Filing Roadmap
+              </h1>
+              <p className="text-sm text-slate-600 max-w-2xl">
+                Informational only (not legal advice). Optimized for clear, chronological, court-ready speaking.
+              </p>
             </div>
 
 {/* Quick Update */}

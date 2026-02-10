@@ -1,21 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCaseStore } from "@/store/useCaseStore";
 
 export function TopNav() {
-  const caseCount = useCaseStore((state) => state.cases.length);
-  const activeCaseId = useCaseStore((state) => state.activeCaseId);
-  const activeCase = useCaseStore((state) =>
-    state.cases.find((item) => item.id === state.activeCaseId)
-  );
-
-  const dashboardHref = activeCaseId
-    ? activeCase?.status === "interview"
-      ? `/case/${activeCaseId}/interview`
-      : `/case/${activeCaseId}/roadmap`
-    : "/";
-
   return (
     <div className="w-full px-4 py-4 sm:px-6 lg:px-10">
       <div className="flex w-full flex-wrap items-center justify-between gap-4">
@@ -27,23 +14,19 @@ export function TopNav() {
         </div>
 
         <nav className="flex items-center gap-3 text-sm text-ui-textMuted" aria-label="Main navigation">
-          {activeCaseId ? (
-            <Link
-              href={dashboardHref}
-              className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
-            >
-              Dashboard
-            </Link>
-          ) : null}
+          <Link
+            href="/"
+            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+          >
+            Home
+          </Link>
 
-          {caseCount === 0 ? (
-            <Link
-              href="/new"
-              className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
-            >
-              New Intake
-            </Link>
-          ) : null}
+          <Link
+            href="/new"
+            className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95"
+          >
+            New Intake
+          </Link>
 
           <Link
             href="/guide"
