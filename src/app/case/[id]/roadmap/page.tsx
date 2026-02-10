@@ -96,11 +96,6 @@ export default function RoadmapPage() {
     state.cases.find((item) => item.id === caseId)
   ) as CaseFile | undefined;
 
-  const [interruptOpen, setInterruptOpen] = useState(false);
-
-  const now = useMemo(() => new Date(), []);
-  const dayGreeting = now.getHours() < 12 ? "morning" : "afternoon";
-
   const hydrated = useHydrated();
 
   if (!hydrated) {
@@ -133,6 +128,14 @@ export default function RoadmapPage() {
       </GlassCard>
     );
   }
+
+  return <RoadmapContent caseFile={caseFile} />;
+}
+
+function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
+  const [interruptOpen, setInterruptOpen] = useState(false);
+  const now = useMemo(() => new Date(), []);
+  const dayGreeting = now.getHours() < 12 ? "morning" : "afternoon";
 
   const { intake, facts, outputs, safety, status } = caseFile;
 
