@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,8 +11,15 @@ export function TopNav() {
     <div className="w-full px-4 py-4 sm:px-6 lg:px-10">
       <div className="flex w-full items-center justify-between gap-4">
         <div className="min-w-[220px]">
-          <Link href="/" className="text-lg font-semibold tracking-tight text-ui-text" aria-label="Home">
-            Pro-Se Prime
+          <Link href="/" aria-label="Home">
+            <Image
+              src="/images/logo.png"
+              alt="Pro-Se Prime"
+              width={180}
+              height={89}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
           <p className="text-xs text-ui-textMuted">NY Family Court / Orders of Protection / Information-only</p>
         </div>

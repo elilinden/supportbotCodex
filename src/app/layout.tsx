@@ -20,7 +20,11 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   title: "Pro-Se Prime",
-  description: "Information-only guidance for New York Family Court Orders of Protection."
+  description: "Information-only guidance for New York Family Court Orders of Protection.",
+  icons: {
+    icon: "/images/favicon.png",
+    apple: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
