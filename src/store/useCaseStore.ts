@@ -28,6 +28,14 @@ export const defaultIntake: IntakeData = {
   requestedRelief: ""
 };
 
+export type InterviewResponseUpdate = {
+  message?: CoachMessage;
+  facts?: Facts;
+  outputs?: CaseOutputs;
+  safety?: { immediateDanger: boolean; notes?: string; flags?: string[] };
+  status?: CaseFile["status"];
+};
+
 export type CaseStoreState = {
   cases: CaseFile[];
   activeCaseId: string | null;
@@ -38,6 +46,9 @@ export type CaseStoreState = {
   updateOutputs: (id: string, outputs: Partial<CaseOutputs>) => void;
 
   addMessage: (id: string, message: CoachMessage) => void;
+
+  /** Batch update: apply message + facts + outputs + safety + status in ONE set() call. */
+  applyInterviewResponse: (id: string, update: InterviewResponseUpdate) => void;
 
   setAssumptions: (id: string, assumptions: string[]) => void;
   setUncertainties: (id: string, uncertainties: string[]) => void;
@@ -184,6 +195,40 @@ export const useCaseStore = create<CaseStoreState>()(
               ? { ...item, messages: [...item.messages, message], updatedAt: new Date().toISOString() }
               : item
           )
+        })),
+
+      applyInterviewResponse: (id, update) =>
+        set((state) => ({
+          cases: state.cases.map((item) => {
+            if (item.id !== id) return item;
+            const now = new Date().toISOString();
+            let next = { ...item, updatedAt: now };
+            if (update.message) {
+              next = { ...next, messages: [...next.messages, update.message] };
+            }
+            if (update.facts) {
+              next = { ...next, facts: update.facts };
+            }
+            if (update.outputs) {
+              next = { ...next, outputs: update.outputs };
+            }
+            if (update.safety) {
+              next = {
+                ...next,
+                safety: {
+                  immediateDanger: update.safety.immediateDanger,
+                  notes: update.safety.notes ?? next.safety.notes,
+                  flags: update.safety.flags?.length
+                    ? Array.from(new Set(update.safety.flags))
+                    : next.safety.flags
+                }
+              };
+            }
+            if (update.status) {
+              next = { ...next, status: update.status };
+            }
+            return next;
+          })
         })),
 
       setAssumptions: (id, assumptions) =>

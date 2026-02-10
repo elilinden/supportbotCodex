@@ -465,9 +465,33 @@ function valueIsMissing(v: unknown): boolean {
   return false;
 }
 
+const EMPTY_FACTS: Facts = {
+  parties: { petitioner: "", respondent: "" },
+  relationship: "",
+  incidents: [],
+  safetyConcerns: [],
+  requestedRelief: [],
+  evidenceList: [],
+  timeline: []
+};
+
+function isFactsShape(v: unknown): v is Facts {
+  if (!v || typeof v !== "object") return false;
+  const f = v as Record<string, unknown>;
+  return (
+    typeof f.parties === "object" &&
+    f.parties !== null &&
+    Array.isArray(f.incidents) &&
+    Array.isArray(f.safetyConcerns)
+  );
+}
+
 export function computeMissingFields(intake: IntakeData, facts: Facts): string[] {
   const missing: string[] = [];
-  const safeFacts = (FactsSchema.safeParse(facts).success ? facts : FactsSchema.parse({})) as Facts;
+  // Lightweight shape check instead of full Zod safeParse (~100x faster).
+  // Facts from our own Zustand store are always valid; Zod is only needed
+  // when parsing untrusted LLM output (handled elsewhere).
+  const safeFacts = isFactsShape(facts) ? facts : EMPTY_FACTS;
 
   // Check BOTH intake and facts, plus special-case "mostRecentIncidentAt"
   const has = (intakeKey: keyof IntakeData) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, startTransition } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
@@ -10,20 +10,160 @@ import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import { computeMissingFields } from "@/lib/coach";
 import { mergeFacts } from "@/lib/mergeFacts";
 import { buildOutputsFromFacts } from "@/lib/case";
+import type { CoachMessage, Facts, IntakeData } from "@/lib/types";
 
 const MAX_TURNS = 5;
+
+/* ------------------------------------------------------------------ */
+/*  Memoized sub-components — each only re-renders when its props     */
+/*  actually change, preventing the entire page from re-rendering.    */
+/* ------------------------------------------------------------------ */
+
+const ChatMessageBubble = memo(function ChatMessageBubble({
+  msg
+}: {
+  msg: CoachMessage;
+}) {
+  return (
+    <div
+      className={`rounded-2xl border px-4 py-3 text-xs ${
+        msg.role === "user"
+          ? "border-slate-200 bg-white text-ui-text"
+          : "border-slate-200 bg-slate-50 text-slate-700"
+      }`}
+    >
+      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+        {msg.role === "user" ? "You" : "Assistant"}
+      </p>
+      <p className="mt-2 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+    </div>
+  );
+});
+
+const ChatMessageList = memo(function ChatMessageList({
+  messages,
+  loading,
+  chatEndRef
+}: {
+  messages: CoachMessage[];
+  loading: boolean;
+  chatEndRef: React.RefObject<HTMLDivElement>;
+}) {
+  return (
+    <div className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
+      {messages.length ? (
+        messages.map((msg) => <ChatMessageBubble key={msg.id} msg={msg} />)
+      ) : loading ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-ui-primary" />
+          <p className="text-sm font-medium text-ui-text">Preparing your interview...</p>
+          <p className="mt-1 text-xs text-slate-500">Analyzing your intake to identify key questions.</p>
+        </div>
+      ) : (
+        <p className="text-xs text-slate-600 italic">Waiting to begin the interview...</p>
+      )}
+      <div ref={chatEndRef} />
+    </div>
+  );
+});
+
+const MissingFieldsList = memo(function MissingFieldsList({
+  fields
+}: {
+  fields: string[];
+}) {
+  if (!fields.length) return null;
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Next targets</p>
+      <ul className="mt-2 space-y-1 text-xs text-slate-700">
+        {fields.slice(0, 6).map((f) => (
+          <li key={f}>• {f}</li>
+        ))}
+        {fields.length > 6 ? (
+          <li className="text-slate-500">• …and {fields.length - 6} more</li>
+        ) : null}
+      </ul>
+    </div>
+  );
+});
+
+const KPICards = memo(function KPICards({
+  turnsUsed,
+  missingCount,
+  done
+}: {
+  turnsUsed: number;
+  missingCount: number;
+  done: boolean;
+}) {
+  return (
+    <div className="mt-5 grid gap-4 md:grid-cols-3">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Turns</p>
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="text-3xl font-display font-bold text-ui-text">{turnsUsed}</span>
+          <span className="text-xs text-slate-500">of {MAX_TURNS}</span>
+        </div>
+        <p className="mt-2 text-xs text-slate-600">Max turns before auto-complete.</p>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Missing</p>
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="text-3xl font-display font-bold text-ui-text">{missingCount}</span>
+          <span className="text-xs text-slate-500">fields</span>
+        </div>
+        <p className="mt-2 text-xs text-slate-600">Dates, locations, injuries, threats, evidence.</p>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="text-3xl font-display font-bold text-ui-text">{done ? "Done" : "In progress"}</span>
+        </div>
+        <p className="mt-2 text-xs text-slate-600">Complete to unlock Roadmap.</p>
+      </div>
+    </div>
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/*  Stable missingFields hook — returns same array reference when     */
+/*  contents haven't changed, and only recomputes when intake/facts   */
+/*  change (not on every message or turnCount change).                */
+/* ------------------------------------------------------------------ */
+
+function useStableMissingFields(intake: IntakeData | undefined, facts: Facts | undefined): string[] {
+  const prevRef = useRef<string[]>([]);
+
+  return useMemo(() => {
+    if (!intake || !facts) return prevRef.current;
+    const next = computeMissingFields(intake, facts);
+    // Return same reference if contents are identical (prevents downstream re-renders)
+    const prev = prevRef.current;
+    if (prev.length === next.length && prev.every((v, i) => v === next[i])) {
+      return prev;
+    }
+    prevRef.current = next;
+    return next;
+  }, [intake, facts]);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main page component                                               */
+/* ------------------------------------------------------------------ */
 
 export default function InterviewPage() {
   const params = useParams<{ id: string | string[] }>();
   const caseId = Array.isArray(params.id) ? params.id[0] : params.id;
 
+  // Granular Zustand selectors — only re-render when the specific field changes
   const caseFile = useCaseStore((state) => state.cases.find((item) => item.id === caseId));
   const addMessage = useCaseStore((state) => state.addMessage);
-  const updateFacts = useCaseStore((state) => state.updateFacts);
-  const updateOutputs = useCaseStore((state) => state.updateOutputs);
+  const applyInterviewResponse = useCaseStore((state) => state.applyInterviewResponse);
   const incrementTurn = useCaseStore((state) => state.incrementTurn);
   const setStatus = useCaseStore((state) => state.setStatus);
-  const setSafety = useCaseStore((state) => state.setSafety);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,10 +174,8 @@ export default function InterviewPage() {
   const initialized = useRef(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const missingFields = useMemo(() => {
-    if (!caseFile) return [];
-    return computeMissingFields(caseFile.intake, caseFile.facts);
-  }, [caseFile]);
+  // Only recompute when intake or facts change (not messages, turnCount, etc.)
+  const missingFields = useStableMissingFields(caseFile?.intake, caseFile?.facts);
 
   useEffect(() => {
     if (!caseFile) return;
@@ -54,7 +192,7 @@ export default function InterviewPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [caseFile?.messages.length, loading]);
 
-  const askInterviewQuestion = async (message: string, turnCountOverride?: number) => {
+  const askInterviewQuestion = useCallback(async (message: string, turnCountOverride?: number) => {
     if (!caseFile) return;
     setLoading(true);
     setError(null);
@@ -77,44 +215,61 @@ export default function InterviewPage() {
 
       const data = await response.json();
 
-      const assistantMessage = {
+      const assistantMessage: CoachMessage = {
         id: `msg_${Date.now()}_assistant`,
         role: "assistant" as const,
         content: data.assistant_message || "",
         createdAt: new Date().toISOString()
       };
 
-      addMessage(caseFile.id, assistantMessage);
-
       const extractedFacts = (data.extracted_facts || {}) as object;
-      const mergedFacts = mergeFacts(caseFile.facts, extractedFacts as any);
-      updateFacts(caseFile.id, mergedFacts);
-      updateOutputs(caseFile.id, buildOutputsFromFacts(mergedFacts));
+      const mergedFacts = mergeFacts(caseFile.facts, extractedFacts as Partial<Facts>);
+      const mergedOutputs = buildOutputsFromFacts(mergedFacts);
+
+      // Build safety update if flags present
+      let safetyUpdate: { immediateDanger: boolean; notes?: string; flags?: string[] } | undefined;
+      if (data.safety_flags && Array.isArray(data.safety_flags)) {
+        if (data.safety_flags.includes("immediate_danger")) {
+          safetyUpdate = {
+            immediateDanger: true,
+            notes: "Safety interrupt triggered during interview.",
+            flags: data.safety_flags
+          };
+          setInterruptOpen(true);
+        } else if (data.safety_flags.length) {
+          safetyUpdate = {
+            immediateDanger: caseFile.safety.immediateDanger,
+            notes: caseFile.safety.notes,
+            flags: data.safety_flags
+          };
+        }
+      }
 
       const stillMissing = computeMissingFields(caseFile.intake, mergedFacts);
       const turnCountValue = typeof turnCountOverride === "number" ? turnCountOverride : caseFile.turnCount ?? 0;
       const isComplete = stillMissing.length === 0 || turnCountValue >= MAX_TURNS;
 
-      setDone(isComplete);
+      // SINGLE batched store update instead of 3-5 sequential updates.
+      // This eliminates cascading re-renders that were causing the 6.6s INP.
+      applyInterviewResponse(caseFile.id, {
+        message: assistantMessage,
+        facts: mergedFacts,
+        outputs: mergedOutputs,
+        safety: safetyUpdate,
+        status: isComplete && caseFile.status !== "active" ? "active" : undefined
+      });
 
-      if (data.safety_flags && Array.isArray(data.safety_flags)) {
-        if (data.safety_flags.includes("immediate_danger")) {
-          setSafety(caseFile.id, true, "Safety interrupt triggered during interview.", data.safety_flags);
-          setInterruptOpen(true);
-        } else if (data.safety_flags.length) {
-          setSafety(caseFile.id, caseFile.safety.immediateDanger, caseFile.safety.notes, data.safety_flags);
-        }
-      }
-
-      if (isComplete && caseFile.status !== "active") {
-        setStatus(caseFile.id, "active");
-      }
+      // Use startTransition for the non-urgent UI state update
+      startTransition(() => {
+        setDone(isComplete);
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caseFile, applyInterviewResponse]);
 
   useEffect(() => {
     if (!caseFile || initialized.current) return;
@@ -136,7 +291,7 @@ export default function InterviewPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseFile, missingFields]);
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     if (!caseFile) return;
     if (done) return;
 
@@ -146,7 +301,7 @@ export default function InterviewPage() {
     setInput("");
     setError(null);
 
-    const userMessage = {
+    const userMessage: CoachMessage = {
       id: `msg_${Date.now()}`,
       role: "user" as const,
       content: message,
@@ -159,7 +314,7 @@ export default function InterviewPage() {
     incrementTurn(caseFile.id);
 
     await askInterviewQuestion(message, nextTurn);
-  };
+  }, [caseFile, done, input, addMessage, incrementTurn, askInterviewQuestion]);
 
   const hydrated = useHydrated();
 
@@ -203,7 +358,7 @@ export default function InterviewPage() {
         <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR — visible on all screens, collapses in single-column on mobile */}
+        {/* LEFT SIDEBAR */}
         <aside>
           <GlassCard className="p-4 space-y-4">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -250,7 +405,7 @@ export default function InterviewPage() {
 
         {/* MAIN */}
         <main className="space-y-6">
-          {/* Header row (dashboard-like) */}
+          {/* Header row */}
           <GlassCardStrong className="p-5">
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Interview</p>
@@ -260,34 +415,7 @@ export default function InterviewPage() {
               </p>
             </div>
 
-            {/* KPI row (same vibe as Roadmap) */}
-            <div className="mt-5 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Turns</p>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ui-text">{turnsUsed}</span>
-                  <span className="text-xs text-slate-500">of {MAX_TURNS}</span>
-                </div>
-                <p className="mt-2 text-xs text-slate-600">Max turns before auto-complete.</p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Missing</p>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ui-text">{missingFields.length}</span>
-                  <span className="text-xs text-slate-500">fields</span>
-                </div>
-                <p className="mt-2 text-xs text-slate-600">Dates, locations, injuries, threats, evidence.</p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-display font-bold text-ui-text">{done ? "Done" : "In progress"}</span>
-                </div>
-                <p className="mt-2 text-xs text-slate-600">Complete to unlock Roadmap.</p>
-              </div>
-            </div>
+            <KPICards turnsUsed={turnsUsed} missingCount={missingFields.length} done={done} />
           </GlassCardStrong>
 
           {/* Content grid */}
@@ -298,34 +426,11 @@ export default function InterviewPage() {
                 <h2 className="text-sm font-bold text-ui-text">Conversation</h2>
               </div>
 
-              <div className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
-                {caseFile.messages.length ? (
-                  caseFile.messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`rounded-2xl border px-4 py-3 text-xs ${
-                        msg.role === "user"
-                          ? "border-slate-200 bg-white text-ui-text"
-                          : "border-slate-200 bg-slate-50 text-slate-700"
-                      }`}
-                    >
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
-                        {msg.role === "user" ? "You" : "Assistant"}
-                      </p>
-                      <p className="mt-2 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                    </div>
-                  ))
-                ) : loading ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-ui-primary" />
-                    <p className="text-sm font-medium text-ui-text">Preparing your interview...</p>
-                    <p className="mt-1 text-xs text-slate-500">Analyzing your intake to identify key questions.</p>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-600 italic">Waiting to begin the interview...</p>
-                )}
-                <div ref={chatEndRef} />
-              </div>
+              <ChatMessageList
+                messages={caseFile.messages}
+                loading={loading}
+                chatEndRef={chatEndRef}
+              />
 
               {loading && caseFile.messages.length > 0 ? (
                 <div className="flex items-center gap-2 px-2 py-1">
@@ -398,19 +503,7 @@ export default function InterviewPage() {
                   </div>
                 </div>
 
-                {missingFields.length ? (
-                  <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Next targets</p>
-                    <ul className="mt-2 space-y-1 text-xs text-slate-700">
-                      {missingFields.slice(0, 6).map((f) => (
-                        <li key={f}>• {f}</li>
-                      ))}
-                      {missingFields.length > 6 ? (
-                        <li className="text-slate-500">• …and {missingFields.length - 6} more</li>
-                      ) : null}
-                    </ul>
-                  </div>
-                ) : null}
+                <MissingFieldsList fields={missingFields} />
 
                 {done ? (
                   <Link
