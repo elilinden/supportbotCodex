@@ -198,9 +198,13 @@ export default function InterviewPage() {
     setError(null);
 
     try {
+      // ✅ FIX: Added x-api-secret header to authorize the request
       const response = await fetch("/api/coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-api-secret": process.env.NEXT_PUBLIC_API_SECRET || "" 
+        },
         body: JSON.stringify({
           mode: "interview",
           caseId: caseFile.id,
@@ -211,7 +215,10 @@ export default function InterviewPage() {
         })
       });
 
-      if (!response.ok) throw new Error(`Interview error ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 401) throw new Error("Unauthorized: Check API Secret in Vercel.");
+        throw new Error(`Interview error ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -274,20 +281,18 @@ export default function InterviewPage() {
   useEffect(() => {
     if (!caseFile || initialized.current) return;
 
+    // Only start if we have work to do
     const shouldAsk = missingFields.length > 0 && (caseFile.turnCount ?? 0) < MAX_TURNS;
-    if (!shouldAsk) {
-      initialized.current = true;
-      return;
-    }
-
+    
+    // Check if we already have an assistant greeting to avoid double-firing
     const hasAssistant = caseFile.messages.some((msg) => msg.role === "assistant");
-    if (hasAssistant) {
-      initialized.current = true;
-      return;
-    }
 
-    initialized.current = true;
-    void askInterviewQuestion("");
+    if (shouldAsk && !hasAssistant) {
+      initialized.current = true;
+      void askInterviewQuestion("");
+    } else {
+      initialized.current = true;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caseFile, missingFields]);
 
@@ -405,7 +410,6 @@ export default function InterviewPage() {
 
         {/* MAIN */}
         <main className="space-y-6">
-          {/* Header row */}
           <GlassCardStrong className="p-5">
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-slate-500">Interview</p>
