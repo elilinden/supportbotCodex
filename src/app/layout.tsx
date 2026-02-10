@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Bricolage_Grotesque } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { TopNav } from "@/components/TopNav";
 import { SafetyBanner } from "@/components/SafetyBanner";
@@ -64,6 +66,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <Footer />
         </div>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

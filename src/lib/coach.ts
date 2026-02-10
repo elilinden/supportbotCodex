@@ -469,7 +469,7 @@ export function computeMissingFields(intake: IntakeData, facts: Facts): string[]
   const missing: string[] = [];
   const safeFacts = (FactsSchema.safeParse(facts).success ? facts : FactsSchema.parse({})) as Facts;
 
-  // Check BOTH intake and facts, plus special-case “mostRecentIncidentAt”
+  // Check BOTH intake and facts, plus special-case "mostRecentIncidentAt"
   const has = (intakeKey: keyof IntakeData) => {
     const valIntake = (intake as any)?.[intakeKey];
     const valFacts = (safeFacts as any)?.[intakeKey];
@@ -489,12 +489,32 @@ export function computeMissingFields(intake: IntakeData, facts: Facts): string[]
     if (!has(def.intakeKey)) missing.push(def.label);
   }
 
-  // Computed: top_events
-  const hasTopEvent = (safeFacts.incidents || []).some((inc) => {
-    return Boolean(toTrimmedString((inc as any)?.whatHappened) && toTrimmedString((inc as any)?.date));
+  // Computed: top_events — require at least 3 incidents with meaningful detail,
+  // not just the single intake-seeded incident. The interview needs to collect
+  // the most recent, first, and worst incidents separately.
+  const detailedIncidents = (safeFacts.incidents || []).filter((inc) => {
+    const what = toTrimmedString((inc as any)?.whatHappened);
+    const date = toTrimmedString((inc as any)?.date);
+    // Require both a date and a description with at least some substance
+    return what.length > 0 && date.length > 0;
   });
+  if (detailedIncidents.length < 3) missing.push("top_events");
 
-  if (!hasTopEvent) missing.push("top_events");
+  // Computed: fields with intakeKey=null that need to be gathered during interview.
+  // These are only satisfiable by facts collected during the conversation.
+  const factsRecord = safeFacts as unknown as Record<string, unknown>;
+
+  // prior_dv_history — check if facts contain any prior DV info
+  const hasPriorDV = !valueIsMissing(factsRecord["priorDVHistory"]);
+  if (!hasPriorDV) missing.push("prior_dv_history");
+
+  // isolation_control — check if facts contain isolation/control info
+  const hasIsolation = !valueIsMissing(factsRecord["isolationControl"]);
+  if (!hasIsolation) missing.push("isolation_control");
+
+  // stalking_harassment — check if facts contain stalking/harassment info
+  const hasStalking = !valueIsMissing(factsRecord["stalkingHarassment"]);
+  if (!hasStalking) missing.push("stalking_harassment");
 
   return missing
     .map((label) => FIELD_LOOKUP.get(label) || { label, priority: 999, intakeKey: null, question: "" })

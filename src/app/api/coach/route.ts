@@ -184,13 +184,29 @@ function isAuthorized(req: Request) {
   // Dev-friendly: if no secret configured, allow.
   if (!envSecret) return true;
 
+  // External clients (curl, etc.) — require x-api-secret header
   const headerSecret = req.headers.get("x-api-secret");
-  return headerSecret === envSecret;
+  if (headerSecret === envSecret) return true;
+
+  // Same-origin browser requests — allow without API secret.
+  // The browser automatically sends the Origin header on fetch POST requests.
+  const origin = req.headers.get("origin");
+  const host = req.headers.get("host");
+  if (host && origin) {
+    try {
+      const originHost = new URL(origin).host;
+      if (originHost === host) return true;
+    } catch {
+      // malformed origin — fall through to deny
+    }
+  }
+
+  return false;
 }
 
 export async function POST(request: Request) {
   if (!isAuthorized(request)) {
-    return json({ error: "Unauthorized" }, 401);
+    return json({ error: "Unauthorized: Check API_SECRET in Vercel environment variables." }, 401);
   }
 
   let body: unknown;

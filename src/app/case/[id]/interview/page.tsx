@@ -32,6 +32,7 @@ export default function InterviewPage() {
   const [interruptOpen, setInterruptOpen] = useState(false);
 
   const initialized = useRef(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const missingFields = useMemo(() => {
     if (!caseFile) return [];
@@ -47,6 +48,11 @@ export default function InterviewPage() {
       setStatus(caseFile.id, "active");
     }
   }, [caseFile, missingFields, setStatus]);
+
+  // Auto-scroll chat to bottom on new messages or loading change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [caseFile?.messages.length, loading]);
 
   const askInterviewQuestion = async (message: string, turnCountOverride?: number) => {
     if (!caseFile) return;
@@ -312,10 +318,24 @@ export default function InterviewPage() {
                       <p className="mt-2 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     </div>
                   ))
+                ) : loading ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-ui-primary" />
+                    <p className="text-sm font-medium text-ui-text">Preparing your interview...</p>
+                    <p className="mt-1 text-xs text-slate-500">Analyzing your intake to identify key questions.</p>
+                  </div>
                 ) : (
                   <p className="text-xs text-slate-600 italic">Waiting to begin the interview...</p>
                 )}
+                <div ref={chatEndRef} />
               </div>
+
+              {loading && caseFile.messages.length > 0 ? (
+                <div className="flex items-center gap-2 px-2 py-1">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-ui-primary" />
+                  <p className="text-xs text-slate-500">Thinking...</p>
+                </div>
+              ) : null}
 
               {error ? <p className="mt-3 text-xs text-rose-600" role="alert">{error}</p> : null}
 
