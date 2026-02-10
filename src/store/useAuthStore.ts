@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import type { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { requireSupabase } from "@/lib/supabase";
 
 export type AuthStoreState = {
   user: User | null;
@@ -25,14 +25,14 @@ export const useAuthStore = create<AuthStoreState>()((set, get) => ({
 
   init: () => {
     // Grab the current session (may exist from a refresh)
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    requireSupabase().auth.getSession().then(({ data: { session } }) => {
       set({ session, user: session?.user ?? null, loading: false });
     });
 
     // Subscribe to future auth changes (login, logout, token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = requireSupabase().auth.onAuthStateChange((_event, session) => {
       set({ session, user: session?.user ?? null, loading: false });
     });
 
@@ -40,24 +40,24 @@ export const useAuthStore = create<AuthStoreState>()((set, get) => ({
   },
 
   signUp: async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await requireSupabase().auth.signUp({ email, password });
     if (error) return { error: error.message };
     return { error: null };
   },
 
   signIn: async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await requireSupabase().auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
     return { error: null };
   },
 
   signOut: async () => {
-    await supabase.auth.signOut();
+    await requireSupabase().auth.signOut();
     set({ user: null, session: null });
   },
 
   resetPassword: async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await requireSupabase().auth.resetPasswordForEmail(email);
     if (error) return { error: error.message };
     return { error: null };
   },
