@@ -19,10 +19,11 @@ const SECRET_KEY =
   ENV_KEY ||
   (process.env.NODE_ENV === "production"
     ? (() => {
-        console.error(
-          "[encryption] NEXT_PUBLIC_STORAGE_KEY is missing in production. Using fallback is insecure."
+        throw new Error(
+          "[encryption] NEXT_PUBLIC_STORAGE_KEY is required in production. " +
+          "Set it in your environment variables to encrypt sensitive case data. " +
+          "Refusing to start with an insecure fallback key."
         );
-        return FALLBACK_KEY;
       })()
     : FALLBACK_KEY);
 

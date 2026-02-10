@@ -70,7 +70,7 @@ export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
   // Build a severity-aware 2-minute script
   const hasSafetyConcerns = facts.safetyConcerns.length > 0;
   const hasMultipleIncidents = facts.incidents.length > 1;
-  const mostRecentIncident = facts.incidents[0];
+  const mostRecentIncident = facts.incidents.length > 0 ? facts.incidents[0] : undefined;
   const incidentSummary = mostRecentIncident?.whatHappened
     ? `On ${mostRecentIncident.date || "a recent date"}, ${mostRecentIncident.whatHappened}`
     : timelineSource[0] || "I need to describe what happened.";
@@ -211,7 +211,7 @@ export function deriveUncertainties(facts: Facts, intake: IntakeData): string[] 
   if (!intake.patternOfIncidents) uncertainties.push("Pattern of incidents not yet described — is the behavior escalating?");
   if (!intake.existingCasesOrders) uncertainties.push("Unknown whether prior cases or orders exist between the parties.");
   if (!intake.evidenceInventory) uncertainties.push("Evidence inventory not listed yet — documentation strengthens the petition.");
-  if (!facts.incidents[0]?.location) uncertainties.push("Incident location(s) missing — needed for the petition.");
+  if (!facts.incidents.length || !facts.incidents[0]?.location) uncertainties.push("Incident location(s) missing — needed for the petition.");
   if (facts.incidents.some((i) => !i.threats && !i.injuries)) {
     uncertainties.push("Some incidents are missing details about threats or injuries — these details matter for the court.");
   }
