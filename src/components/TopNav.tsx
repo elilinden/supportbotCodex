@@ -3,11 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuthStore } from "@/store/useAuthStore";
+import { AuthModal } from "@/components/AuthModal";
 
 export function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const signOut = useAuthStore((s) => s.signOut);
 
   return (
+    <>
     <div className="w-full px-4 py-4 sm:px-6 lg:px-10">
       <div className="flex w-full items-center justify-between gap-4">
         <div className="min-w-[220px]">
@@ -69,6 +77,30 @@ export function TopNav() {
           >
             Settings
           </Link>
+
+          {/* Auth button */}
+          {!loading && (
+            user ? (
+              <div className="flex items-center gap-2">
+                <span className="max-w-[140px] truncate text-xs text-ui-textMuted" title={user.email ?? ""}>
+                  {user.email}
+                </span>
+                <button
+                  onClick={() => signOut()}
+                  className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setAuthOpen(true)}
+                className="rounded-full border border-ui-primary bg-ui-primarySoft px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-primary hover:opacity-90"
+              >
+                Sign In
+              </button>
+            )
+          )}
         </nav>
       </div>
 
@@ -103,8 +135,33 @@ export function TopNav() {
           >
             Settings
           </Link>
+
+          {/* Auth button — mobile */}
+          {!loading && (
+            user ? (
+              <>
+                <p className="truncate px-4 py-1 text-xs text-ui-textMuted">{user.email}</p>
+                <button
+                  onClick={() => { signOut(); setMenuOpen(false); }}
+                  className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => { setAuthOpen(true); setMenuOpen(false); }}
+                className="rounded-xl border border-ui-primary bg-ui-primarySoft px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-primary hover:opacity-90"
+              >
+                Sign In
+              </button>
+            )
+          )}
         </nav>
       )}
     </div>
+
+    {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+    </>
   );
 }

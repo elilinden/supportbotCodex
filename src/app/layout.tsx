@@ -7,6 +7,7 @@ import { TopNav } from "@/components/TopNav";
 import { SafetyBanner } from "@/components/SafetyBanner";
 import { Footer } from "@/components/Footer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="absolute bottom-[-10%] left-[30%] h-80 w-80 rounded-full bg-rose-200/30 blur-3xl" />
         </div>
 
+        <AuthProvider>
         <div className="min-h-screen">
           <a
             href="#main-content"
@@ -70,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <Footer />
         </div>
+        </AuthProvider>
         <Analytics />
         <SpeedInsights />
       </body>
