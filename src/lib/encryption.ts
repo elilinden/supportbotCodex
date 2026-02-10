@@ -1,4 +1,3 @@
-// src/lib/encryption.ts
 import CryptoJS from "crypto-js";
 import type { StateStorage } from "zustand/middleware";
 
@@ -211,4 +210,31 @@ export const encryptedStorage: StateStorage = {
     if (typeof window === "undefined") return;
     window.localStorage.removeItem(name);
   }
+};
+
+// ✅ ADDED: Export Function (fixes Settings page build error)
+export const exportCaseData = () => {
+  if (typeof window === "undefined") return;
+  
+  // Note: Ensure this key matches what you use in src/store/useCaseStore.ts
+  const data = window.localStorage.getItem("ny-op-case-store-encrypted");
+  if (!data) return;
+  
+  // Create a blob and download it
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `supportbot-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+// ✅ ADDED: Wipe Function (fixes Settings page build error)
+export const wipeCaseData = () => {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem("ny-op-case-store-encrypted");
+  window.location.reload();
 };
