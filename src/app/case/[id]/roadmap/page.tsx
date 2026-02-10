@@ -462,6 +462,14 @@ export default function RoadmapPage() {
                 <span>Facts Summary</span>
                 <span className="text-slate-400">↗</span>
               </Link>
+
+              <Link
+                href="/guide"
+                className="flex items-center justify-between rounded-xl border border-ui-primary/20 bg-ui-primary/5 px-3 py-2 text-xs font-semibold text-ui-primary hover:bg-ui-primary/10"
+              >
+                <span>Court Guide & Forms</span>
+                <span className="text-ui-primary/50">↗</span>
+              </Link>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
@@ -742,6 +750,46 @@ export default function RoadmapPage() {
                   </ul>
                 </GlassCard>
               ) : null}
+
+              {/* Court Forms Quick Links */}
+              <GlassCard className="p-5 text-ui-text">
+                <h3 className="text-sm font-bold text-ui-text">Key Court Forms</h3>
+                <div className="mt-3 space-y-2">
+                  <a
+                    href="https://www.nycourts.gov/LegacyPDFS/FORMS/familycourt/pdfs/8-2.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 hover:border-ui-primary/30 hover:bg-white"
+                  >
+                    <span><span className="font-bold text-ui-primary">8-2</span> Family Offense Petition</span>
+                    <span className="text-slate-400">&#8599;</span>
+                  </a>
+                  <a
+                    href="https://www.nycourts.gov/LegacyPDFS/FORMS/familycourt/pdfs/gf-21.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 hover:border-ui-primary/30 hover:bg-white"
+                  >
+                    <span><span className="font-bold text-ui-primary">GF-21</span> Address Confidentiality</span>
+                    <span className="text-slate-400">&#8599;</span>
+                  </a>
+                  <a
+                    href="https://www.nycourts.gov/LegacyPDFS/FORMS/familycourt/pdfs/GF-8.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 hover:border-ui-primary/30 hover:bg-white"
+                  >
+                    <span><span className="font-bold text-ui-primary">GF-8</span> Violation Petition</span>
+                    <span className="text-slate-400">&#8599;</span>
+                  </a>
+                  <Link
+                    href="/guide#forms"
+                    className="flex items-center justify-center rounded-lg border border-ui-primary/20 bg-ui-primary/5 px-3 py-2 text-xs font-semibold text-ui-primary hover:bg-ui-primary/10"
+                  >
+                    View All Forms & Guide
+                  </Link>
+                </div>
+              </GlassCard>
 
               {/* Safety */}
               <GlassCard className="p-5 border border-ui-danger/20 bg-ui-danger/5 text-ui-text">

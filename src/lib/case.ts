@@ -156,23 +156,26 @@ export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
 
   const whatToBring = [
     "A government-issued photo ID",
-    "All evidence from your evidence checklist (originals and copies)",
-    "Written notes with key dates, times, and locations for each incident",
+    "All evidence from your evidence checklist — bring originals AND copies for the court",
+    "Written notes with key dates, times, and locations for each incident (most recent, first, and worst)",
+    "If there were verbal threats, write down the EXACT WORDS used",
     "Names, addresses, and phone numbers of witnesses",
     "Information about children (names, ages, schools, custody arrangements)",
-    "Any existing orders of protection, custody orders, or related court documents",
+    "Any existing orders of protection, custody orders, or related court documents with case numbers",
     "Case numbers for any related family, criminal, or supreme court matters",
+    "If you need address confidentiality, be ready to file form GF-21 (do NOT write your address on the petition)",
     "Contact info for your local domestic violence advocate or hotline (if applicable)",
   ];
 
   const whatToExpect = [
-    "You may go through a screening or intake process where court staff ask about the relationship and incidents.",
-    "If there is immediate danger, the judge can issue a temporary (ex parte) order of protection the same day.",
-    "You will need to describe the incidents clearly and factually — the judge will ask questions.",
-    "The respondent will be served with the petition and order to appear at a hearing.",
-    "At the hearing, both sides can present evidence and testimony. You may bring witnesses.",
-    "The judge will decide whether to issue a final order of protection, which can last up to 2-5 years.",
-    "Bring everything on your 'What to Bring' list — being prepared strengthens your case.",
+    "Step 1: Go to the Help Center ('Petition Room') at Family Court. A clerk will help draft your Family Offense Petition. No filing fees.",
+    "Step 2: Complete paperwork carefully — include the most recent incident, the first incident, and the worst incident with all details.",
+    "Step 3: See the judge for a Temporary Order of Protection (usually same day). Hit 3 points: (1) most recent incident, (2) why risk is ongoing, (3) exact relief you want.",
+    "Step 4: If granted, you'll get a temporary order + summons. The order is NOT enforceable until served on the respondent.",
+    "Step 5: Serve the respondent (you CANNOT do this yourself). Use sheriff, police, a friend over 18, or a process server.",
+    "Step 6: Return date — if respondent doesn't appear, judge may issue final order same day. If they appear, options are consent order or trial.",
+    "Step 7: At trial (fact-finding), prove your case by 'fair preponderance of evidence' (more likely than not). Bring all evidence and witnesses.",
+    "Final orders last up to 2 years (5 years with aggravating circumstances). If you can't afford a lawyer, ask the judge for a court-appointed attorney.",
   ];
 
   return {

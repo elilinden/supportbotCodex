@@ -38,8 +38,13 @@ export default function HomePage() {
         </GlassCard>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-3">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[
+          {
+            title: "Court Guide",
+            text: "Complete step-by-step process, every form you need, what to say to the judge, time estimates, and more.",
+            href: "/guide"
+          },
           {
             title: "Guided Intake",
             text: "Step-by-step collection of relationship, incident, and safety details for NY Family Court OPs.",
