@@ -84,13 +84,6 @@ export function TopNav() {
             Court Guide
           </Link>
 
-          <Link
-            href="/settings"
-            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
-          >
-            Settings
-          </Link>
-
           {/* Auth: avatar dropdown or sign-in button */}
           {!loading && (
             user ? (
@@ -159,13 +152,6 @@ export function TopNav() {
             onClick={() => setMenuOpen(false)}
           >
             Court Guide
-          </Link>
-          <Link
-            href="/settings"
-            className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
-            onClick={() => setMenuOpen(false)}
-          >
-            Settings
           </Link>
 
           {/* Auth — mobile */}
