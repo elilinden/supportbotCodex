@@ -21,6 +21,7 @@ export const defaultIntake: IntakeData = {
   mostRecentIncidentAt: "",
   patternOfIncidents: "",
   childrenInvolved: "",
+  incidentLocation: "",
   existingCasesOrders: "",
   firearmsAccess: "",
   safetyStatus: "",

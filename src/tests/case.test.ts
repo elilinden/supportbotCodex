@@ -16,6 +16,7 @@ function makeIntake(overrides?: Partial<IntakeData>): IntakeData {
     mostRecentIncidentAt: "2024-06-15T14:30:00Z",
     patternOfIncidents: "Repeated verbal and physical abuse",
     childrenInvolved: "Children involved",
+    incidentLocation: "",
     existingCasesOrders: "Prior temporary order #12345",
     firearmsAccess: "Yes",
     safetyStatus: "Unsafe",

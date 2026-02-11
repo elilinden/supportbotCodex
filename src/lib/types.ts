@@ -13,7 +13,7 @@ export type CohabitationStatus =
 
 export type ChildrenInvolvedStatus =
   | "Children involved"
-  | "Children witnessed"
+  | "Children witnessed incidents"
   | "Children not involved"
   | "Unsure";
 
@@ -32,6 +32,7 @@ export interface IntakeData {
   existingCasesOrders: string;
   firearmsAccess: FirearmsAccess | "";
   safetyStatus: SafetyStatus | "";
+  incidentLocation: string;
   evidenceInventory: string;
   requestedRelief: string;
 }
