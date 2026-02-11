@@ -1,6 +1,7 @@
 "use client";
 
 import { requireSupabase } from "@/lib/supabase";
+import { useCaseStore } from "@/store/useCaseStore";
 
 /**
  * Cloud sync helpers.
@@ -74,7 +75,7 @@ export async function cloudRestore(userId: string): Promise<{ error: string | nu
   if (!blob) return { error: "No cloud backup found for this account." };
 
   setLocalEncrypted(blob);
-  // Reload so Zustand re-hydrates from the updated localStorage
-  window.location.reload();
+  // Re-hydrate Zustand from the updated localStorage — no page reload needed
+  await useCaseStore.persist.rehydrate();
   return { error: null };
 }
