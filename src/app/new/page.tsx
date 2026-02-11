@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+import { RequireAuth } from "@/components/RequireAuth";
 import { defaultIntake, useCaseStore } from "@/store/useCaseStore";
 import type { IntakeData } from "@/lib/types";
 
@@ -72,6 +73,7 @@ export default function NewIntakePage() {
     "shadow-sm outline-none focus:border-ui-primary focus:ring-4 focus:ring-ui-primarySoft";
 
   return (
+    <RequireAuth>
     <div className="mx-auto max-w-5xl space-y-8 text-ui-text">
       <GlassCardStrong className="space-y-4 text-ui-text">
         <div className="space-y-1">
@@ -346,5 +348,6 @@ export default function NewIntakePage() {
         </div>
       </GlassCard>
     </div>
+    </RequireAuth>
   );
 }
