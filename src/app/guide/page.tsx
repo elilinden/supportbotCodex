@@ -362,7 +362,7 @@ export default function GuidePage() {
       </GlassCard>
 
       {/* Available Relief */}
-      <div id="relief" className="scroll-mt-8">
+      <div id="relief" className="scroll-mt-32">
         <GlassCard className="space-y-4">
           <h2 className="text-lg font-bold text-slate-900">What the Judge Can Order (Relief Options)</h2>
           <p className="text-sm text-slate-700">You can ask for any combination of:</p>
@@ -378,7 +378,7 @@ export default function GuidePage() {
       </div>
 
       {/* Step-by-Step Process */}
-      <div id="steps" className="scroll-mt-8 space-y-6">
+      <div id="steps" className="scroll-mt-32 space-y-6">
         <GlassCardStrong className="space-y-2">
           <h2 className="text-lg font-bold text-slate-900">Step-by-Step: How It Actually Works</h2>
           <p className="text-sm text-slate-600">
@@ -450,7 +450,7 @@ export default function GuidePage() {
       </div>
 
       {/* What to Say to the Judge — Priority 4: moved right after steps */}
-      <div id="what-to-say" className="scroll-mt-8">
+      <div id="what-to-say" className="scroll-mt-32">
         <GlassCard className="space-y-4">
           <h2 className="text-lg font-bold text-slate-900">What to Say to the Judge</h2>
           <p className="text-sm text-slate-700 leading-relaxed">
@@ -549,7 +549,7 @@ export default function GuidePage() {
       </GlassCard>
 
       {/* Service Requirements — Priority 3: warning box already exists, add id for jump */}
-      <div id="service" className="scroll-mt-8">
+      <div id="service" className="scroll-mt-32">
         <GlassCard className="space-y-4">
           <h2 className="text-lg font-bold text-slate-900">Service Requirements</h2>
           <div className="rounded-xl border-2 border-red-300 bg-red-50 p-4 text-sm text-red-800">
@@ -709,7 +709,7 @@ export default function GuidePage() {
       </GlassCard>
 
       {/* All Forms & Documents — Priority 4: split into Required vs Additional */}
-      <div id="forms" className="scroll-mt-8 space-y-6">
+      <div id="forms" className="scroll-mt-32 space-y-6">
         <GlassCardStrong className="space-y-2">
           <h2 className="text-lg font-bold text-slate-900">All Court Forms & Documents</h2>
           <p className="text-sm text-slate-600">
@@ -858,7 +858,7 @@ export default function GuidePage() {
       </GlassCard>
 
       {/* Safety banner */}
-      <div id="safety" className="scroll-mt-8">
+      <div id="safety" className="scroll-mt-32">
         <GlassCard className="border-2 border-ui-danger/30 bg-red-50 space-y-3">
           <h2 className="text-sm font-bold text-ui-danger">Safety Resources</h2>
           <div className="space-y-2 text-xs text-slate-700">
