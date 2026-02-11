@@ -57,12 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Sticky "app header" */}
           <header className="sticky top-0 z-50 border-b border-ui-border bg-ui-surface/75 backdrop-blur">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
-              <TopNav />
-            </div>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6">
-              <SafetyBanner />
-            </div>
+            <TopNav />
+            <SafetyBanner />
           </header>
 
           {/* Main content */}
