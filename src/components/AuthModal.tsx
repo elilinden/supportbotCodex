@@ -51,11 +51,11 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-8 bg-black/40 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="mx-4 w-full max-w-sm rounded-2xl border border-ui-border bg-ui-surface p-6 shadow-card"
+        className="mx-4 my-auto w-full max-w-sm rounded-2xl border border-ui-border bg-ui-surface p-6 shadow-card"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
