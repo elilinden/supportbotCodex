@@ -39,13 +39,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           "bg-ui-bg text-ui-text"
         ].join(" ")}
       >
-        {/* Subtle background wash */}
-        <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
-          <div className="absolute -top-24 left-[-10%] h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
-          <div className="absolute top-10 right-[-10%] h-80 w-80 rounded-full bg-emerald-200/40 blur-3xl" />
-          <div className="absolute bottom-[-10%] left-[30%] h-80 w-80 rounded-full bg-rose-200/30 blur-3xl" />
-        </div>
-
         <AuthProvider>
         <div className="min-h-screen">
           <a
