@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -9,10 +9,23 @@ import { AuthModal } from "@/components/AuthModal";
 export function TopNav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   const user = useAuthStore((s) => s.user);
   const loading = useAuthStore((s) => s.loading);
   const signOut = useAuthStore((s) => s.signOut);
+
+  // Close account dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    }
+    if (accountOpen) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [accountOpen]);
 
   return (
     <>
@@ -78,19 +91,38 @@ export function TopNav() {
             Settings
           </Link>
 
-          {/* Auth button */}
+          {/* Auth: avatar dropdown or sign-in button */}
           {!loading && (
             user ? (
-              <div className="flex items-center gap-2">
-                <span className="max-w-[140px] truncate text-xs text-ui-textMuted" title={user.email ?? ""}>
-                  {user.email}
-                </span>
+              <div className="relative" ref={accountRef}>
                 <button
-                  onClick={() => signOut()}
-                  className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+                  onClick={() => setAccountOpen((prev) => !prev)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-ui-primary text-sm font-semibold text-white hover:opacity-90"
+                  aria-label="Account menu"
+                  title={user.email ?? "Account"}
                 >
-                  Sign Out
+                  {(user.email ?? "U")[0].toUpperCase()}
                 </button>
+
+                {accountOpen && (
+                  <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-ui-border bg-ui-surface p-3 shadow-card">
+                    <p className="truncate text-xs font-medium text-ui-text">{user.email}</p>
+                    <hr className="my-2 border-ui-border" />
+                    <Link
+                      href="/settings"
+                      onClick={() => setAccountOpen(false)}
+                      className="block rounded-lg px-3 py-2 text-xs text-ui-text hover:bg-ui-surface2"
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => { signOut(); setAccountOpen(false); }}
+                      className="mt-1 w-full rounded-lg px-3 py-2 text-left text-xs text-ui-danger hover:bg-ui-dangerSoft"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button
@@ -136,7 +168,7 @@ export function TopNav() {
             Settings
           </Link>
 
-          {/* Auth button — mobile */}
+          {/* Auth — mobile */}
           {!loading && (
             user ? (
               <>

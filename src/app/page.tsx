@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { HomeActions } from "@/components/HomeActions";
 
@@ -8,7 +7,7 @@ export default function HomePage() {
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <GlassCardStrong className="space-y-5">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-            NY Family Court / Orders of Protection
+            Information-Only Tool
           </p>
 
           <h1 className="text-3xl font-semibold leading-tight text-slate-900 md:text-4xl">
@@ -16,6 +15,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-sm text-slate-600">
+            Designed for individuals representing themselves in Family Court.
             Capture incident details, organize evidence, and generate information-only prep materials
             for Orders of Protection in New York Family Court. This is not legal advice.
           </p>
@@ -32,37 +32,10 @@ export default function HomePage() {
             <li>• Info-only scripts and checklists you can print or export.</li>
           </ul>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
+          <div className="rounded-2xl border border-ui-danger/30 bg-ui-dangerSoft p-4 text-xs font-medium text-ui-danger">
             If you are in immediate danger, call 911 or your local emergency number.
           </div>
         </GlassCard>
-      </section>
-
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {[
-          {
-            title: "Court Guide",
-            text: "Complete step-by-step process, every form you need, what to say to the judge, time estimates, and more.",
-            href: "/guide"
-          },
-          {
-            title: "Start New Intake",
-            text: "Step-by-step collection of relationship, incident, and safety details for NY Family Court OPs.",
-            href: "/new"
-          },
-          {
-            title: "Settings",
-            text: "Configure your Gemini API key and manage your cases.",
-            href: "/settings"
-          }
-        ].map((item) => (
-          <Link key={item.title} href={item.href}>
-            <GlassCard className="space-y-2 transition-all hover:border-ui-primary/30 hover:shadow-lg">
-              <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-              <p className="text-xs text-slate-600">{item.text}</p>
-            </GlassCard>
-          </Link>
-        ))}
       </section>
     </div>
   );

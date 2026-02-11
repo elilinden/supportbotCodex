@@ -6,12 +6,16 @@ export function SafetyBanner() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="w-full border-b border-ui-border bg-ui-surface/80 backdrop-blur-xl" role="banner">
+    <div className="w-full border-b border-ui-warning/30 bg-ui-warningSoft/60 backdrop-blur-xl" role="banner">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-3 text-xs text-ui-text">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-semibold text-ui-text">Not legal advice.</span>
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-ui-warning" aria-hidden="true" />
+            <span className="font-semibold text-ui-warning">Not legal advice.</span>
+            <span className="text-ui-textMuted">Information-only guidance for NY Family Court OPs.</span>
+          </div>
           <button
-            className="rounded-full border border-ui-border bg-ui-surface px-3 py-1 text-[11px] uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+            className="rounded-full border border-ui-warning/30 bg-white/60 px-3 py-1 text-[11px] uppercase tracking-wide text-ui-text hover:bg-white"
             onClick={() => setOpen((prev) => !prev)}
             aria-expanded={open}
             aria-controls="safety-info"

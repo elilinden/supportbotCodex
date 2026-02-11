@@ -55,8 +55,8 @@ export function HomeActions() {
           </>
         )}
 
-        <Link href="/settings" className={outlineBtn}>
-          Configure Settings
+        <Link href="/guide" className={outlineBtn}>
+          Learn How It Works
         </Link>
       </div>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
