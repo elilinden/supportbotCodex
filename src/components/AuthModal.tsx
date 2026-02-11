@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
 type Mode = "sign-in" | "sign-up" | "reset";
@@ -49,9 +50,9 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   const title =
     mode === "sign-in" ? "Sign In" : mode === "sign-up" ? "Create Account" : "Reset Password";
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-8 bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto py-8 bg-black/40 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -150,6 +151,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
