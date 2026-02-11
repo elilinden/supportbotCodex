@@ -20,9 +20,8 @@ export function GlassCard({ children, className = "", id, as: Tag = "div" }: Car
       data-ui="card"
       className={cx(
         "rounded-2xl p-6",
-        "bg-ui-surface/90 border border-ui-border shadow-card",
+        "bg-ui-surface border border-ui-border shadow-card",
         "text-ui-text",
-        "backdrop-blur-xl",
         className
       )}
     >
@@ -43,7 +42,6 @@ export function GlassCardStrong({ children, className = "", id, as: Tag = "div" 
         "rounded-2xl p-6",
         "bg-ui-surface border border-ui-border shadow-[0_12px_30px_rgba(15,23,42,0.08)]",
         "text-ui-text",
-        "backdrop-blur-xl",
         className
       )}
     >
