@@ -584,7 +584,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
             {/* LEFT column */}
             <div className="space-y-6">
               {/* Timeline */}
-              <GlassCard id="roadmap-timeline" className="p-5 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-timeline" className="p-5 text-ui-text scroll-mt-32">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-bold text-ui-text">Timeline</h2>
                   <span className="text-xs text-slate-400">Showing up to 6</span>
@@ -623,7 +623,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
 
               {/* Scripts */}
-              <GlassCard id="roadmap-scripts" className="p-5 space-y-4 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-scripts" className="p-5 space-y-4 text-ui-text scroll-mt-32">
                 <h2 className="text-sm font-bold text-ui-text">Scripts for Court</h2>
 
                 <details className="group rounded-2xl border border-slate-200 bg-slate-50 open:bg-slate-100">
@@ -666,7 +666,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
 
               {/* Judge Q&A */}
-              <GlassCard id="roadmap-judge-qa" className="p-5 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-judge-qa" className="p-5 text-ui-text scroll-mt-32">
                 <h2 className="text-sm font-bold text-ui-text">Common Judge Questions</h2>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {scripts.judgeQuestions.map((qa, idx) => (
@@ -689,7 +689,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
             {/* RIGHT column */}
             <aside className="space-y-6">
               {/* Evidence */}
-              <GlassCard id="roadmap-evidence" className="p-5 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-evidence" className="p-5 text-ui-text scroll-mt-32">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-ui-text">Evidence</h3>
                   <span className="text-xs text-slate-400">Top 8</span>
@@ -717,7 +717,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
 
               {/* Strategy tips */}
               {tips.length > 0 ? (
-                <GlassCard id="roadmap-strategy" className="p-5 border border-amber-400/20 bg-amber-50 text-ui-text scroll-mt-6">
+                <GlassCard id="roadmap-strategy" className="p-5 border border-amber-400/20 bg-amber-50 text-ui-text scroll-mt-32">
                   <h3 className="text-sm font-bold text-amber-700">Personalized Strategy</h3>
                   <ul className="mt-3 space-y-2">
                     {tips.map((tip, i) => (
@@ -730,7 +730,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               ) : null}
 
               {/* Court Forms Quick Links */}
-              <GlassCard id="roadmap-forms" className="p-5 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-forms" className="p-5 text-ui-text scroll-mt-32">
                 <h3 className="text-sm font-bold text-ui-text">Key Court Forms</h3>
                 <div className="mt-3 space-y-2">
                   <a
@@ -770,7 +770,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
 
               {/* Safety - more visually prominent */}
-              <GlassCard id="roadmap-safety" className="p-5 border-2 border-ui-danger/40 bg-red-50 text-ui-text scroll-mt-6">
+              <GlassCard id="roadmap-safety" className="p-5 border-2 border-ui-danger/40 bg-red-50 text-ui-text scroll-mt-32">
                 <div className="flex items-center gap-2">
                   <span className="text-lg" role="img" aria-label="Warning">&#9888;&#65039;</span>
                   <h3 className="text-sm font-bold text-ui-danger">Safety First</h3>
