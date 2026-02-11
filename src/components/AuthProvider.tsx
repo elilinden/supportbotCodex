@@ -1,19 +1,61 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCaseStore } from "@/store/useCaseStore";
+import { cloudSave, cloudRestore } from "@/lib/cloudSync";
+
+const AUTO_SAVE_DELAY = 3_000; // 3-second debounce
 
 /**
- * Initialises the Supabase auth listener once, at the root of the app.
- * Renders nothing visible — just wires up the subscription.
+ * Initialises Supabase auth, auto-loads cloud data on sign-in,
+ * and auto-saves the encrypted store to Supabase on every change.
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const init = useAuthStore((s) => s.init);
+  const user = useAuthStore((s) => s.user);
+  const prevUserRef = useRef<string | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // 1. Wire up Supabase auth listener
   useEffect(() => {
     const unsubscribe = init();
     return unsubscribe;
   }, [init]);
+
+  // 2. On sign-in: load cloud data into local store
+  useEffect(() => {
+    const currentId = user?.id ?? null;
+    const previousId = prevUserRef.current;
+    prevUserRef.current = currentId;
+
+    // Only trigger on a *new* sign-in (null -> userId)
+    if (currentId && !previousId) {
+      cloudRestore(currentId).catch(() => {
+        // No cloud data yet — first-time user, that's fine
+      });
+    }
+  }, [user]);
+
+  // 3. Auto-save on store changes (debounced)
+  useEffect(() => {
+    if (!user) return;
+
+    const unsub = useCaseStore.subscribe(() => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+
+      saveTimerRef.current = setTimeout(() => {
+        cloudSave(user.id).catch((err) =>
+          console.error("[AuthProvider] auto-save failed", err)
+        );
+      }, AUTO_SAVE_DELAY);
+    });
+
+    return () => {
+      unsub();
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [user]);
 
   return <>{children}</>;
 }
