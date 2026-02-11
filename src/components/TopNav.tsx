@@ -42,7 +42,7 @@ export function TopNav() {
               priority
             />
           </Link>
-          <p className="text-xs text-ui-textMuted">NY Family Court / Orders of Protection / Information-only</p>
+          <p className="text-xs text-ui-textMuted">NY Family Court / Orders of Protection</p>
         </div>
 
         {/* Hamburger button — mobile only */}
