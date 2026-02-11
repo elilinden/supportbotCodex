@@ -69,7 +69,7 @@ export function SafetyUpdateInput({
         }
       }
 
-      setNote(data.assistant_message || "Update saved.");
+      setNote(data.assistant_message || "Update saved. Your roadmap has been refreshed.");
       setInput("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -101,8 +101,17 @@ export function SafetyUpdateInput({
         </button>
       </div>
 
-      {note ? <p className="text-xs text-ui-textMuted" role="status">{note}</p> : null}
-      {error ? <p className="text-xs text-ui-danger" role="alert">{error}</p> : null}
+      {note ? (
+        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2" role="status">
+          <span className="text-green-600 text-sm">&#10003;</span>
+          <p className="text-xs text-green-800">{note}</p>
+        </div>
+      ) : null}
+      {error ? (
+        <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2" role="alert">
+          <p className="text-xs text-ui-danger">{error}</p>
+        </div>
+      ) : null}
     </div>
   );
 }

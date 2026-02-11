@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 
 type CardProps = PropsWithChildren<{
   className?: string;
+  id?: string;
   as?: keyof JSX.IntrinsicElements;
 }>;
 
@@ -12,9 +13,10 @@ function cx(...parts: Array<string | undefined | false | null>) {
 /**
  * GlassCard = standard surface card (light dashboard style)
  */
-export function GlassCard({ children, className = "", as: Tag = "div" }: CardProps) {
+export function GlassCard({ children, className = "", id, as: Tag = "div" }: CardProps) {
   return (
     <Tag
+      id={id}
       data-ui="card"
       className={cx(
         "rounded-2xl p-6",
@@ -32,9 +34,10 @@ export function GlassCard({ children, className = "", as: Tag = "div" }: CardPro
 /**
  * GlassCardStrong = emphasized/hero card
  */
-export function GlassCardStrong({ children, className = "", as: Tag = "div" }: CardProps) {
+export function GlassCardStrong({ children, className = "", id, as: Tag = "div" }: CardProps) {
   return (
     <Tag
+      id={id}
       data-ui="card-strong"
       className={cx(
         "rounded-2xl p-6",

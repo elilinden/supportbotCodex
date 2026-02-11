@@ -58,7 +58,7 @@ export default function SettingsPage() {
         <p className="text-xs uppercase tracking-[0.3em] text-ui-textMuted">Settings</p>
         <h1 className="text-2xl font-semibold text-ui-text">Workspace Settings</h1>
         <p className="text-sm text-ui-textMuted">
-          Settings are stored locally in your browser. This is a NY Family Court OP-only workspace.
+          Settings are stored locally in your browser. This is a NY Family Court Order of Protection workspace.
         </p>
       </GlassCardStrong>
 

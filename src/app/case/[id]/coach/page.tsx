@@ -137,7 +137,7 @@ export default function CoachPage() {
     <div className="space-y-8">
       <GlassCardStrong className="space-y-3">
         <p className="text-xs uppercase tracking-[0.3em] text-ui-textMuted">Coach Mode</p>
-        <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Coach</h1>
+        <h1 className="text-2xl font-semibold text-ui-text">NY Family Court &mdash; Order of Protection Coach</h1>
         <p className="text-sm text-ui-textMuted">
           Ask questions, refine facts, and stay within New York Family Court Order of Protection scope.
         </p>
@@ -183,7 +183,7 @@ export default function CoachPage() {
           <div className="mt-4 flex items-center gap-2">
             <input
               className="flex-1 rounded-full border border-ui-border bg-ui-surface2 px-4 py-2 text-xs text-ui-text"
-              placeholder="Ask a question about NY Family Court OP preparation..."
+              placeholder="Ask a question about Order of Protection preparation..."
               value={input}
               onChange={(event) => setInput(event.target.value)}
               onKeyDown={(event) => {

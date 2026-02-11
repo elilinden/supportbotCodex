@@ -1,10 +1,10 @@
-import { formatDateTime, splitList } from "@/lib/utils";
+import { formatDateTime, splitList, normalizeOutputText } from "@/lib/utils";
 import type { CaseOutputs, Facts, IntakeData } from "@/lib/types";
 
 export function buildFactsFromIntake(intake: IntakeData): Facts {
   const { date, time } = formatDateTime(intake.mostRecentIncidentAt);
-  const petitioner = intake.petitionerName || "Petitioner";
-  const respondent = intake.respondentName || "Respondent";
+  const petitioner = intake.petitionerName || "";
+  const respondent = intake.respondentName || "";
   const relationshipDetails = [intake.relationshipCategory, intake.cohabitation]
     .filter(Boolean)
     .join(" / ");
@@ -51,8 +51,8 @@ export function buildFactsFromIntake(intake: IntakeData): Facts {
 }
 
 export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
-  const petitioner = facts.parties.petitioner || "Petitioner";
-  const respondent = facts.parties.respondent || "Respondent";
+  const petitioner = facts.parties.petitioner || "[Your Name]";
+  const respondent = facts.parties.respondent || "[Other Person's Name]";
 
   // Build timeline from incidents if no explicit timeline exists
   const incidentTimeline = facts.incidents
@@ -97,7 +97,7 @@ export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
     severityContext,
     patternContext,
     facts.requestedRelief.length
-      ? `I am requesting: ${facts.requestedRelief.join("; ")}.`
+      ? `I am requesting that the respondent ${facts.requestedRelief.join("; ")}.`
       : "I am requesting the court's protection.",
     facts.evidenceList.length
       ? `I have evidence including: ${facts.evidenceList.slice(0, 3).join(", ")}.`
@@ -183,10 +183,10 @@ export function buildOutputsFromFacts(facts: Facts): CaseOutputs {
   ];
 
   return {
-    script2Min,
-    outline5Min,
+    script2Min: normalizeOutputText(script2Min),
+    outline5Min: outline5Min.map(normalizeOutputText),
     evidenceChecklist,
-    timelineSummary,
+    timelineSummary: timelineSummary.map(normalizeOutputText),
     whatToBring,
     whatToExpect,
   };

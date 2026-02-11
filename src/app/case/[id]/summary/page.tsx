@@ -6,6 +6,7 @@ import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { CaseSubNav } from "@/components/CaseSubNav";
 import { AssumptionsPanel } from "@/components/AssumptionsPanel";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
+import { normalizeOutputText } from "@/lib/utils";
 
 export default function CaseSummaryPage() {
   const params = useParams();
@@ -46,6 +47,9 @@ export default function CaseSummaryPage() {
 
   const { intake, facts, outputs, assumptions, uncertainties } = caseFile;
 
+  const petitionerName = facts.parties.petitioner || intake.petitionerName || "[Name not provided]";
+  const respondentName = facts.parties.respondent || intake.respondentName || "[Name not provided]";
+
   return (
     <div className="space-y-8">
       <div className="no-print">
@@ -54,7 +58,7 @@ export default function CaseSummaryPage() {
 
       <GlassCardStrong className="space-y-3 no-print">
         <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Facts Summary</p>
-        <h1 className="text-2xl font-semibold text-ui-text">NY Family Court OP Summary</h1>
+        <h1 className="text-2xl font-semibold text-ui-text">NY Family Court &mdash; Order of Protection Summary</h1>
         <p className="text-sm text-slate-600">Information-only summary for Orders of Protection. Not legal advice.</p>
 
         <div className="flex flex-wrap gap-3">
@@ -73,12 +77,11 @@ export default function CaseSummaryPage() {
             <h2 className="text-sm font-semibold text-ui-text">Facts snapshot</h2>
 
             <p className="text-xs text-slate-700">
-              <strong>Parties:</strong> {facts.parties.petitioner || "Petitioner"} vs.{" "}
-              {facts.parties.respondent || "Respondent"}
+              <strong>Parties:</strong> {petitionerName} vs. {respondentName}
             </p>
 
             <p className="text-xs text-slate-700">
-              <strong>Relationship:</strong> {facts.relationship}
+              <strong>Relationship:</strong> {facts.relationship || "[Not provided]"}
             </p>
 
             <p className="text-xs text-slate-700">
@@ -96,14 +99,14 @@ export default function CaseSummaryPage() {
             <div className="space-y-3 text-xs text-slate-700">
               <div>
                 <strong>2-minute script:</strong>
-                <p className="mt-1 whitespace-pre-wrap">{outputs.script2Min}</p>
+                <p className="mt-1 whitespace-pre-wrap">{normalizeOutputText(outputs.script2Min)}</p>
               </div>
 
               <div>
                 <strong>5-minute outline:</strong>
                 <ul className="mt-1 space-y-1">
                   {outputs.outline5Min.map((item, index) => (
-                    <li key={index}>- {item}</li>
+                    <li key={index}>- {normalizeOutputText(item)}</li>
                   ))}
                 </ul>
               </div>
@@ -121,7 +124,7 @@ export default function CaseSummaryPage() {
                 <strong>Timeline:</strong>
                 <ul className="mt-1 space-y-1">
                   {outputs.timelineSummary.map((item, index) => (
-                    <li key={index}>- {item}</li>
+                    <li key={index}>- {normalizeOutputText(item)}</li>
                   ))}
                 </ul>
               </div>
@@ -136,12 +139,22 @@ export default function CaseSummaryPage() {
               </div>
 
               <div>
-                <strong>What to expect:</strong>
-                <ul className="mt-1 space-y-1">
-                  {outputs.whatToExpect.map((item, index) => (
-                    <li key={index}>- {item}</li>
-                  ))}
-                </ul>
+                <strong>What to expect in court:</strong>
+                <div className="mt-2 space-y-3">
+                  {outputs.whatToExpect.map((item, index) => {
+                    const stepMatch = item.match(/^Step\s*(\d+):\s*(.*)/i);
+                    const stepNum = stepMatch ? stepMatch[1] : String(index + 1);
+                    const stepText = stepMatch ? stepMatch[2] : item;
+                    return (
+                      <div key={index} className="flex gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-ui-primary text-[11px] font-bold text-white">
+                          {stepNum}
+                        </div>
+                        <p className="text-xs text-slate-700 leading-relaxed pt-1">{normalizeOutputText(stepText)}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </GlassCard>
@@ -151,15 +164,15 @@ export default function CaseSummaryPage() {
           <GlassCard className="space-y-3">
             <h2 className="text-sm font-semibold text-ui-text">Intake details</h2>
             <ul className="space-y-2 text-xs text-slate-700">
-              <li>Relationship: {intake.relationshipCategory || "-"}</li>
-              <li>Cohabitation: {intake.cohabitation || "-"}</li>
-              <li>Most recent incident: {intake.mostRecentIncidentAt || "-"}</li>
-              <li>Pattern: {intake.patternOfIncidents || "-"}</li>
-              <li>Children: {intake.childrenInvolved || "-"}</li>
-              <li>Existing cases/orders: {intake.existingCasesOrders || "-"}</li>
-              <li>Firearms: {intake.firearmsAccess || "-"}</li>
-              <li>Safety status: {intake.safetyStatus || "-"}</li>
-              <li>Evidence inventory: {intake.evidenceInventory || "-"}</li>
+              <li><strong>Relationship:</strong> {intake.relationshipCategory || "[Not provided]"}</li>
+              <li><strong>Living situation:</strong> {intake.cohabitation || "[Not provided]"}</li>
+              <li><strong>Most recent incident:</strong> {intake.mostRecentIncidentAt || "Date not provided"}</li>
+              <li><strong>Pattern:</strong> {intake.patternOfIncidents || "[Not provided]"}</li>
+              <li><strong>Children:</strong> {intake.childrenInvolved || "[Not provided]"}</li>
+              <li><strong>Existing cases/orders:</strong> {intake.existingCasesOrders || "[Not provided]"}</li>
+              <li><strong>Firearms:</strong> {intake.firearmsAccess || "[Not provided]"}</li>
+              <li><strong>Safety status:</strong> {intake.safetyStatus || "[Not provided]"}</li>
+              <li><strong>Evidence inventory:</strong> {intake.evidenceInventory || "[Not provided]"}</li>
             </ul>
           </GlassCard>
 
@@ -172,16 +185,19 @@ export default function CaseSummaryPage() {
             </ul>
           </GlassCard>
 
-          <GlassCard className="space-y-2">
-            <h2 className="text-sm font-semibold text-ui-text">Safety resources</h2>
+          <GlassCard className="space-y-2 border-2 border-ui-danger/40 bg-red-50">
+            <div className="flex items-center gap-2">
+              <span className="text-lg" role="img" aria-label="Warning">&#9888;&#65039;</span>
+              <h2 className="text-sm font-semibold text-ui-danger">Safety resources</h2>
+            </div>
             <p className="text-xs text-slate-700">
-              If you are in immediate danger, call 911 or your local emergency number.
+              If you are in immediate danger, call <strong>911</strong> or your local emergency number.
             </p>
-            <div className="text-xs text-slate-700">
-              <p>NY State Domestic and Sexual Violence Hotline: 800-942-6906</p>
-              <p>Text: 844-997-2121</p>
-              <p>NYC Safe Horizon Hotline: 800-621-4673</p>
-              <p>National DV Hotline: 1-800-799-7233</p>
+            <div className="text-xs text-slate-700 space-y-0.5">
+              <p>NY State Domestic and Sexual Violence Hotline: <strong>800-942-6906</strong></p>
+              <p>Text: <strong>844-997-2121</strong></p>
+              <p>NYC Safe Horizon Hotline: <strong>800-621-4673</strong></p>
+              <p>National DV Hotline: <strong>1-800-799-7233</strong></p>
             </div>
           </GlassCard>
 
