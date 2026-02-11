@@ -8,6 +8,7 @@ import { SafetyUpdateInput } from "@/components/SafetyUpdateInput";
 import { CaseSubNav } from "@/components/CaseSubNav";
 import { SafetyInterrupt } from "@/components/SafetyInterrupt";
 import { useCaseStore, useHydrated } from "@/store/useCaseStore";
+import { normalizeOutputText } from "@/lib/utils";
 import type { CaseFile, IntakeData } from "@/lib/types";
 
 const FAMILY_COURT_RELATIONSHIPS = new Set<string>([
@@ -45,7 +46,7 @@ function splitToList(value: unknown): string[] {
   if (Array.isArray(value)) return value.map(safeString).filter(Boolean);
   const s = safeString(value);
   if (!s) return [];
-  return s.split(/\n|,|;|•/g).map((x) => x.trim()).filter(Boolean);
+  return s.split(/\n|,|;|\u2022/g).map((x) => x.trim()).filter(Boolean);
 }
 
 function uniq(list: string[]): string[] {
@@ -139,6 +140,8 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
   const dayGreeting = now.getHours() < 12 ? "morning" : "afternoon";
 
   const { intake, facts, outputs, safety, status } = caseFile;
+
+  const petitionerName = facts.parties.petitioner || intake.petitionerName || "[Your Name]";
 
   const incidents = useMemo<FactsIncident[]>(
     () => (Array.isArray(facts.incidents) ? facts.incidents : []),
@@ -265,7 +268,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
 
     if (!relationshipKnown) {
       t.push(
-        "Confirm your relationship category. Family Court access depends on a qualifying relationship (family/household or an “intimate relationship”)."
+        "Confirm your relationship category. Family Court access depends on a qualifying relationship (family/household or an intimate relationship)."
       );
     } else if (!familyCourtLikely) {
       t.push(
@@ -273,7 +276,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
       );
     } else if (relationshipCategory !== "Spouse" && relationshipCategory !== "Parent of child in common") {
       t.push(
-        "If this is an “intimate relationship,” be ready to describe it concretely (how long, how often you saw each other, the nature of the relationship) so eligibility is clear."
+        "If this is an intimate relationship, be ready to describe it concretely (how long, how often you saw each other, the nature of the relationship) so eligibility is clear."
       );
     }
 
@@ -288,7 +291,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
     }
 
     if (cohabitation === "Lives together now") {
-      t.push("If you live together, be prepared to request “exclusion” or a clear stay-away perimeter to safely access the home.");
+      t.push("If you live together, be prepared to request exclusion or a clear stay-away perimeter to safely access the home.");
     }
 
     if (existingOrders && !looksLikeNo(existingOrders)) {
@@ -331,91 +334,102 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
         : "I have supporting proof (texts, photos, reports, witnesses) and can provide it to the court.";
 
     const relationshipLine = relationshipKnown
-      ? `The respondent is my ${relationshipCategory}.`
+      ? `The respondent is my ${relationshipCategory.toLowerCase()}.`
       : "I can explain the relationship category if the court needs it for eligibility.";
 
     const riskBits: string[] = [];
-    if (threats) riskBits.push(`Threats: ${threats}`);
-    if (injuries) riskBits.push(`Injuries: ${injuries}`);
-    if (cohabitation === "Lives together now") riskBits.push("We currently live together");
-    if (childrenInvolved && !looksLikeNo(childrenInvolved)) riskBits.push("Children were involved/affected");
-    if (firearmsAccess === "Yes") riskBits.push("Firearms access was reported");
+    if (threats) riskBits.push(`threats: ${threats}`);
+    if (injuries) riskBits.push(`injuries: ${injuries}`);
+    if (cohabitation === "Lives together now") riskBits.push("we currently live together");
+    if (childrenInvolved && !looksLikeNo(childrenInvolved)) riskBits.push("children were involved or affected");
+    if (firearmsAccess === "Yes") riskBits.push("firearms access was reported");
 
     const riskLine =
       riskBits.length > 0
-        ? `My safety concern is: ${riskBits.join(". ")}.`
+        ? `My safety concern is: ${riskBits.join("; ")}.`
         : "My safety concern is that the incidents are continuing or escalating and I am afraid for my safety.";
 
     const whyNowLine =
       safeString(incidentCore?.date) || mostRecentIncidentAt
-        ? "I’m requesting protection now because the most recent incident is recent and I’m concerned the situation will continue or escalate."
-        : "I’m requesting protection now because I’m concerned the situation will continue or escalate.";
+        ? "I'm requesting protection now because the most recent incident is recent and I'm concerned the situation will continue or escalate."
+        : "I'm requesting protection now because I'm concerned the situation will continue or escalate.";
 
-    const exParteScript = [
-      `Good ${dayGreeting}, Your Honor. My name is [your name]. I am the petitioner, and I am requesting a Temporary Order of Protection.`,
+    const exParteScript = normalizeOutputText([
+      `Good ${dayGreeting}, Your Honor. My name is ${petitionerName}. I am the petitioner, and I am requesting a Temporary Order of Protection.`,
       relationshipLine,
       `The most recent incident was on ${incidentDate}${incidentTime ? ` at about ${incidentTime}` : ""} at ${incidentLocation}. The respondent ${whatHappened}.`,
       riskLine,
       whyNowLine,
       evidenceSay,
-      `I’m requesting ${reliefAsk}. I’m requesting those terms because they address the specific safety risk and reduce the chance of further contact or harm.`,
+      `I'm requesting ${reliefAsk}. I'm requesting those terms because they address the specific safety risk and reduce the chance of further contact or harm.`,
       `If helpful, I can summarize the prior incidents in date order and tie each one to the evidence I have.`
-    ].join("\n\n");
+    ].join("\n\n"));
 
-    const returnDateScript = [
-      `Good ${dayGreeting}, Your Honor. I’m the petitioner. I’m asking the court to continue the temporary order and schedule/keep a fact-finding hearing if the order is contested.`,
+    const returnDateScript = normalizeOutputText([
+      `Good ${dayGreeting}, Your Honor. I'm the petitioner. I'm asking the court to continue the temporary order and schedule or keep a fact-finding hearing if the order is contested.`,
       `My request is based on the reported incidents, especially the most recent incident on ${incidentDate}.`,
       `I have organized my timeline and evidence. I can testify to what I personally observed and provide the proof I have.`,
-      `I’m requesting ${reliefAsk} because it directly addresses safety and prevents further incidents.`
-    ].join("\n\n");
+      `I'm requesting ${reliefAsk} because it directly addresses safety and prevents further incidents.`
+    ].join("\n\n"));
 
     const factFindingOutline: string[] = [
-      "1) Foundation (30 seconds): who you are, how you know respondent, and what you want (protection for safety).",
-      "2) Eligibility (short): relationship category + simple facts showing family/household or intimate relationship.",
-      "3) Incident #1 (most recent): date/time/location → exact actions/words → what you did next → impact/injury/threat.",
-      "4) Incident #2 (if applicable): same structure, no side stories.",
-      "5) Incident #3 (if applicable): same structure.",
-      "6) Pattern/escalation: one sentence connecting the incidents (frequency, recentness, escalation).",
-      "7) Evidence: identify each item, what it shows, and which incident it supports.",
-      "8) Relief requested: list each term and the safety reason for each (how it prevents a specific risk)."
+      "Foundation (30 seconds): who you are, how you know the respondent, and what you want (protection for safety).",
+      "Eligibility (short): relationship category plus simple facts showing family/household or intimate relationship.",
+      "Incident #1 (most recent): date/time/location, exact actions/words, what you did next, impact/injury/threat.",
+      "Incident #2 (if applicable): same structure, no side stories.",
+      "Incident #3 (if applicable): same structure.",
+      "Pattern/escalation: one sentence connecting the incidents (frequency, recentness, escalation).",
+      "Evidence: identify each item, what it shows, and which incident it supports.",
+      "Relief requested: list each term and the safety reason for each (how it prevents a specific risk)."
     ];
 
     const judgeQuestions: Array<{ q: string; a: string }> = [
       {
-        q: "“Why are you asking for an order today?”",
-        a: "“Because the most recent incident was recent and I’m concerned the behavior will continue or escalate. I’m asking for specific conditions to prevent further contact or harm.”"
+        q: "Why are you asking for an order today?",
+        a: normalizeOutputText("Because the most recent incident was recent and I'm concerned the behavior will continue or escalate. I'm asking for specific conditions to prevent further contact or harm.")
       },
       {
-        q: "“What exactly happened in the most recent incident?”",
-        a: `“On ${incidentDate}${incidentTime ? ` around ${incidentTime}` : ""} at ${incidentLocation}, the respondent ${whatHappened}. Then I [what you did next].”`
+        q: "What exactly happened in the most recent incident?",
+        a: normalizeOutputText(`On ${incidentDate}${incidentTime ? ` around ${incidentTime}` : ""} at ${incidentLocation}, the respondent ${whatHappened}. Then I [what you did next].`)
       },
       {
-        q: "“What do you want the order to say?”",
-        a: `“I’m requesting ${reliefAsk}. I’m requesting those terms because they address the safety risk.”`
+        q: "What do you want the order to say?",
+        a: normalizeOutputText(`I'm requesting ${reliefAsk}. I'm requesting those terms because they address the safety risk.`)
       },
       {
-        q: "“What proof do you have?”",
-        a: `“${evidenceSay}”`
+        q: "What proof do you have?",
+        a: normalizeOutputText(evidenceSay)
       },
       {
-        q: "“Any existing cases or orders?”",
-        a: existingOrders && !looksLikeNo(existingOrders) ? `“Yes. ${existingOrders}.”` : "“No existing cases or orders.”"
+        q: "Any existing cases or orders?",
+        a: existingOrders && !looksLikeNo(existingOrders) ? normalizeOutputText(`Yes. ${existingOrders}.`) : "No existing cases or orders."
       },
       {
-        q: "“Any firearms?”",
-        a: firearmsAccess ? `“${firearmsAccess}.”` : "“Unknown.”"
+        q: "Any firearms?",
+        a: firearmsAccess ? `${firearmsAccess}.` : "Unknown."
       },
       {
-        q: "“You live together. Are you asking me to order them to move out?”",
+        q: "You live together. Are you asking me to order them to move out?",
         a:
           cohabitation === "Lives together now"
-            ? "“Yes, Your Honor. I am requesting exclusion because [describe fear/risk]. I have no other safe place to go.”"
-            : "“No, we do not currently live together.”"
+            ? "Yes, Your Honor. I am requesting exclusion because [describe fear/risk]. I have no other safe place to go."
+            : "No, we do not currently live together."
       }
     ];
 
     return { exParteScript, returnDateScript, factFindingOutline, judgeQuestions };
-  }, [derived, dayGreeting]);
+  }, [derived, dayGreeting, petitionerName]);
+
+  // Table of Contents sections for anchor-link navigation
+  const tocSections = [
+    { id: "roadmap-timeline", label: "Timeline" },
+    { id: "roadmap-scripts", label: "Scripts" },
+    { id: "roadmap-judge-qa", label: "Judge Questions" },
+    { id: "roadmap-evidence", label: "Evidence" },
+    { id: "roadmap-strategy", label: "Strategy" },
+    { id: "roadmap-forms", label: "Forms" },
+    { id: "roadmap-safety", label: "Safety" },
+  ];
 
   return (
     <div className="min-h-[calc(100vh-120px)] animate-float-in text-ui-text">
@@ -423,23 +437,23 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
         <CaseSubNav caseId={caseFile.id} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-        {/* LEFT SIDEBAR — visible on all screens */}
-        <aside>
+        {/* LEFT SIDEBAR */}
+        <aside className="space-y-4">
           <GlassCard className="p-4 space-y-4 text-ui-text">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</p>
               <div className="mt-2 space-y-2 text-xs text-slate-700">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Mode</span>
-                  <span className="font-semibold text-ui-text">{status === "active" ? "Active" : "Draft"}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-500 flex-shrink-0">Mode</span>
+                  <span className="font-semibold text-ui-text text-right">{status === "active" ? "Active" : "Draft"}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Safety</span>
-                  <span className="font-semibold text-ui-text">{derived.safetyStatus || "Unknown"}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-500 flex-shrink-0">Safety</span>
+                  <span className="font-semibold text-ui-text text-right">{derived.safetyStatus || "Unknown"}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Relationship</span>
-                  <span className="font-semibold text-ui-text">{derived.relationshipCategory || "Not set"}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-500 flex-shrink-0">Relationship</span>
+                  <span className="font-semibold text-ui-text text-right truncate max-w-[120px]" title={derived.relationshipCategory || "Not set"}>{derived.relationshipCategory || "Not set"}</span>
                 </div>
               </div>
             </div>
@@ -461,11 +475,27 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </div>
             ) : null}
           </GlassCard>
+
+          {/* Table of Contents - hidden on mobile, shown on lg */}
+          <GlassCard className="hidden lg:block p-4 text-ui-text">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">On this page</p>
+            <nav className="mt-2 space-y-1">
+              {tocSections.map((sec) => (
+                <a
+                  key={sec.id}
+                  href={`#${sec.id}`}
+                  className="block rounded-lg px-2 py-1.5 text-xs text-slate-600 hover:bg-slate-50 hover:text-ui-primary transition-colors"
+                >
+                  {sec.label}
+                </a>
+              ))}
+            </nav>
+          </GlassCard>
         </aside>
 
         {/* MAIN */}
         <main className="space-y-6">
-          {/* Header row (dashboard-like) */}
+          {/* Header */}
           <GlassCardStrong className="p-5 text-ui-text">
             <div className="space-y-1">
               <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-ui-primary">
@@ -479,30 +509,30 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </p>
             </div>
 
-{/* Quick Update */}
-<div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
-  <div className="flex items-center justify-between gap-4">
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-        Quick Update
-      </p>
-      <p className="mt-1 text-xs text-slate-700">
-        Add a new detail (incident, threat, evidence, safety change) without restarting.
-      </p>
-    </div>
-  </div>
+            {/* Quick Update */}
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                    Quick Update
+                  </p>
+                  <p className="mt-1 text-xs text-slate-700">
+                    Add a new detail (incident, threat, evidence, safety change) without restarting.
+                  </p>
+                </div>
+              </div>
 
-  <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-    <SafetyUpdateInput
-      caseFile={caseFile}
-      onSafetyInterrupt={() => setInterruptOpen(true)}
-    />
-  </div>
-</div>
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <SafetyUpdateInput
+                  caseFile={caseFile}
+                  onSafetyInterrupt={() => setInterruptOpen(true)}
+                />
+              </div>
+            </div>
           </GlassCardStrong>
 
           {/* KPI row */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             <GlassCard className="p-4 text-ui-text">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                 Timeline Items
@@ -514,7 +544,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                 <span className="text-xs text-slate-500">items</span>
               </div>
               <p className="mt-2 text-xs text-slate-600">
-                Built from outputs, facts, or your top incidents.
+                Built from your interview answers and top incidents.
               </p>
             </GlassCard>
 
@@ -529,49 +559,63 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                 <span className="text-xs text-slate-500">tracked</span>
               </div>
               <p className="mt-2 text-xs text-slate-600">
-                Consolidated from intake + facts + incident attachments.
+                Combined from your intake, interview, and incident details.
               </p>
             </GlassCard>
 
             <GlassCard className="p-4 text-ui-text">
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                Top Incidents
+                Key Incidents
               </p>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-3xl font-display font-bold text-ui-text">
                   {derived.topIncidents.length}
                 </span>
-                <span className="text-xs text-slate-500">anchors</span>
+                <span className="text-xs text-slate-500">documented</span>
               </div>
               <p className="mt-2 text-xs text-slate-600">
-                Highest detail incidents used to draft scripts.
+                Most detailed incidents used to draft your scripts.
               </p>
             </GlassCard>
           </div>
 
           {/* Main content grid */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-            {/* LEFT */}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+            {/* LEFT column */}
             <div className="space-y-6">
-              {/* Timeline preview */}
-              <GlassCard className="p-5 text-ui-text">
+              {/* Timeline */}
+              <GlassCard id="roadmap-timeline" className="p-5 text-ui-text scroll-mt-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-bold text-ui-text">Timeline</h2>
                   <span className="text-xs text-slate-400">Showing up to 6</span>
                 </div>
                 <div className="mt-4">
                   {derived.timelineItems.length ? (
-                    <ul className="space-y-2">
-                      {derived.timelineItems.slice(0, 6).map((item: string, index: number) => (
-                        <li
-                          key={`${index}-${item}`}
-                          className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-700"
-                        >
-                          <span className="text-slate-400 mr-2">{index + 1}.</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="relative ml-3 border-l-2 border-slate-200 pl-4 space-y-4">
+                      {derived.timelineItems.slice(0, 6).map((item: string, index: number) => {
+                        const dateMatch = item.match(/^([A-Za-z]{3}\s+\d{1,2},?\s*\d{4}|\d{1,2}\/\d{1,2}\/\d{2,4}|[A-Za-z]+\s+\d{4})/);
+                        const dateLabel = dateMatch ? dateMatch[1] : null;
+                        const description = dateLabel ? item.slice(dateLabel.length).replace(/^\s*[-:\u2013]\s*/, "") : item;
+                        return (
+                          <div key={`${index}-${item}`} className="relative">
+                            <div className="absolute -left-[22px] top-1 h-3 w-3 rounded-full border-2 border-ui-primary bg-white" />
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                              {dateLabel ? (
+                                <>
+                                  <p className="text-[10px] font-bold uppercase tracking-widest text-ui-primary">{dateLabel}</p>
+                                  <p className="mt-1 text-xs text-slate-700 leading-relaxed">{normalizeOutputText(description)}</p>
+                                </>
+                              ) : (
+                                <p className="text-xs text-slate-700 leading-relaxed">
+                                  <span className="text-slate-400 mr-2">{index + 1}.</span>
+                                  {normalizeOutputText(item)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <p className="text-xs text-slate-400 italic">Add incidents to build a timeline.</p>
                   )}
@@ -579,11 +623,8 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
 
               {/* Scripts */}
-              <GlassCard className="p-5 space-y-4 text-ui-text">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-ui-text">Scripts for Court</h2>
-                  <span className="text-xs text-slate-400">Record-first</span>
-                </div>
+              <GlassCard id="roadmap-scripts" className="p-5 space-y-4 text-ui-text scroll-mt-6">
+                <h2 className="text-sm font-bold text-ui-text">Scripts for Court</h2>
 
                 <details className="group rounded-2xl border border-slate-200 bg-slate-50 open:bg-slate-100">
                   <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 group-hover:text-ui-primary">
@@ -615,7 +656,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                     <ol className="space-y-2 text-sm text-slate-700">
                       {scripts.factFindingOutline.map((line: string, i: number) => (
                         <li key={`${i}-${line}`} className="leading-relaxed">
-                          <span className="text-slate-400 mr-2">{i + 1}.</span>
+                          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-ui-primary/10 text-[10px] font-bold text-ui-primary mr-2">{i + 1}</span>
                           {line}
                         </li>
                       ))}
@@ -625,7 +666,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
 
               {/* Judge Q&A */}
-              <GlassCard className="p-5 text-ui-text">
+              <GlassCard id="roadmap-judge-qa" className="p-5 text-ui-text scroll-mt-6">
                 <h2 className="text-sm font-bold text-ui-text">Common Judge Questions</h2>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {scripts.judgeQuestions.map((qa, idx) => (
@@ -633,7 +674,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                       key={`${idx}-${qa.q}`}
                       className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-ui-primary">
+                      <p className="text-[11px] font-bold text-ui-primary leading-snug">
                         {qa.q}
                       </p>
                       <p className="mt-2 text-sm text-slate-700 italic leading-relaxed">
@@ -645,10 +686,10 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               </GlassCard>
             </div>
 
-            {/* RIGHT */}
+            {/* RIGHT column */}
             <aside className="space-y-6">
               {/* Evidence */}
-              <GlassCard className="p-5 text-ui-text">
+              <GlassCard id="roadmap-evidence" className="p-5 text-ui-text scroll-mt-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-ui-text">Evidence</h3>
                   <span className="text-xs text-slate-400">Top 8</span>
@@ -661,7 +702,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                           key={`${index}-${item}`}
                           className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700"
                         >
-                          <span className="text-ui-danger mt-[1px]">✓</span>
+                          <span className="text-ui-danger mt-[1px]">&#10003;</span>
                           <span>{item}</span>
                         </li>
                       ))}
@@ -676,12 +717,12 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
 
               {/* Strategy tips */}
               {tips.length > 0 ? (
-                <GlassCard className="p-5 border border-amber-400/20 bg-amber-50 text-ui-text">
+                <GlassCard id="roadmap-strategy" className="p-5 border border-amber-400/20 bg-amber-50 text-ui-text scroll-mt-6">
                   <h3 className="text-sm font-bold text-amber-700">Personalized Strategy</h3>
                   <ul className="mt-3 space-y-2">
                     {tips.map((tip, i) => (
                       <li key={i} className="text-xs text-slate-700 leading-relaxed">
-                        • {tip}
+                        &bull; {tip}
                       </li>
                     ))}
                   </ul>
@@ -689,7 +730,7 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
               ) : null}
 
               {/* Court Forms Quick Links */}
-              <GlassCard className="p-5 text-ui-text">
+              <GlassCard id="roadmap-forms" className="p-5 text-ui-text scroll-mt-6">
                 <h3 className="text-sm font-bold text-ui-text">Key Court Forms</h3>
                 <div className="mt-3 space-y-2">
                   <a
@@ -723,28 +764,32 @@ function RoadmapContent({ caseFile }: { caseFile: CaseFile }) {
                     href="/guide#forms"
                     className="flex items-center justify-center rounded-lg border border-ui-primary/20 bg-ui-primary/5 px-3 py-2 text-xs font-semibold text-ui-primary hover:bg-ui-primary/10"
                   >
-                    View All Forms & Guide
+                    View All Forms &amp; Guide
                   </Link>
                 </div>
               </GlassCard>
 
-              {/* Safety */}
-              <GlassCard className="p-5 border border-ui-danger/20 bg-ui-danger/5 text-ui-text">
-                <h3 className="text-sm font-bold text-ui-danger">Safety First</h3>
+              {/* Safety - more visually prominent */}
+              <GlassCard id="roadmap-safety" className="p-5 border-2 border-ui-danger/40 bg-red-50 text-ui-text scroll-mt-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg" role="img" aria-label="Warning">&#9888;&#65039;</span>
+                  <h3 className="text-sm font-bold text-ui-danger">Safety First</h3>
+                </div>
                 <p className="mt-2 text-xs text-slate-700 leading-relaxed">
-                  If you are in immediate danger, call 911. This tool is informational only.
+                  If you are in immediate danger, call <strong>911</strong>. This tool is informational only &mdash; it is not legal advice.
                 </p>
 
                 <div className="mt-4 space-y-3">
                   <div className="rounded-xl border border-slate-200 bg-white p-3">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                       Hotlines (confidential)
                     </p>
                     <p className="mt-2 text-xs text-slate-700">
-                      NY State Domestic & Sexual Violence: 800-942-6906
+                      NY State Domestic &amp; Sexual Violence: <strong>800-942-6906</strong>
                     </p>
-                    <p className="text-xs text-slate-700">Text: 844-997-2121</p>
-                    <p className="text-xs text-slate-700">NYC Safe Horizon: 800-621-4673</p>
+                    <p className="text-xs text-slate-700">Text: <strong>844-997-2121</strong></p>
+                    <p className="text-xs text-slate-700">NYC Safe Horizon: <strong>800-621-4673</strong></p>
+                    <p className="text-xs text-slate-700">National DV Hotline: <strong>1-800-799-7233</strong></p>
                   </div>
                 </div>
               </GlassCard>

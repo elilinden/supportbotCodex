@@ -345,7 +345,7 @@ export default function GuidePage() {
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-ui-primary">2. Why the Risk Is Ongoing</p>
             <p className="mt-2 text-sm text-slate-700">
-              Continued contact, stalking, escalation, access to weapons, prior OP violations.
+              Continued contact, stalking, escalation, access to weapons, prior order violations.
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -468,7 +468,7 @@ export default function GuidePage() {
             </div>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Optional: OP Notification System</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Optional: Order of Protection Notification System</p>
             <p className="mt-2 text-xs text-slate-700">
               New York offers an Order of Protection Notification System so you can receive updates about service and enforcement status:
             </p>
@@ -487,7 +487,7 @@ export default function GuidePage() {
                 rel="noopener noreferrer"
                 className="block text-xs text-ui-primary underline hover:no-underline"
               >
-                Sheriffs&apos; Institute — How OP Notification Works &#8599;
+                Sheriffs&apos; Institute — How Order of Protection Notification Works &#8599;
               </a>
             </div>
           </div>
@@ -544,7 +544,7 @@ export default function GuidePage() {
                 Download GF-8 &#8599;
               </a>
             </li>
-            <li><strong>4. Report to police</strong> — they can arrest for a violation of an OP.</li>
+            <li><strong>4. Report to police</strong> — they can arrest for a violation of an Order of Protection.</li>
           </ol>
         </div>
       </GlassCard>

@@ -10,6 +10,7 @@ import { useCaseStore, useHydrated } from "@/store/useCaseStore";
 import { computeMissingFields } from "@/lib/coach";
 import { mergeFacts } from "@/lib/mergeFacts";
 import { buildOutputsFromFacts } from "@/lib/case";
+import { FIELD_DISPLAY_LABELS } from "@/lib/utils";
 import type { CoachMessage, Facts, IntakeData } from "@/lib/types";
 
 const MAX_TURNS = 5;
@@ -75,10 +76,10 @@ const MissingFieldsList = memo(function MissingFieldsList({
   if (!fields.length) return null;
   return (
     <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Next targets</p>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Still needed</p>
       <ul className="mt-2 space-y-1 text-xs text-slate-700">
         {fields.slice(0, 6).map((f) => (
-          <li key={f}>• {f}</li>
+          <li key={f}>• {FIELD_DISPLAY_LABELS[f] || f}</li>
         ))}
         {fields.length > 6 ? (
           <li className="text-slate-500">• …and {fields.length - 6} more</li>
@@ -98,18 +99,18 @@ const KPICards = memo(function KPICards({
   done: boolean;
 }) {
   return (
-    <div className="mt-5 grid gap-4 md:grid-cols-3">
+    <div className="mt-5 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Turns</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Exchanges</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-3xl font-display font-bold text-ui-text">{turnsUsed}</span>
           <span className="text-xs text-slate-500">of {MAX_TURNS}</span>
         </div>
-        <p className="mt-2 text-xs text-slate-600">Max turns before auto-complete.</p>
+        <p className="mt-2 text-xs text-slate-600">The interview wraps up after {MAX_TURNS} exchanges.</p>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Missing</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Still needed</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-3xl font-display font-bold text-ui-text">{missingCount}</span>
           <span className="text-xs text-slate-500">fields</span>
@@ -327,6 +328,27 @@ export default function InterviewPage() {
     await askInterviewQuestion(message, nextTurn);
   }, [caseFile, done, input, addMessage, incrementTurn, askInterviewQuestion]);
 
+  const handleSkip = useCallback(async () => {
+    if (!caseFile || done) return;
+
+    setInput("");
+    setError(null);
+
+    const skipMessage: CoachMessage = {
+      id: `msg_${Date.now()}`,
+      role: "user" as const,
+      content: "(Skipped this question)",
+      createdAt: new Date().toISOString()
+    };
+
+    addMessage(caseFile.id, skipMessage);
+
+    const nextTurn = (caseFile.turnCount ?? 0) + 1;
+    incrementTurn(caseFile.id);
+
+    await askInterviewQuestion("The user chose to skip this question. Move on to the next topic.", nextTurn);
+  }, [caseFile, done, addMessage, incrementTurn, askInterviewQuestion]);
+
   const hydrated = useHydrated();
 
   if (!hydrated) {
@@ -380,13 +402,13 @@ export default function InterviewPage() {
                   <span className="font-semibold text-ui-text">{modeLabel}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Turns</span>
+                  <span className="text-slate-600">Exchanges</span>
                   <span className="font-semibold text-ui-text">
                     {turnsUsed} / {MAX_TURNS}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Missing</span>
+                  <span className="text-slate-600">Still needed</span>
                   <span className="font-semibold text-ui-text">{missingFields.length}</span>
                 </div>
               </div>
@@ -429,7 +451,7 @@ export default function InterviewPage() {
           </GlassCardStrong>
 
           {/* Content grid */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             {/* Chat */}
             <GlassCard className="flex h-[640px] flex-col p-5">
               <div className="flex items-center justify-between">
@@ -451,31 +473,46 @@ export default function InterviewPage() {
 
               {error ? <p className="mt-3 text-xs text-rose-600" role="alert">{error}</p> : null}
 
-              <div className="mt-4 flex items-center gap-2">
-                <input
+              <div className="mt-4 flex gap-2">
+                <textarea
                   className={[
-                    "flex-1 rounded-full border px-4 py-2 text-xs",
+                    "flex-1 resize-none rounded-2xl border px-4 py-3 text-sm leading-relaxed",
                     "border-slate-200 bg-white text-ui-text shadow-sm outline-none",
                     "placeholder:text-slate-400",
                     "focus:border-ui-primary focus:ring-4 focus:ring-ui-primary/20",
                     "disabled:cursor-not-allowed disabled:opacity-60"
                   ].join(" ")}
+                  rows={3}
                   aria-label="Interview response"
-                  placeholder={done ? "Interview complete" : "Answer the interview question..."}
+                  placeholder={done ? "Interview complete" : "Type your answer\u2026"}
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter") void handleSend();
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      void handleSend();
+                    }
                   }}
                   disabled={loading || done}
                 />
-                <button
-                  className="rounded-full bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => void handleSend()}
-                  disabled={loading || done}
-                >
-                  {loading ? "Sending" : "Send"}
-                </button>
+                <div className="flex flex-col gap-2">
+                  <button
+                    className="rounded-xl bg-ui-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => void handleSend()}
+                    disabled={loading || done}
+                  >
+                    {loading ? "Sending" : "Send"}
+                  </button>
+                  {!done ? (
+                    <button
+                      className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      onClick={() => void handleSkip()}
+                      disabled={loading || done}
+                    >
+                      Skip
+                    </button>
+                  ) : null}
+                </div>
               </div>
               {done ? (
                 <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -492,27 +529,9 @@ export default function InterviewPage() {
               ) : null}
             </GlassCard>
 
-            {/* Right panel */}
+            {/* Right panel — fields still needed + safety */}
             <aside className="space-y-6">
               <GlassCard className="p-5">
-                <h3 className="text-sm font-bold text-ui-text">Interview status</h3>
-                <div className="mt-3 space-y-2 text-xs text-slate-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Turns used</span>
-                    <span className="font-semibold text-ui-text">
-                      {turnsUsed} / {MAX_TURNS}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Missing fields</span>
-                    <span className="font-semibold text-ui-text">{missingFields.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Mode</span>
-                    <span className="font-semibold text-ui-text">{modeLabel}</span>
-                  </div>
-                </div>
-
                 <MissingFieldsList fields={missingFields} />
 
                 {done ? (
@@ -524,15 +543,21 @@ export default function InterviewPage() {
                   </Link>
                 ) : (
                   <p className="mt-4 text-xs text-slate-600">
-                    Keep answering until the missing fields hit 0 (or turn limit).
+                    Keep answering until all fields are filled (or the exchange limit is reached).
                   </p>
                 )}
               </GlassCard>
 
-              <GlassCard className="p-5 border border-ui-danger/20 bg-ui-danger/5">
-                <h3 className="text-sm font-bold text-ui-text">Safety First</h3>
-                <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-                  If you are in immediate danger, call 911. This tool is informational only.
+              <GlassCard className="p-5 border-2 border-ui-danger/40 bg-red-50 shadow-md">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg" role="img" aria-label="Warning">&#9888;&#65039;</span>
+                  <h3 className="text-sm font-bold text-ui-danger">Safety First</h3>
+                </div>
+                <p className="mt-2 text-xs text-slate-700 leading-relaxed">
+                  If you are in immediate danger, call <strong>911</strong>. This tool is informational only &mdash; it is not legal advice.
+                </p>
+                <p className="mt-2 text-xs text-slate-700">
+                  National DV Hotline: <strong>1-800-799-7233</strong>
                 </p>
               </GlassCard>
             </aside>
