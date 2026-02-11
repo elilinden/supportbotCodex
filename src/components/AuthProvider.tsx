@@ -29,11 +29,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const previousId = prevUserRef.current;
     prevUserRef.current = currentId;
 
-    // Only trigger on a *new* sign-in (null -> userId)
+    // Only trigger on a *new* sign-in (null -> userId).
+    // sessionStorage guard prevents re-triggering after page refresh
+    // (refs reset on reload, but sessionStorage persists within the tab).
     if (currentId && !previousId) {
-      cloudRestore(currentId).catch(() => {
-        // No cloud data yet — first-time user, that's fine
-      });
+      const restoreKey = `cloud-restored-${currentId}`;
+      if (!sessionStorage.getItem(restoreKey)) {
+        sessionStorage.setItem(restoreKey, "1");
+        cloudRestore(currentId).catch(() => {
+          // No cloud data yet — first-time user, that's fine
+        });
+      }
     }
   }, [user]);
 
