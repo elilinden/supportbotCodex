@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 import { HomeActions } from "@/components/HomeActions";
+
+export const metadata: Metadata = {
+  title: "NY Family Court Order of Protection — Free Guided Workspace",
+  description:
+    "A free, private workspace to prepare for a New York Family Court Order of Protection. Organize facts, track evidence, and build court-ready documents — no attorney required.",
+};
 
 export default function HomePage() {
   return (

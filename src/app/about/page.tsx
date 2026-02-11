@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Pro-Se Prime is a free, information-only tool that helps self-represented individuals prepare for New York Family Court Orders of Protection.",
+};
 
 export default function AboutPage() {
   return (

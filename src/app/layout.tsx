@@ -20,8 +20,15 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "Pro-Se Prime",
+  metadataBase: new URL("https://proseprime.com"),
+  title: { default: "Pro-Se Prime", template: "%s | Pro-Se Prime" },
   description: "Information-only guidance for New York Family Court Orders of Protection.",
+  openGraph: {
+    siteName: "Pro-Se Prime",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: { card: "summary" },
   icons: {
     icon: "/images/favicon.png",
     apple: "/images/favicon.png",
@@ -31,6 +38,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Pro-Se Prime",
+            url: "https://proseprime.com",
+            description: "Information-only guidance for New York Family Court Orders of Protection.",
+          }) }}
+        />
+      </head>
       <body
         className={[
           spaceGrotesk.variable,

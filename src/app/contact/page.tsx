@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Get in touch with the Pro-Se Prime team for product support, feedback, or questions about NY Family Court Orders of Protection.",
+};
 
 export default function ContactPage() {
   return (

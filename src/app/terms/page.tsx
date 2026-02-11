@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Terms of Service for Pro-Se Prime. This tool provides general information only — not legal advice.",
+};
 
 export default function TermsPage() {
   return (
