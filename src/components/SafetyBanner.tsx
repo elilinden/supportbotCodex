@@ -6,7 +6,7 @@ export function SafetyBanner() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="w-full border-b border-ui-warning/30 bg-ui-warningSoft/60 backdrop-blur-xl" role="banner">
+    <div className="w-full border-b border-ui-warning/30 bg-ui-warningSoft/60" role="banner">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-3 text-xs text-ui-text">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">

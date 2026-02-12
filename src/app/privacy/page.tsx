@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How Pro-Se Prime protects your data: local-first encrypted storage, optional cloud sync, and no third-party tracking.",
+};
 
 export default function PrivacyPage() {
   return (
