@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -17,6 +17,47 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   const signIn = useAuthStore((s) => s.signIn);
   const signUp = useAuthStore((s) => s.signUp);
   const resetPassword = useAuthStore((s) => s.resetPassword);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  /* ---- Focus trap: keep Tab cycling inside the dialog ---- */
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [onClose]
+  );
+
+  /* ---- Restore focus on unmount ---- */
+  const previousFocus = useRef<Element | null>(null);
+  useEffect(() => {
+    previousFocus.current = document.activeElement;
+    return () => {
+      if (previousFocus.current instanceof HTMLElement) {
+        previousFocus.current.focus();
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,22 +92,28 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
     mode === "sign-in" ? "Sign In" : mode === "sign-up" ? "Create Account" : "Reset Password";
 
   return createPortal(
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto py-8 bg-black/40 backdrop-blur-sm"
       onClick={onClose}
+      onKeyDown={handleKeyDown}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
         className="mx-4 my-auto w-full max-w-sm rounded-2xl border border-ui-border bg-ui-surface p-6 shadow-card"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ui-text">{title}</h2>
+          <h2 id="auth-modal-title" className="text-lg font-semibold text-ui-text">{title}</h2>
           <button
             className="text-ui-textMuted hover:text-ui-text"
             onClick={onClose}
             aria-label="Close"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -81,6 +128,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
               id="auth-email"
               type="email"
               required
+              autoFocus
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -107,13 +155,13 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           )}
 
           {error && (
-            <p className="rounded-xl border border-ui-danger/30 bg-ui-dangerSoft px-3 py-2 text-xs text-ui-danger">
+            <p role="alert" className="rounded-xl border border-ui-danger/30 bg-ui-dangerSoft px-3 py-2 text-xs text-ui-danger">
               {error}
             </p>
           )}
 
           {info && (
-            <p className="rounded-xl border border-ui-success/30 bg-ui-successSoft px-3 py-2 text-xs text-ui-success">
+            <p role="status" className="rounded-xl border border-ui-success/30 bg-ui-successSoft px-3 py-2 text-xs text-ui-success">
               {info}
             </p>
           )}

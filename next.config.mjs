@@ -32,6 +32,8 @@ const nextConfig = {
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://generativelanguage.googleapis.com https://*.supabase.co",
               "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
             ].join("; "),
           },
         ],

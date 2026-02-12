@@ -5,7 +5,7 @@ import { HomeActions } from "@/components/HomeActions";
 export const metadata: Metadata = {
   title: "NY Family Court Order of Protection — Free Guided Workspace",
   description:
-    "A free, private workspace to prepare for a New York Family Court Order of Protection. Organize facts, track evidence, and build court-ready documents — no attorney required.",
+    "Free workspace to organize facts and evidence for a New York Family Court Order of Protection. Build court-ready materials — no attorney required.",
 };
 
 export default function HomePage() {

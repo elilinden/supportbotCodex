@@ -3,7 +3,7 @@ import Link from "next/link";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About — Free NY Family Court Self-Help Tool",
   description:
     "Pro-Se Prime is a free, information-only tool that helps self-represented individuals prepare for New York Family Court Orders of Protection.",
 };
@@ -30,6 +30,12 @@ export default function AboutPage() {
             className="rounded-full bg-ui-primary px-7 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/20 hover:opacity-95"
           >
             Start Your Case
+          </Link>
+          <Link
+            href="/guide"
+            className="rounded-full border border-slate-200 bg-white px-7 py-3 text-xs font-bold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
+          >
+            Court Guide
           </Link>
           <Link
             href="/terms"
