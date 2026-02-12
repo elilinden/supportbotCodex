@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://proseprime.com";
+  const base = "https://proseprime.org";
 
   return [
     { url: base, lastModified: new Date(), changeFrequency: "monthly", priority: 1.0 },

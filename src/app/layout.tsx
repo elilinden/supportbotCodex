@@ -20,7 +20,7 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://proseprime.com"),
+  metadataBase: new URL("https://proseprime.org"),
   title: { default: "Pro-Se Prime", template: "%s | Pro-Se Prime" },
   description: "Information-only guidance for New York Family Court Orders of Protection.",
   openGraph: {
@@ -45,8 +45,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Pro-Se Prime",
-            url: "https://proseprime.com",
-            logo: "https://proseprime.com/images/logo.png",
+            url: "https://proseprime.org",
+            logo: "https://proseprime.org/images/logo.png",
             description: "Information-only guidance for New York Family Court Orders of Protection.",
             areaServed: "US-NY",
             knowsAbout: [
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ],
             contactPoint: {
               "@type": "ContactPoint",
-              email: "support@proseprime.com",
+              email: "support@proseprime.org",
               contactType: "Customer Support",
             },
           }) }}

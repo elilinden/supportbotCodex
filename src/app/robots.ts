@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: ["/", "/about", "/guide", "/contact", "/privacy", "/terms"],
       disallow: ["/new", "/settings", "/case/"],
     },
-    sitemap: "https://proseprime.com/sitemap.xml",
+    sitemap: "https://proseprime.org/sitemap.xml",
   };
 }
