@@ -46,7 +46,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             "@type": "Organization",
             name: "Pro-Se Prime",
             url: "https://proseprime.com",
+            logo: "https://proseprime.com/images/logo.png",
             description: "Information-only guidance for New York Family Court Orders of Protection.",
+            areaServed: "US-NY",
+            knowsAbout: [
+              "New York Family Court",
+              "Orders of Protection",
+              "Family Offense Petitions",
+              "Self-Represented Litigants",
+            ],
+            contactPoint: {
+              "@type": "ContactPoint",
+              email: "support@proseprime.com",
+              contactType: "Customer Support",
+            },
           }) }}
         />
       </head>

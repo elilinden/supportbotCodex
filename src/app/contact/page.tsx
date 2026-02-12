@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { GlassCard, GlassCardStrong } from "@/components/GlassCard";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Contact & Support",
   description:
     "Get in touch with the Pro-Se Prime team for product support, feedback, or questions about NY Family Court Orders of Protection.",
 };
@@ -41,6 +42,24 @@ export default function ContactPage() {
               local emergency number).
             </p>
           </div>
+        </div>
+      </GlassCard>
+
+      <GlassCard className="border border-black/10 bg-white/70 text-slate-900">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Helpful links</p>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <Link
+            href="/guide"
+            className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
+          >
+            Court Guide
+          </Link>
+          <Link
+            href="/about"
+            className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-widest text-slate-700 hover:bg-slate-50"
+          >
+            About
+          </Link>
         </div>
       </GlassCard>
     </div>
