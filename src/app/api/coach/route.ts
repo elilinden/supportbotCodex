@@ -20,6 +20,43 @@ const DEFAULT_MODEL = "gemini-2.5-flash";
 // Require API_SECRET in production to prevent abuse
 const REQUIRE_API_SECRET_IN_PROD = false;
 
+/* ---------- lightweight in-memory rate limiter ---------- */
+const RATE_WINDOW_MS = 60_000; // 1 minute
+const RATE_MAX = 20;           // max requests per window per IP
+
+const hits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = hits.get(ip) ?? [];
+  // drop entries older than the window
+  const recent = timestamps.filter((t) => now - t < RATE_WINDOW_MS);
+  if (recent.length >= RATE_MAX) {
+    hits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  hits.set(ip, recent);
+  return false;
+}
+
+// Periodically prune stale IPs (every 5 min) to avoid unbounded growth
+if (typeof globalThis !== "undefined") {
+  const PRUNE_INTERVAL = 5 * 60_000;
+  const pruneKey = "__coachRateLimitPrune";
+  if (!(globalThis as Record<string, unknown>)[pruneKey]) {
+    (globalThis as Record<string, unknown>)[pruneKey] = setInterval(() => {
+      const now = Date.now();
+      for (const [ip, timestamps] of hits) {
+        const recent = timestamps.filter((t) => now - t < RATE_WINDOW_MS);
+        if (recent.length === 0) hits.delete(ip);
+        else hits.set(ip, recent);
+      }
+    }, PRUNE_INTERVAL);
+  }
+}
+/* -------------------------------------------------------- */
+
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
 }
@@ -207,6 +244,12 @@ function isAuthorized(req: Request) {
 }
 
 export async function POST(request: Request) {
+  // Rate limit by IP
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) {
+    return json({ error: "Too many requests. Please wait a moment and try again." }, 429);
+  }
+
   if (!isAuthorized(request)) {
     return json({ error: "Unauthorized: Check API_SECRET in Vercel environment variables." }, 401);
   }

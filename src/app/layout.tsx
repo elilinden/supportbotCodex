@@ -27,8 +27,13 @@ export const metadata: Metadata = {
     siteName: "Pro-Se Prime",
     type: "website",
     locale: "en_US",
+    images: [{ url: "/images/logo.png", width: 512, height: 512, alt: "Pro-Se Prime — Free NY Family Court Self-Help Tool" }],
   },
-  twitter: { card: "summary" },
+  twitter: {
+    card: "summary",
+    images: ["/images/logo.png"],
+  },
+  alternates: { canonical: "./" },
   icons: {
     icon: "/images/favicon.png",
     apple: "/images/favicon.png",

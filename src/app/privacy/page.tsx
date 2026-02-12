@@ -288,18 +288,61 @@ export default function PrivacyPage() {
             </p>
           </section>
 
+          {/* 10a) Your Rights (CCPA / GDPR) */}
+          <section className="space-y-3">
+            <h2 className="text-base font-semibold text-slate-900">10) Your Privacy Rights</h2>
+
+            <p>
+              Depending on where you live, you may have specific rights regarding your personal information under laws
+              such as the California Consumer Privacy Act (CCPA) or the EU General Data Protection Regulation (GDPR).
+            </p>
+
+            <div className="space-y-3">
+              <p className="font-semibold text-slate-900">A. Rights you may have</p>
+              <ul className="list-disc space-y-1 pl-5">
+                <li><strong>Access:</strong> Request a copy of the personal information we hold about you.</li>
+                <li><strong>Correction:</strong> Ask us to correct inaccurate information.</li>
+                <li><strong>Deletion:</strong> Ask us to delete your personal information, subject to legal exceptions.</li>
+                <li><strong>Portability:</strong> Request your data in a structured, machine-readable format (GDPR).</li>
+                <li><strong>Opt-out of sale:</strong> We do not sell personal information. No opt-out is needed.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <p className="font-semibold text-slate-900">B. How to exercise these rights</p>
+              <p>
+                Email{" "}
+                <a href="mailto:support@proseprime.org" className="font-semibold underline underline-offset-4">
+                  support@proseprime.org
+                </a>{" "}
+                with the subject line &ldquo;Privacy Rights Request.&rdquo; We will respond within 30 days (or sooner if
+                required by applicable law). We may need to verify your identity before processing requests.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <p className="font-semibold text-slate-900">C. International visitors</p>
+              <p>
+                Pro-Se Prime is designed for use in New York, United States. If you access the Service from outside the
+                United States, your information may be transferred to and processed in the United States, which may have
+                different data-protection standards than your jurisdiction. By using the Service, you consent to such
+                transfer and processing.
+              </p>
+            </div>
+          </section>
+
           {/* 11) Changes */}
           <section className="space-y-3">
-            <h2 className="text-base font-semibold text-slate-900">10) Changes to This Policy</h2>
+            <h2 className="text-base font-semibold text-slate-900">11) Changes to This Policy</h2>
             <p>
               We may update this Policy from time to time. The “Last updated” date indicates when changes take effect.
               Continued use of the Service after an update means you accept the revised Policy.
             </p>
           </section>
 
-          {/* 12) Contact */}
+          {/* 13) Contact */}
           <section className="space-y-3">
-            <h2 className="text-base font-semibold text-slate-900">11) Contact</h2>
+            <h2 className="text-base font-semibold text-slate-900">12) Contact</h2>
             <p>
               Questions or requests about this Policy:{" "}
               <a href="mailto:support@proseprime.org" className="font-semibold underline underline-offset-4">
