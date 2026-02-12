@@ -302,8 +302,8 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-slate-900">11) Contact</h2>
             <p>
               Questions or requests about this Policy:{" "}
-              <a href="mailto:support@proseprime.com" className="font-semibold underline underline-offset-4">
-                support@proseprime.com
+              <a href="mailto:support@proseprime.org" className="font-semibold underline underline-offset-4">
+                support@proseprime.org
               </a>
             </p>
           </section>

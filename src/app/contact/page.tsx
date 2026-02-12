@@ -24,8 +24,8 @@ export default function ContactPage() {
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Email</p>
             <p className="mt-2">
               <span className="font-medium text-slate-900">Support:</span>{" "}
-              <a className="underline underline-offset-4" href="mailto:support@proseprime.com">
-                support@proseprime.com
+              <a className="underline underline-offset-4" href="mailto:support@proseprime.org">
+                support@proseprime.org
               </a>
             </p>
             <p className="mt-2 text-xs text-slate-500">

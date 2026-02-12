@@ -214,10 +214,10 @@ export default function TermsPage() {
             <p>
               Questions about these Terms:{" "}
               <a
-                href="mailto:support@proseprime.com"
+                href="mailto:support@proseprime.org"
                 className="font-semibold text-slate-900 underline underline-offset-4"
               >
-                support@proseprime.com
+                support@proseprime.org
               </a>
             </p>
           </section>
