@@ -879,6 +879,12 @@ export default function GuidePage() {
           Start Your Intake
         </Link>
         <Link
+          href="/about"
+          className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:bg-slate-50"
+        >
+          About
+        </Link>
+        <Link
           href="/"
           className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:bg-slate-50"
         >

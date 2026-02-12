@@ -6,6 +6,15 @@ export const metadata: Metadata = {
     "Step-by-step guide to filing for an Order of Protection in New York Family Court: eligibility, required forms, what to say to the judge, timelines, and more.",
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://proseprime.org" },
+    { "@type": "ListItem", position: 2, name: "Court Guide", item: "https://proseprime.org/guide" },
+  ],
+};
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -56,6 +65,10 @@ const faqJsonLd = {
 export default function GuideLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
