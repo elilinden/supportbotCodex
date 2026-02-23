@@ -182,6 +182,7 @@ const QUICK_JUMPS = [
   { label: "What to Say", href: "#what-to-say" },
   { label: "Forms", href: "#forms" },
   { label: "Relief", href: "#relief" },
+  { label: "Rules", href: "#rules" },
   { label: "Service", href: "#service" },
   { label: "Safety", href: "#safety" },
 ];
@@ -547,6 +548,151 @@ export default function GuidePage() {
           ))}
         </div>
       </GlassCard>
+
+      {/* Important Rules to Know */}
+      <div id="rules" className="scroll-mt-52 space-y-6">
+        <GlassCardStrong className="space-y-2">
+          <h2 className="text-lg font-bold text-slate-900">Important Rules to Know</h2>
+          <p className="text-sm text-slate-600">
+            These are commonly misunderstood rules that can affect your case. Knowing them in advance
+            helps you avoid surprises.
+          </p>
+        </GlassCardStrong>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">1. Consequences of Violating an Order of Protection</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If the respondent violates a temporary or final order of protection, the consequences can include:
+          </p>
+          <ul className="space-y-1.5 text-sm text-slate-700">
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Arrest</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Up to one year in jail</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Felony charges carrying up to seven years in prison and three years of probation</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Revocation of a conditional discharge</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Revocation of an Adjournment in Contemplation of Dismissal (ACD)</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Revocation of probation</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Revocation of bail</li>
+          </ul>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            A violation can also result in a new criminal case against the respondent. You should document
+            every violation thoroughly and file a Violation Petition (<InlineForm formNumber="GF-8" label="form GF-8" />)
+            in Family Court in addition to calling 911 if you are in danger.
+          </p>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">2. Respondent Still Owes Rent if Excluded from the Home</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If the court orders the respondent to leave the home, the respondent is still legally required to pay rent
+            if their name is on the lease. This is true even if the order of protection prohibits them from living there,
+            and even if they are incarcerated. As the petitioner, you should know that exclusion from the home does not
+            eliminate the respondent&apos;s financial obligation for the lease.
+          </p>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">3. No One Else Can Retrieve Belongings on the Respondent&apos;s Behalf</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If a stay-away or exclusion order is in effect, the respondent cannot send another person to the home to
+            pick up belongings. This is a violation of the order of protection, even if you are not home or would not
+            object. The only way the respondent can retrieve belongings is with explicit permission from the judge,
+            usually with a police escort on a specific date and time set by the court.
+          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
+            If someone shows up claiming to be picking things up for the respondent, you can call the police.
+          </div>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">4. The Order Stands Even if You Resume Contact</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            An order of protection remains in full effect even if you and the respondent reconcile, resume communication,
+            or begin living together again. As long as the order is active, you can still call the police to enforce it
+            at any time.
+          </p>
+          <div className="rounded-xl border-2 border-red-300 bg-red-50 p-4 text-sm text-red-800">
+            <p className="font-bold">Critical</p>
+            <p className="mt-1">
+              If the respondent contacts you in violation of the order, or if you initiate contact and the respondent
+              responds, the respondent can still be arrested. The order does not go away because both parties are in
+              contact.
+            </p>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If you want the order removed, you must ask the judge &mdash; it does not expire or become void based on
+            your behavior.
+          </p>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">5. Cross-Petitions: The Respondent Can File Against You</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            The respondent has the right to file a cross-petition for their own order of protection against you. To do
+            so, they must give the court a valid reason &mdash; simply having an order filed against them is not enough.
+          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
+            If both parties have orders of protection against each other, both parties can be arrested if either order is
+            violated. Be aware this is a possibility so it does not catch you off guard.
+          </div>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">6. How to Remove or End an Order of Protection Early</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If you (the petitioner) want to remove or end the order of protection before it expires, you can ask the
+            Family Court judge to do so. The judge will usually decide the same day. However, the judge is not required
+            to remove it &mdash; if the judge believes the order is still needed, it stays in effect.
+          </p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
+            You cannot remove the order on your own; only the judge can do this.
+          </div>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">7. Statewide Registry of Orders of Protection</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            All temporary and final orders of protection in New York State are entered into a computerized
+            Registry of Orders of Protection and Warrants. This means police can look up your order electronically
+            during any encounter. The registry includes:
+          </p>
+          <ul className="space-y-1.5 text-sm text-slate-700">
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Who is covered</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> The dates the order is in effect</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> Whether the respondent was served</li>
+            <li><span className="mr-1 text-slate-400">&#8226;</span> What rules the judge ordered</li>
+          </ul>
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-800">
+            You should still carry a copy of the order with you at all times, but enforcement does not depend on
+            having the physical paper.
+          </div>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">8. Out-of-State Enforcement</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            Orders of protection issued in New York are enforceable in every other state under federal law
+            (the Violence Against Women Act). If you move to or travel to another state, your New York order of
+            protection is still valid and enforceable there.
+          </p>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            Similarly, if you have an order of protection from another state, you can register it in New York for
+            free by filing <InlineForm formNumber="GF-5e" label="form GF-5e" /> with the Court Clerk, and it will
+            be entered into the statewide registry.
+          </p>
+        </GlassCard>
+
+        <GlassCard className="space-y-4">
+          <h3 className="text-base font-bold text-slate-900">9. Integrated Domestic Violence (IDV) Court</h3>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            If you have both a Family Court case and a Criminal Court case involving the same respondent, both cases
+            may be transferred to the Integrated Domestic Violence (IDV) Court. In IDV Court, one judge hears both
+            cases, which reduces the number of court appearances you need to make and helps ensure consistent rulings.
+          </p>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
+            You do not need to request this &mdash; the courts will transfer the cases when they identify the overlap.
+          </div>
+        </GlassCard>
+      </div>
 
       {/* Service Requirements — Priority 3: warning box already exists, add id for jump */}
       <div id="service" className="scroll-mt-52">
