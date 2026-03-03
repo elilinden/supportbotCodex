@@ -78,6 +78,13 @@ export function TopNav() {
           </Link>
 
           <Link
+            href="/how-it-works"
+            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+          >
+            How It Works
+          </Link>
+
+          <Link
             href="/guide"
             className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
           >
@@ -145,6 +152,13 @@ export function TopNav() {
             onClick={() => setMenuOpen(false)}
           >
             New Intake
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="rounded-xl border border-ui-border bg-ui-surface px-4 py-3 text-xs font-semibold uppercase tracking-wide text-ui-text hover:bg-ui-surface2"
+            onClick={() => setMenuOpen(false)}
+          >
+            How It Works
           </Link>
           <Link
             href="/guide"
