@@ -55,7 +55,7 @@ export function HomeActions() {
           </>
         )}
 
-        <Link href="/guide" className={outlineBtn}>
+        <Link href="/how-it-works" className={outlineBtn}>
           Learn How It Works
         </Link>
       </div>
