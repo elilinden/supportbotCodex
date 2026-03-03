@@ -23,6 +23,12 @@ export function Footer() {
             About
           </Link>
           <Link
+            href="/how-it-works"
+            className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text shadow-sm hover:border-ui-borderStrong"
+          >
+            How It Works
+          </Link>
+          <Link
             href="/contact"
             className="rounded-full border border-ui-border bg-ui-surface px-4 py-2 text-xs font-semibold uppercase tracking-wide text-ui-text shadow-sm hover:border-ui-borderStrong"
           >
