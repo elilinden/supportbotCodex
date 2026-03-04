@@ -258,7 +258,7 @@ export default function GuidePage() {
           </li>
           <li className="flex gap-3">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ui-primary text-xs font-bold text-white">3</span>
-            <span>The order must be <strong>served</strong> on the other person before it is enforceable. You cannot serve it yourself.</span>
+            <span>The order must be <strong>served</strong> to the other person before it is enforceable. You cannot serve it yourself.</span>
           </li>
           <li className="flex gap-3">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ui-primary text-xs font-bold text-white">4</span>
